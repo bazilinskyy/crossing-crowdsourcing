@@ -1,0 +1,327 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Experiment page</title>
+    <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
+    <script src='jsPsych/jspsych.js'></script>
+    <script src='jsPsych/plugins/jspsych-html-keyboard-response.js'></script>
+    <script src='jsPsych/plugins/jspsych-video-keyboard-multiple-responses-release.js'></script>
+    <script src='jsPsych/plugins/jspsych-call-function.js'></script>
+    <script src='jsPsych/plugins/jspsych-survey-html-form-slider.js'></script>
+    <script src='jsPsych/plugins/jspsych-audio-keyboard-response.js'></script>
+    <link href='jsPsych/css/jspsych.css' rel='stylesheet' type='text/css'></link>
+    <link href='css/experiment.css' rel='stylesheet' type='text/css'></link>
+    <link rel='icon' type='image/png' href='/img/favicon.png' />
+    <!-- bootstrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+  </head>
+  <body>
+  </body>
+  <script>
+
+// by Pavlo Bazilinskyy <p.bazilinskyy@tudelft.nl>
+
+// Constants
+var n_videos = 10; // number of videos
+var n_videos_repeat = 5; // number of repeats of each condition
+var n_videos_break = 10; // number of videos between each break
+var image_pfefix = 'img/'; // prefix for images
+var video_pfefix = 'videos/video_'; // prefix for videos
+var SHOW_DEBUG = false; // switch for debugging output
+var SAVE_DATA = true; // save data or not
+
+// Arrays
+var video_ids = [];
+
+// browser info
+// https://stackoverflow.com/questions/11219582/how-to-detect-my-browser-version-and-operating-system-using-javascript
+var nVer = navigator.appVersion;
+var nAgt = navigator.userAgent;
+var br_name = navigator.appName;
+var br_full_version = '' + parseFloat(navigator.appVersion);
+var br_major_version = parseInt(navigator.appVersion, 10);
+var nameOffset, verOffset, ix;
+
+// In Opera, the true version is after "Opera" or after "Version"
+if ((verOffset = nAgt.indexOf("Opera")) != -1) {
+    br_name = "Opera";
+    br_full_version = nAgt.substring(verOffset + 6);
+    if ((verOffset = nAgt.indexOf("Version")) != -1)
+        br_full_version = nAgt.substring(verOffset + 8);
+}
+// In MSIE, the true version is after "MSIE" in userAgent
+else if ((verOffset = nAgt.indexOf("MSIE")) != -1) {
+    br_name = "Microsoft Internet Explorer";
+    br_full_version = nAgt.substring(verOffset + 5);
+}
+// In Chrome, the true version is after "Chrome" 
+else if ((verOffset = nAgt.indexOf("Chrome")) != -1) {
+    br_name = "Chrome";
+    br_full_version = nAgt.substring(verOffset + 7);
+}
+// In Safari, the true version is after "Safari" or after "Version" 
+else if ((verOffset = nAgt.indexOf("Safari")) != -1) {
+    br_name = "Safari";
+    br_full_version = nAgt.substring(verOffset + 7);
+    if ((verOffset = nAgt.indexOf("Version")) != -1)
+        br_full_version = nAgt.substring(verOffset + 8);
+}
+// In Firefox, the true version is after "Firefox" 
+else if ((verOffset = nAgt.indexOf("Firefox")) != -1) {
+    browserName = "Firefox";
+    br_full_version = nAgt.substring(verOffset + 8);
+}
+// In most other browsers, "name/version" is at the end of userAgent 
+else if ((nameOffset = nAgt.lastIndexOf(' ') + 1) <
+    (verOffset = nAgt.lastIndexOf('/'))) {
+    browserName = nAgt.substring(nameOffset, verOffset);
+    br_full_version = nAgt.substring(verOffset + 1);
+    if (browserName.toLowerCase() == browserName.toUpperCase()) {
+        browserName = navigator.appName;
+    }
+}
+// trim the br_full_version string at semicolon/space if present
+if ((ix = br_full_version.indexOf(";")) != -1)
+    br_full_version = br_full_version.substring(0, ix);
+if ((ix = br_full_version.indexOf(" ")) != -1)
+    br_full_version = br_full_version.substring(0, ix);
+
+br_major_version = parseInt('' + br_full_version, 10);
+if (isNaN(br_major_version)) {
+    br_full_version = '' + parseFloat(navigator.appVersion);
+    br_major_version = parseInt(navigator.appVersion, 10);
+}
+
+if (debug) {
+    console.log('browser name', br_name);
+    console.log('browser full version', br_full_version);
+    console.log('browser major version', br_major_version);
+    console.log('browser navigator.appName', navigator.appName);
+    console.log('browser navigator.userAgent', navigator.userAgent);
+}
+
+ /**
+ * Returns a random integer between min (inclusive) and max (inclusive).
+ * The value is no lower than min (or the next integer greater than min
+ * if min isn't an integer) and no greater than max (or the next integer
+ * lower than max if max isn't an integer).
+ * Using Math.round() will give you a non-uniform distribution!
+ */
+function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+/**
+ * Get code for the worker.
+ */
+function getWorkerCode() {
+    var timestamp = window.performance.timing.navigationStart + window.performance.now();
+    var current_time = Math.round(timestamp);
+    var random_num = getRandomInt(1, 10000);
+    worker_code = 'X6' + current_time + 'BV' + random_num + '1W';
+    return worker_code;
+}
+
+var worker_code = getWorkerCode();
+
+/**
+ * Shuffles array in place.
+ * @param {Array} a items An array containing the items.
+ */
+function shuffle(a) {
+    var j, x, i;
+    for (i = a.length - 1; i > 0; i--) {
+        j = Math.floor(Math.random() * (i + 1));
+        x = a[i];
+        a[i] = a[j];
+        a[j] = x;
+    }
+    return a;
+}
+
+function onlyUnique(value, index, self) { 
+    return self.indexOf(value) === index;
+}
+
+/**
+ * Get parameter from URL.
+ */
+var getUrlParameter = function getUrlParameter(sParam) {
+    var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+        sURLVariables = sPageURL.split('&'),
+        sParameterName,
+        i;
+    for (i = 0; i < sURLVariables.length; i++) {
+        sParameterName = sURLVariables[i].split('=');
+        if (sParameterName[0] === sParam) {
+            return sParameterName[1] === undefined ? true : sParameterName[1];
+        }
+    }
+};
+
+/**
+ * Save data.
+ */
+function saveData() {
+    // check if data needs to be saved
+    if (save_data) {
+        // add worker ID 
+        jsPsych.data.get().addToLast({
+            worker_code: worker_code
+        });
+
+        if (debug) {
+            console.log('saving data', jsPsych.data.get().json());
+        }
+        $.ajax({
+                type: 'POST',
+                url: '/experiment-data',
+                data: jsPsych.data.get().json(),
+                contentType: 'application/json'
+            })
+            .done(function() {
+                jsPsych.data.reset();
+            })
+            .fail(function() {
+                alert('A problem occurred while writing to the database. Please contact the researcher for more information.')
+                window.location.href = '/';
+            })
+        if (debug) {
+            console.log('data saved');
+        }
+    }
+}
+
+var debug = getUrlParameter('debug');
+if (!debug) {
+    debug = SHOW_DEBUG;
+}
+
+if (debug) {
+    console.log('debug', debug);
+}
+
+var save_data = getUrlParameter('save_data');
+if (!save_data) {
+    save_data = SAVE_DATA;
+}
+
+// Arrays for storing data
+var between_blocks = []; // instructions between blocks
+var video_stimuli = []; // blocks with videos
+
+// define instructions block
+var instructions_block = {
+    type: 'html-keyboard-response',
+    stimulus: '<div class="jumbotron jumbotron-fluid" style="text-align: left;"><div class="container"><h1 class="display-4">Instructions</h1><p class="lead">You will view ' + n_videos * n_videos_repeat + ' videos of approaching cars. Some cars will stop and other cars will continue driving. In some videos, the driver will make eye contact with you.</p><p class="lead">Each video starts with a black screen. As soon as you see the black screen, press and HOLD the key \'F\'.</p><p class="lead">Hold the key as long as you feel safe to cross. Release the key if you do not feel safe to cross anymore. You can press and release the key as many times as you want per video.</p><p class="lead">Please make sure that your audio is on. On the next page, you will listen to a song. When you will be listening to the song, adjust your volume level to be able to hear the song clearly. Do NOT change your volume level till the end of the experiment.</p><p class="lead">The window of your browser should be at least 1300px wide and 800px tall.</p><hr><p>Press \'C\' to proceed to the first practice trial.</p></div></div>',
+
+    choices: ['C'],
+    data: {
+        browser_name: br_name,
+        browser_full_version: br_full_version,
+        browser_major_version: br_major_version,
+        browser_app_name: navigator.appName,
+        browser_user_agent: navigator.userAgent,
+        video_ids: video_ids
+    }
+};
+// populate array with video IDs
+for (var i = 0; i < n_videos; i++) {
+    for (var j = 0; j < n_videos_repeat; j++) {
+        video_ids.push(i);
+    }
+}
+
+// shuffle ids
+video_ids = shuffle(video_ids);
+
+// build array with videos with stimuli
+for (var i = 0; i < n_videos * n_videos_repeat; i++) {
+    video_stimuli.push({
+        type: 'video-keyboard-multiple-responses-release',
+        autoplay: true,
+        controls: false,
+        width: 1280,
+        height: 720,
+        choices: ['F'],
+        sources: [video_pfefix + video_ids[i] + '.mp4'],
+        prompt: '<p>Press and HOLD \'F\' when you feel that the traffic sitaution is dangerous.</p>'
+    });
+}
+// continue before showing the image
+var continue_block = {
+    type: 'html-keyboard-response',
+    stimulus: '<p>Press \'C\' to continue to the next video.</p>',
+    choices: ['C']
+};
+// build between blocks
+for (var i = 1; i < n_videos * n_videos_repeat / n_videos_break; i++) {
+    var videos_done = n_videos_break * i;
+    between_blocks.push({
+        type: 'html-keyboard-response',
+        stimulus: '<div class="alert alert-primary" role="alert" style="text-align: left;"><h4 class="alert-heading">Break</h4><p>You have now completed ' + videos_done + ' videos out of ' + n_videos * n_videos_repeat + '.</p><hr><p class="mb-0">When ready press \'N\' to proceed to the next batch.</p></div>',
+        choices: ['N']
+    });
+}
+
+// questions after each stimulus
+var qs_form = {
+    type: 'survey-html-form-slider',
+    require_movement: true,
+    html: '<div id="jspsych-content" class="jspsych-content"><div id="jspsych-html-slider-response-wrapper" style="margin: 0px 0px;"><p style="width: 1000px">Please rate the following statements based on the video you just saw. Provide your answers by moving the sliders. You will not be able to continue before moving all sliders.</p></div><div class="jspsych-html-slider-response-container" style="position:relative; margin: 3em auto 1.5em auto; width:1000px;"><input type="range" value="50" min="0" max="100" step="1" style="width: 100%;" id="slider-0" name="slider-0"><div><div style="display: inline-block; position: absolute; left:-10%; text-align: center; width: 20%;"><span style="text-align: center; font-size: 80%;">0</span></div><div style="display: inline-block; position: absolute; left:10%; text-align: center; width: 20%;"><span style="text-align: center; font-size: 80%;">20</span></div><div style="display: inline-block; position: absolute; left:30%; text-align: center; width: 20%;"><span style="text-align: center; font-size: 80%;">40</span></div><div style="display: inline-block; position: absolute; left:50%; text-align: center; width: 20%;"><span style="text-align: center; font-size: 80%;">60</span></div><div style="display: inline-block; position: absolute; left:70%; text-align: center; width: 20%;"><span style="text-align: center; font-size: 80%;">80</span></div><div style="display: inline-block; position: absolute; left:90%; text-align: center; width: 20%;"><span style="text-align: center; font-size: 80%;">100</span></div></div></div><p style="width: 1000px"><strong>The crossing situation was dangerous (0 = completely disagree, 100 = completely agree)</strong>.</p><div class="jspsych-html-slider-response-container" style="position:relative; margin: 3em auto 1.5em auto; width:1000px;"><input type="range" value="50" min="0" max="100" step="1" style="width: 100%;" id="slider-1" name="slider-1"><div><div style="display: inline-block; position: absolute; left:-10%; text-align: center; width: 20%;"><span style="text-align: center; font-size: 80%;">0</span></div><div style="display: inline-block; position: absolute; left:10%; text-align: center; width: 20%;"><span style="text-align: center; font-size: 80%;">20</span></div><div style="display: inline-block; position: absolute; left:30%; text-align: center; width: 20%;"><span style="text-align: center; font-size: 80%;">40</span></div><div style="display: inline-block; position: absolute; left:50%; text-align: center; width: 20%;"><span style="text-align: center; font-size: 80%;">60</span></div><div style="display: inline-block; position: absolute; left:70%; text-align: center; width: 20%;"><span style="text-align: center; font-size: 80%;">80</span></div><div style="display: inline-block; position: absolute; left:90%; text-align: center; width: 20%;"><span style="text-align: center; font-size: 80%;">100</span></div></div></div><p style="width: 1000px"><strong>The speed of the car was appropriate for the crossing situation (0 = completely disagree, 100 = completely agree)</strong>.</p></div><div class="jspsych-html-slider-response-container" style="position:relative; margin: 3em auto 1.5em auto; width:1000px;"><input type="range" value="50" min="0" max="100" step="1" style="width: 100%;" id="slider-2" name="slider-2"><div><div style="display: inline-block; position: absolute; left:-10%; text-align: center; width: 20%;"><span style="text-align: center; font-size: 80%;">0</span></div><div style="display: inline-block; position: absolute; left:10%; text-align: center; width: 20%;"><span style="text-align: center; font-size: 80%;">20</span></div><div style="display: inline-block; position: absolute; left:30%; text-align: center; width: 20%;"><span style="text-align: center; font-size: 80%;">40</span></div><div style="display: inline-block; position: absolute; left:50%; text-align: center; width: 20%;"><span style="text-align: center; font-size: 80%;">60</span></div><div style="display: inline-block; position: absolute; left:70%; text-align: center; width: 20%;"><span style="text-align: center; font-size: 80%;">8</span></div><div style="display: inline-block; position: absolute; left:90%; text-align: center; width: 20%;"><span style="text-align: center; font-size: 80%;">100</span></div></div></div><p style="width: 1000px"><strong>I would cross the road if I was a pedestrian in this situation (0 = completely disagree, 100 = completely agree)</strong>.</p>',
+    items: 3
+};
+
+// block for sending data
+var save_data_block = {
+    type: 'call-function',
+    func: function() {
+        saveData(); // save data
+    }
+}
+
+// create experiment timeline array
+var timeline = [];
+var between_blocks_count = 0;  // counter of shown between blocks
+timeline.push(instructions_block);
+// iterate over blocks
+for (var i = 0; i < n_videos * n_videos_repeat; i++) {
+    timeline.push(continue_block);
+    timeline.push(video_stimuli[i]);  // page with the stimulus
+    timeline.push(qs_form);
+    // save data
+    timeline.push(save_data_block);
+    // don't add the between block after the last trial
+    if ((i + 1) % n_videos_break == 0 && i != 0 && i != n_videos * n_videos_repeat - 1) {
+        if (debug) {
+            console.log('added break', i, between_blocks[between_blocks_count], i % n_videos_break, i / n_videos_break);
+        }
+        timeline.push(between_blocks[between_blocks_count]);
+        between_blocks_count++;
+    } 
+}
+
+if (debug) {
+    console.log('timeline', timeline);
+    console.log('video_ids', video_ids);
+    console.log('video_stimuli', video_stimuli);
+    console.log('qs_form', qs_form);
+    console.log('between_blocks', between_blocks);
+}
+
+/* Start the experiment */
+jsPsych.init({
+    // auto_preload: false,
+    show_preload_progress_bar: true,
+    preload_images: [image_pfefix + 'black_frame.png'],
+    timeline: timeline,
+    max_load_time: 3000000,
+    on_finish: function() {
+        window.location.href = 'finish?work=' + finish_code;
+    }
+});
+</script>
+</html>
