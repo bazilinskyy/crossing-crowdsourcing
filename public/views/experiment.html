@@ -23,8 +23,9 @@
 // by Pavlo Bazilinskyy <p.bazilinskyy@tudelft.nl>
 
 // Constants
-var n_videos = 10; // number of videos
-var n_videos_repeat = 5; // number of repeats of each condition
+var n_videos = 80; // number of videos
+var n_videos_per_participant = 40; // number of images
+var n_videos_repeat = 1; // number of repeats of each condition
 var n_videos_break = 10; // number of videos between each break
 var image_pfefix = 'img/'; // prefix for images
 var video_pfefix = 'videos/video_'; // prefix for videos
@@ -239,7 +240,7 @@ for (var i = 0; i < n_videos; i++) {
 video_ids = shuffle(video_ids);
 
 // build array with videos with stimuli
-for (var i = 0; i < n_videos * n_videos_repeat; i++) {
+for (var i = 0; i < n_videos_per_participant * n_videos_repeat; i++) {
     video_stimuli.push({
         type: 'video-keyboard-multiple-responses-release',
         autoplay: true,
@@ -288,14 +289,14 @@ var timeline = [];
 var between_blocks_count = 0;  // counter of shown between blocks
 timeline.push(instructions_block);
 // iterate over blocks
-for (var i = 0; i < n_videos * n_videos_repeat; i++) {
+for (var i = 0; i < n_videos_per_participant * n_videos_repeat; i++) {
     timeline.push(continue_block);
     timeline.push(video_stimuli[i]);  // page with the stimulus
     timeline.push(qs_form);
     // save data
     timeline.push(save_data_block);
     // don't add the between block after the last trial
-    if ((i + 1) % n_videos_break == 0 && i != 0 && i != n_videos * n_videos_repeat - 1) {
+    if ((i + 1) % n_videos_break == 0 && i != 0 && i != n_videos_per_participant * n_videos_repeat - 1) {
         if (debug) {
             console.log('added break', i, between_blocks[between_blocks_count], i % n_videos_break, i / n_videos_break);
         }
