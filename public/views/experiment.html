@@ -34,6 +34,7 @@ var SAVE_DATA = true; // save data or not
 
 // Arrays
 var video_ids = [];
+var interactions = [];
 
 // browser info
 // https://stackoverflow.com/questions/11219582/how-to-detect-my-browser-version-and-operating-system-using-javascript
@@ -169,10 +170,12 @@ var getUrlParameter = function getUrlParameter(sParam) {
 function saveData() {
     // check if data needs to be saved
     if (save_data) {
-        // add worker ID 
+        // add worker ID and browser interactions
         jsPsych.data.get().addToLast({
-            worker_code: worker_code
+            worker_code: worker_code,
+            interactions: interactions
         });
+        interactions = [];  // reset interactions
 
         if (debug) {
             console.log('saving data', jsPsych.data.get().json());
@@ -248,7 +251,8 @@ for (var i = 0; i < n_videos_per_participant * n_videos_repeat; i++) {
         width: 1280,
         height: 720,
         choices: ['F'],
-        sources: [video_pfefix + video_ids[i] + '.mp4'],
+        // sources: [video_pfefix + video_ids[i] + '.mp4'],
+        sources: [video_pfefix + '0.mp4'],
         prompt: '<p>Press and HOLD \'F\' when you feel that the traffic sitaution is dangerous.</p>'
     });
 }
@@ -330,6 +334,9 @@ jsPsych.init({
     max_load_time: 3000000,
     on_finish: function() {
         window.location.href = 'finish?work=' + finish_code;
+    },
+    on_interaction_data_update: function(data) {
+        interactions.push(data)
     }
 });
 </script>
