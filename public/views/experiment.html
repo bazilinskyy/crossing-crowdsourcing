@@ -251,8 +251,7 @@ for (var i = 0; i < n_videos_per_participant * n_videos_repeat; i++) {
         width: 1280,
         height: 720,
         choices: ['F'],
-        // sources: [video_pfefix + video_ids[i] + '.mp4'],
-        sources: [video_pfefix + '0.mp4'],
+        sources: [video_pfefix + video_ids[i] + '.mp4'],
         prompt: '<p>Press and HOLD \'F\' when you feel that the traffic sitaution is dangerous.</p>'
     });
 }
