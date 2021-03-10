@@ -332,7 +332,7 @@ jsPsych.init({
     timeline: timeline,
     max_load_time: 3000000,
     on_finish: function() {
-        window.location.href = 'finish?work=' + finish_code;
+        window.location.href = 'finish?work=' + worker_code;
     },
     on_interaction_data_update: function(data) {
         interactions.push(data)
