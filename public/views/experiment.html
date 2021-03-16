@@ -26,8 +26,8 @@
 // by Pavlo Bazilinskyy <p.bazilinskyy@tudelft.nl>
 
 // Constants
-var n_videos = 80; // number of videos
-var n_videos_per_participant = 40; // number of images
+var n_videos = 86; // number of videos
+var n_videos_per_participant = 35; // number of images
 var n_videos_repeat = 1; // number of repeats of each condition
 var n_videos_break = 10; // number of videos between each break
 var image_pfefix = 'img/'; // prefix for images
@@ -258,7 +258,7 @@ for (var i = 0; i < n_videos; i++) {
 video_ids = shuffle(video_ids);
 
 // build array with videos with stimuli
-for (var i = 0; i < n_videos_per_participant * n_videos_repeat; i++) {
+for (var i = 0; i < n_videos; i++) {
     video_stimuli.push({
         type: 'video-keyboard-multiple-responses-release',
         autoplay: true,
