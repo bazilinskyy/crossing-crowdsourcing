@@ -227,7 +227,7 @@ var video_stimuli = []; // blocks with videos
 // define instructions block
 var instructions_block = {
     type: 'html-keyboard-response',
-    stimulus: '<div class="jumbotron jumbotron-fluid" style="text-align: left;"><div class="container"><h1 class="display-4">Instructions</h1><p class="lead">You will watch ' + n_videos_per_participant * n_videos_repeat + ' videos of traffic situations involving pedestrians. Some pedestrians will cross the road and some will make eye contact. All videos are recorded within urban Toronto.</p><p class="lead">Each video starts with a black screen. As soon as you see the black screen, press the \'F\' key to start the video.</p><p class="lead">When you feel the situation could become risky, PRESS and HOLD the \'F\' button until you feel the situation is safe again. Press ‘F’ for any type of risk, including very small risk. You can press and release the key as many times as you want per video. There is no audio involved.</p><p class="lead">The window of your browser should be at least 1300px wide and 800px tall.</p><hr><p>First, we will ask you a few questions. Press \'C\' to proceed to the questions.</p></div></div>',
+    stimulus: '<div class="jumbotron jumbotron-fluid" style="text-align: left;"><div class="container"><h1 class="display-4">Instructions</h1><p class="lead">You will watch ' + n_videos_per_participant * n_videos_repeat + ' videos of traffic situations involving pedestrians. Some pedestrians will cross the road and some will make eye contact. All videos are recorded within urban Toronto.</p><p class="lead">Each video starts with a black screen. As soon as you see the black screen, press \'F\' to start the video.</p><p class="lead">When you feel the situation could become risky, PRESS and HOLD \'F\' until you feel the situation is safe again. Press \'F\' for any type of risk, including very small risk. You can press and release the key as many times as you want per video. There is no audio involved.</p><p class="lead">The window of your browser should be at least 1300px wide and 800px tall.</p><hr><p>Press \'C\' to proceed to the questions.</p></div></div>',
 
     choices: ['C'],
     data: {
@@ -241,12 +241,7 @@ var instructions_block = {
         window_width: window_width
     }
 };
-// var instructions_block_2 = {
-//     type: 'html-keyboard-response',
-//         stimulus: '<div class="alert alert-primary" role="alert" style="text-align: left;"><h4 class="alert-heading">Continue to trials</h4><p>Press \'C\' to proceed to the first trial.</p></div>',
 
-//     choices: ['C']
-// };
 // populate array with video IDs
 for (var i = 0; i < n_videos; i++) {
     for (var j = 0; j < n_videos_repeat; j++) {
@@ -267,15 +262,24 @@ for (var i = 0; i < n_videos_per_participant * n_videos_repeat; i++) {
         height: 720,
         choices: ['F'],
         sources: [video_pfefix + video_ids[i] + '.mp4'],
-        prompt: '<p>PRESS the \F\' key when you feel the situation could become dangerous. RELEASE the key when you feel safe again.</p>'
+        prompt: '<p>PRESS \'F\' when you feel the situation could become risky. RELEASE the key when you feel safe again.</p>'
     });
 }
+
+// black with image to be added before each video
+var image_block = {
+    type: 'html-keyboard-response',
+    stimulus: '<img src=\'' + image_pfefix + 'black_frame.png\'/><p>PRESS \'F\' when you feel the situation could become risky. RELEASE the key when you feel safe again.</p>',
+    choices: ['F'],
+};
+
 // continue before showing the image
 var continue_block = {
     type: 'html-keyboard-response',
     stimulus: '<p>Press \'C\' to continue to the next video.</p>',
     choices: ['C']
 };
+
 // build between blocks
 for (var i = 1; i < n_videos_per_participant * n_videos_repeat / n_videos_break; i++) {
     var videos_done = n_videos_break * i;
@@ -318,21 +322,6 @@ var scale_likert = [
   "Completely agree" 
 ];
 
-// // build page with questions after experiment
-// questions_end = [{prompt: "I find pedestrian behavior that leads to an increased feeling of safety for the driver to be.", name: 'behaviour', labels: ["Early looking", "Hand gestures", "Other"], required: true},
-//                  {prompt: "I prefer eye contact to no eye contact.", name: 'preference', labels: ["Early looking", "Hand gestures", "Other"], required: true},
-//                  {prompt: "In your opinion, what is the main reason for accidents involving vehicle-pedestrian interaction?.", name: 'concentration', labels: ["Hand gestures", "Light signalling", "Early braking", "Other"], required: true},
-//                 ]
-
-// // build page with questions
-// var qs_end = {
-//     type: 'survey-likert',
-//     questions: questions_end,
-//     preamble: 'Answer the questions below based on all videos that you have viewed',
-//     randomize_question_order: false,
-//     scale_width: 800
-// };
-
 // build page with questions
 var qs_end = {
     type: 'survey-html-form-slider',
@@ -350,18 +339,13 @@ var save_data_block = {
     }
 }
 
-// black with image to be added before each video
-var image_block = {
-    type: 'html-keyboard-response',
-    stimulus: '<img src=\'' + image_pfefix + 'black_frame.png\'/><p>PRESS the \F\' key when you feel the situation could become dangerous. RELEASE the key when you feel safe again.</p>',
-    choices: ['F'],
-};
-
+// enter full screen
 var fullscreen_enter = {
     type: 'fullscreen',
     fullscreen_mode: true
 }
 
+// exit full screen
 var fullscreen_exit = {
     type: 'fullscreen',
     fullscreen_mode: false
