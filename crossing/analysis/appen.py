@@ -43,7 +43,9 @@ class Appen:
                        'what_is_your_age': 'age',
                        'what_is_your_gender': 'gender',
                        'what_is_your_primary_mode_of_transportation': 'mode_transportation',  # noqa: E501
-                       'which_input_device_are_you_using_now': 'device'}
+                       'which_input_device_are_you_using_now': 'device',
+                       'as_a_driver_what_does_it_mean_to_you_when_a_pedestrian_makes_eye_contact_with_you': 'ec_driver',  # noqa: E501
+                       'as_a_pedestrian_what_does_it_mean_to_you_when_a_driver_makes_eye_contact_with_you': 'ec_pedestrian'}  # noqa: E501
 
     def __init__(self,
                  file_data: list,

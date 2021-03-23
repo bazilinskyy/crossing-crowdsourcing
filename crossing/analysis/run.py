@@ -64,6 +64,8 @@ if __name__ == '__main__':
     # number of stimuli to process
     num_stimuli = cs.common.get_configs('num_stimuli')
     logger.info('Creating figures for {} stimuli.', num_stimuli)
+    # create correlation matrix
+    analysis.corr_matrix(stimuli_mapped, save_file=True)
     # todo: add analysis code here
     # check if any figures are to be rendered
     figures = [manager.canvas.figure

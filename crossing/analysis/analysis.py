@@ -35,7 +35,11 @@ class Analysis:
         """
         Output correlation matrix.
         """
-        mapping.fillna(0, inplace=True)
+        # drop not needed columns
+        columns_drop = ['id_segment', 'set', 'video', 'extra',
+                        'alternative_frame', 'alternative_frame']
+        mapping = mapping.drop(columns_drop, 1)
+        # mapping.fillna(0, inplace=True)
         # create correlation matrix
         corr = mapping.corr()
         # create mask
