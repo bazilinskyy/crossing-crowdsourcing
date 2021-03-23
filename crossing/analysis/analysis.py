@@ -11,7 +11,10 @@ import matplotlib.animation as animation
 import numpy as np
 import seaborn as sns
 import pandas as pd
-from scipy.stats.kde import gaussian_kde
+import plotly as py
+import plotly.graph_objs as go
+import plotly.io as pio
+from plotly import subplots
 
 import crossing as cs
 
@@ -76,6 +79,58 @@ class Analysis:
                           pad_inches=0.05)
         # revert font
         self.reset_font()
+
+    def plot_plotly(self, df):
+        """Plot figures with analysis.
+
+        Args:
+            df (dataframe): dataframe with data.
+        """
+        # todo: plotly plot
+        logger.info('Creating visualisations with plotly.')
+        # plotly
+        fig = subplots.make_subplots(rows=1,
+                                     cols=1,
+                                     shared_xaxes=True)
+        times = [dt.datetime.fromtimestamp(time) for time in ride.time]
+        # variables to plot
+        variables = []
+        data = df[variables]
+        # plot each variable in data
+        for i, variable in enumerate(variables):
+            fig.add_trace(go.Scatter(y=data,
+                                     mode='lines',
+                                     x=times,
+                                     name=variable),
+                          row=1,
+                          col=1)
+        buttons = list([dict(label='All',
+                             method='update',
+                             args=[{'visible': [True] * 3 * len(variables)},
+                                   {'title': 'All',
+                                    'showlegend': True}])])
+        for i, label in enumerate(variables):
+            visibility = [[i == j] for j in range(len(variables))]
+            visibility = [item for sublist in visibility for item in sublist]
+            button = dict(label=label,
+                          method='update',
+                          args=[{'visible': visibility},
+                                {'title': label}])
+            buttons.append(button)
+
+        updatemenus = [dict(x=-0.15, buttons=buttons, showactive=True)]
+        # update layout
+        fig['layout']['title'] = 'Title'
+        # fig['layout']['showlegend'] = True
+        fig['layout']['updatemenus'] = updatemenus
+        fig.update_layout(template='plotly_dark',)
+        # build path
+        path = cs.settings.output_dir + output_subdir
+        if not os.path.exists(path):
+            os.makedirs(path)
+        file_plot = os.path.join(path + 'plot_' + ride.ride_id + '.html')
+        # save to file
+        py.offline.plot(fig, filename=file_plot)
 
     def save_fig(self, image, fig, output_subdir, suffix, pad_inches=0):
         """

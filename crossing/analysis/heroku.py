@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 from tqdm import tqdm
 import re
+import ast
 from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
 from collections import Counter
@@ -73,9 +74,8 @@ class Heroku:
         # load data
         if self.load_p:
             df = cs.common.load_from_p(self.file_p,
-                                         'heroku data')
+                                       'heroku data')
         # process data
-        # todo: save browser interaction lists per stimulus
         else:
             # read files with heroku data one by one
             data_list = []
@@ -92,12 +92,10 @@ class Heroku:
                 dict_row = {}
                 # load data from a single row into a list
                 list_row = json.loads(row)
-                # flag that stimulus was detected
-                stim_found = False
                 # last found stimulus
                 stim_name = ''
-                # last time_elapsed
-                time_elapsed_last = -1
+                # trial last found stimulus
+                stim_trial = -1
                 # go over cells in the row with data
                 for data_cell in list_row['data']:
                     # extract meta info form the call
@@ -110,6 +108,7 @@ class Heroku:
                                              data_cell['worker_code'])
                     # check if stimulus data is present
                     if 'stimulus' in data_cell.keys():
+                        # extract name of stimulus after last slash
                         # list of stimuli. use 1st
                         if isinstance(data_cell['stimulus'], list):
                             stim_no_path = data_cell['stimulus'][0].rsplit('/', 1)[-1]  # noqa: E501
@@ -127,39 +126,107 @@ class Heroku:
                             if self.prefixes['stimulus'] in stim_no_path:
                                 # Record that stimulus was detected for the
                                 # cells to follow
-                                stim_found = True
                                 stim_name = stim_no_path
+                                # record trial of stimulus
+                                stim_trial = data_cell['trial_index']
                     # keypresses
-                    if 'rts' in data_cell.keys():
+                    if 'rts' in data_cell.keys() and stim_name != '':
                         # record given keypresses
                         responses = data_cell['rts']
                         logger.debug('Found {} points in keypress data.',
                                      len(responses))
-                        if stim_name != '':
-                            # extract pressed keys and rt values
-                            key = [point['key'] for point in responses]
-                            rt = [point['rt'] for point in responses]
-                            # Check if inputted values were recorded previously
-                            if stim_name + '-key' not in dict_row.keys():
-                                # first value
-                                dict_row[stim_name + '-key'] = key
-                            else:
-                                # previous values found
-                                dict_row[stim_name + '-key'].append(key)
-                            # Check if time spent values were recorded
-                            # previously
-                            if stim_name + '-rt' not in dict_row.keys():
-                                # first value
-                                dict_row[stim_name + '-rt'] = rt
-                            else:
-                                # previous values found
-                                dict_row[stim_name + '-rt'].append(rt)
-                            # reset flags for found stimulus
-                            stim_found = False
-                            stim_name = ''
-                    # record time_elapsed
-                    if 'time_elapsed' in data_cell.keys():
-                        time_elapsed_last = data_cell['time_elapsed']
+                        # extract pressed keys and rt values
+                        key = [point['key'] for point in responses]
+                        rt = [point['rt'] for point in responses]
+                        # check if values were recorded previously
+                        if stim_name + '-key' not in dict_row.keys():
+                            # first value
+                            dict_row[stim_name + '-key'] = key
+                        else:
+                            # previous values found
+                            dict_row[stim_name + '-key'].append(key)
+                        # check if values were recorded previously
+                        if stim_name + '-rt' not in dict_row.keys():
+                            # first value
+                            dict_row[stim_name + '-rt'] = rt
+                        else:
+                            # previous values found
+                            dict_row[stim_name + '-rt'].append(rt)
+                    # questions after stimulus
+                    if 'responses' in data_cell.keys() and stim_name != '':
+                        # record given keypresses
+                        responses = data_cell['responses']
+                        logger.debug('Found responses to questions {}.',
+                                     responses)
+                        # extract pressed keys and rt values
+                        responses = ast.literal_eval(re.search('({.+})',
+                                                     responses).group(0))
+                        # unpack questions and answers
+                        questions = []
+                        answers = []
+                        for key, value in responses.items():
+                            questions.append(key)
+                            answers.append(value)
+                        # check if values were recorded previously
+                        if stim_name + '-qs' not in dict_row.keys():
+                            # first value
+                            dict_row[stim_name + '-qs'] = questions
+                        else:
+                            # previous values found
+                            dict_row[stim_name + '-qs'].append(questions)
+                        # Check if time spent values were recorded
+                        # previously
+                        if stim_name + '-as' not in dict_row.keys():
+                            # first value
+                            dict_row[stim_name + '-as'] = answers
+                        else:
+                            # previous values found
+                            dict_row[stim_name + '-as'].append(answers)
+                    # browser interaction events
+                    if 'interactions' in data_cell.keys() and stim_name != '':
+                        interactions = data_cell['interactions']
+                        logger.debug('Found {} browser interactions.',
+                                     len(interactions))
+                        # extract events and timestamps
+                        event = []
+                        time = []
+                        for interation in interactions:
+                            if interation['trial'] == stim_trial:
+                                event.append(interation['event'])
+                                time.append(interation['time'])
+                        # Check if inputted values were recorded previously
+                        if stim_name + '-event' not in dict_row.keys():
+                            # first value
+                            dict_row[stim_name + '-event'] = event
+                        else:
+                            # previous values found
+                            dict_row[stim_name + '-event'].append(event)
+                        # check if values were recorded previously
+                        if stim_name + '-time' not in dict_row.keys():
+                            # first value
+                            dict_row[stim_name + '-time'] = time
+                        else:
+                            # previous values found
+                            dict_row[stim_name + '-time'].append(time)
+                    # questions in the end
+                    if 'responses' in data_cell.keys() and stim_name == '':
+                        # record given keypresses
+                        responses = data_cell['responses']
+                        logger.debug('Found responses to final questions {}.',
+                                     responses)
+                        # extract pressed keys and rt values
+                        responses = ast.literal_eval(re.search('({.+})',
+                                                     responses).group(0))
+                        # unpack questions and answers
+                        questions = []
+                        answers = []
+                        for key, value in responses.items():
+                            questions.append(key)
+                            answers.append(value)
+                        # Check if inputted values were recorded previously
+                        if 'end-qs' not in dict_row.keys():
+                            dict_row['end-qs'] = questions
+                            dict_row['end-as'] = answers
                 # worker_code was ecnountered before
                 if dict_row['worker_code'] in data_dict.keys():
                     # iterate over items in the data dictionary
@@ -175,7 +242,7 @@ class Heroku:
                 # worker_code is ecnountered for the first time
                 else:
                     data_dict[dict_row['worker_code']] = dict_row
-            # turn into panda's dataframe
+            # turn into pandas dataframe
             df = pd.DataFrame(data_dict)
             df = df.transpose()
             # report people that attempted study
@@ -210,62 +277,6 @@ class Heroku:
         # return mapping as a dataframe
         return mapping
 
-    def populate_mapping(self, df, points_duration, mapping):
-        """
-        Populate dataframe with mapping of stimuli with counts of detected
-        coords for each stimulus duration.
-        """
-        # todo: add analysis info to mapping matrix. for example mean keypresses
-        logger.info('Populating coordinates in mapping of stimuli')
-        # # read mapping of polygons from a csv file
-        # polygons = pd.read_csv(cs.common.get_configs('vehicles_polygons'))
-        # # set index as stimulus_id
-        # polygons.set_index('image_id', inplace=True)
-        # # loop over stimuli
-        # for stim_id in tqdm(range(1, self.num_stimuli + 1)):
-        #     # polygon of vehicle
-        #     coords = np.array(polygons.at[stim_id, 'coords'].split(','),
-        #                       dtype=int).reshape(-1, 2)
-        #     polygon = Polygon(coords)
-        #     # loop over durations of stimulus
-        #     for duration in range(len(self.durations)):
-        #         # loop over coord in the list of coords
-        #         for point in points_duration[duration][stim_id]:
-        #             # convert to point object
-        #             point = Point(point[0], point[1])
-        #             # check if point is within polygon of vehicle
-        #             if polygon.contains(point):
-        #                 # check if nan is in the cell
-        #                 if pd.isna(mapping.at[stim_id,
-        #                                       self.durations[duration]]):
-        #                     mapping.at[stim_id, self.durations[duration]] = 1
-        #                 # not nan
-        #                 else:
-        #                     mapping.at[stim_id, self.durations[duration]] += 1
-        #         # count number of participants per duration
-        #         name_cell = 'image_' + \
-        #                     str(stim_id) + \
-        #                     '-' + str(self.durations[duration]) + \
-        #                     '-cb'
-        #         count = int(self.heroku_data[name_cell].count())
-        #         mapping.at[stim_id,
-        #                    str(self.durations[duration]) + '_count'] = count
-        #     # add area of vehicle polygon
-        #     mapping.at[stim_id, 'veh_area'] = polygon.area
-        # # add mean value of counts
-        # mapping['gazes_mean'] = mapping[self.durations].mean(axis=1)
-        # # convert counts of participants to integers
-        # for duration in range(len(self.durations)):
-        #     column = str(self.durations[duration]) + '_count'
-        #     mapping[column] = mapping[column].astype(int)
-        # save to csv
-        if self.save_csv:
-            # save to csv
-            mapping.to_csv(cs.settings.output_dir + '/' +
-                           self.file_mapping_csv + '.csv')
-        # return mapping
-        return mapping
-
     def filter_data(self, df):
         """
         Filter data based on the folllowing criteria:
@@ -275,13 +286,19 @@ class Heroku:
         # more than allowed number of mistake with codes for sentinel images
         # load mapping of codes and coordinates
         logger.info('Filtering heroku data.')
+        # df to store data to filter out
+        df_1 = pd.DataFrame()
         # concatanate dfs with filtered data
         old_size = df.shape[0]
-        df_filtered = df  # no filter applied
-        # drop rows with filtered data
-        unique_worker_codes = df_filtered['worker_code'].drop_duplicates()
-        df = df[~df['worker_code'].isin(unique_worker_codes)]
-        return df_filtered
+        # people to filter present
+        if df_1.shape[0] != 0:
+            df_filtered = pd.concat([df_1])
+            # drop rows with filtered data
+            unique_worker_codes = df_filtered['worker_code'].drop_duplicates()
+            df = df[~df['worker_code'].isin(unique_worker_codes)]
+        logger.info('Filtered in total in heroku data: {}',
+                    old_size - df.shape[0])
+        return df
 
     def show_info(self):
         """
