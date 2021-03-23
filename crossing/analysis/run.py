@@ -65,6 +65,10 @@ if __name__ == '__main__':
     num_stimuli = cs.common.get_configs('num_stimuli')
     logger.info('Creating figures for {} stimuli.', num_stimuli)
     # todo: add analysis code here
+    # check if any figures are to be rendered
+    figures = [manager.canvas.figure
+               for manager in
+               matplotlib._pylab_helpers.Gcf.get_all_fig_managers()]
     # show figures, if any
-    # if figures:
-    #     plt.show()
+    if figures:
+        plt.show()
