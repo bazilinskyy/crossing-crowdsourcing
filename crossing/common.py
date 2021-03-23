@@ -4,16 +4,16 @@ import os
 import json
 import pickle
 
-import cshf
+import crossing as cs
 
-logger = cshf.CustomLogger(__name__)  # use custom logger
+logger = cs.CustomLogger(__name__)  # use custom logger
 
 
 def get_secrets(entry_name: str, secret_file_name: str = 'secret') -> Dict[str, str]:  # noqa: E501
     """
     Open the secrets file and return the requested entry.
     """
-    with open(os.path.join(cshf.settings.root_dir, secret_file_name)) as f:
+    with open(os.path.join(cs.settings.root_dir, secret_file_name)) as f:
         return json.load(f)[entry_name]
 
 
@@ -25,10 +25,10 @@ def get_configs(entry_name: str, config_file_name: str = 'config',
     """
 
     try:
-        with open(os.path.join(cshf.settings.root_dir, config_file_name)) as f:
+        with open(os.path.join(cs.settings.root_dir, config_file_name)) as f:
             content = json.load(f)
     except FileNotFoundError:
-        with open(os.path.join(cshf.settings.root_dir, config_default_file_name)) as f:  # noqa: E501
+        with open(os.path.join(cs.settings.root_dir, config_default_file_name)) as f:  # noqa: E501
             content = json.load(f)
     return content[entry_name]
 

@@ -13,10 +13,10 @@ import seaborn as sns
 import pandas as pd
 from scipy.stats.kde import gaussian_kde
 
-import cshf
+import crossing as cs
 
 matplotlib.use('TkAgg')
-logger = cshf.CustomLogger(__name__)  # use custom logger
+logger = cs.CustomLogger(__name__)  # use custom logger
 
 
 class Analysis:
@@ -36,7 +36,7 @@ class Analysis:
         Output correlation matrix.
         """
         # drop time and group_2 columns
-        durations = cshf.common.get_configs('stimulus_durations')
+        durations = cs.common.get_configs('stimulus_durations')
         columns_drop = ['time', 'group_2', 'gazes_mean']
         for dur in durations:
             columns_drop.append(str(dur) + '_count')
@@ -88,7 +88,7 @@ class Analysis:
         # remove extension
         file_no_path = os.path.splitext(file_no_path)[0]
         # create path
-        path = cshf.settings.output_dir + output_subdir
+        path = cs.settings.output_dir + output_subdir
         if not os.path.exists(path):
             os.makedirs(path)
         # save file
@@ -107,7 +107,7 @@ class Analysis:
         # remove extension
         file_no_path = os.path.splitext(file_no_path)[0]
         # create path
-        path = cshf.settings.output_dir + output_subdir
+        path = cs.settings.output_dir + output_subdir
         if not os.path.exists(path):
             os.makedirs(path)
         # save file

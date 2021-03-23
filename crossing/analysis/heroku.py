@@ -9,12 +9,12 @@ from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
 from collections import Counter
 
-import cshf
+import crossing as cs
 
 # warning about partial assignment
 pd.options.mode.chained_assignment = None  # default='warn'
 
-logger = cshf.CustomLogger(__name__)  # use custom logger
+logger = cs.CustomLogger(__name__)  # use custom logger
 
 
 class Heroku:
@@ -53,7 +53,7 @@ class Heroku:
         self.save_p = save_p
         self.load_p = load_p
         self.save_csv = save_csv
-        self.num_stimuli = cshf.common.get_configs('num_stimuli')
+        self.num_stimuli = cs.common.get_configs('num_stimuli')
 
     def set_data(self, heroku_data):
         """
@@ -72,7 +72,7 @@ class Heroku:
         # todo: read heroku data
         # load data
         if self.load_p:
-            df = cshf.common.load_from_p(self.file_p,
+            df = cs.common.load_from_p(self.file_p,
                                          'heroku data')
         # process data
         # todo: save browser interaction lists per stimulus
@@ -116,7 +116,7 @@ class Heroku:
                         stim_no_path = os.path.splitext(stim_no_path)[0]
                         # Check if it is a block with stimulus and not an
                         # instructions block
-                        if (cshf.common.search_dict(self.prefixes, stim_no_path)  # noqa: E501
+                        if (cs.common.search_dict(self.prefixes, stim_no_path)  # noqa: E501
                            is not None):
                             # stimulus is found
                             logger.debug('Found stimulus {}.', stim_no_path)
@@ -182,11 +182,11 @@ class Heroku:
             df = self.filter_data(df)
         # save to pickle
         if self.save_p:
-            cshf.common.save_to_p(self.file_p,  df, 'heroku data')
+            cs.common.save_to_p(self.file_p,  df, 'heroku data')
         # save to csv
         if self.save_csv:
             # todo: check whith index=False is needed here
-            df.to_csv(cshf.settings.output_dir + '/' + self.file_data_csv +
+            df.to_csv(cs.settings.output_dir + '/' + self.file_data_csv +
                       '.csv', index=False)
             logger.info('Saved heroku data to csv file {}',
                         self.file_data_csv + '.csv')
@@ -200,7 +200,7 @@ class Heroku:
         Read mapping.
         """
         # read mapping from a csv file
-        mapping = pd.read_csv(cshf.common.get_configs('mapping_stimuli'))
+        mapping = pd.read_csv(cs.common.get_configs('mapping_stimuli'))
         # set index as stimulus_id
         mapping.set_index('mapped_video', inplace=True)
         # return mapping as a dataframe
@@ -214,7 +214,7 @@ class Heroku:
         # todo: add analysis info to mapping matrix. for example mean keypresses
         logger.info('Populating coordinates in mapping of stimuli')
         # # read mapping of polygons from a csv file
-        # polygons = pd.read_csv(cshf.common.get_configs('vehicles_polygons'))
+        # polygons = pd.read_csv(cs.common.get_configs('vehicles_polygons'))
         # # set index as stimulus_id
         # polygons.set_index('image_id', inplace=True)
         # # loop over stimuli
@@ -257,7 +257,7 @@ class Heroku:
         # save to csv
         if self.save_csv:
             # save to csv
-            mapping.to_csv(cshf.settings.output_dir + '/' +
+            mapping.to_csv(cs.settings.output_dir + '/' +
                            self.file_mapping_csv + '.csv')
         # return mapping
         return mapping
@@ -266,7 +266,7 @@ class Heroku:
         """
         Filter data based on the folllowing criteria:
             1. People who entered incorrect codes for sentinel images more than
-               cshf.common.get_configs('allowed_mistakes_sent') times.
+               cs.common.get_configs('allowed_mistakes_sent') times.
         """
         # more than allowed number of mistake with codes for sentinel images
         # load mapping of codes and coordinates
