@@ -110,8 +110,12 @@ class Heroku:
                                              data_cell['worker_code'])
                     # check if stimulus data is present
                     if 'stimulus' in data_cell.keys():
-                        # extract name of stimulus after last slash
-                        stim_no_path = data_cell['stimulus'].rsplit('/', 1)[-1]
+                        # list of stimuli. use 1st
+                        if isinstance(data_cell['stimulus'], list):
+                            stim_no_path = data_cell['stimulus'][0].rsplit('/', 1)[-1]  # noqa: E501
+                        # single stimulus
+                        else:
+                            stim_no_path = data_cell['stimulus'].rsplit('/', 1)[-1]  # noqa: E501
                         # remove extension
                         stim_no_path = os.path.splitext(stim_no_path)[0]
                         # Check if it is a block with stimulus and not an
@@ -202,7 +206,7 @@ class Heroku:
         # read mapping from a csv file
         mapping = pd.read_csv(cs.common.get_configs('mapping_stimuli'))
         # set index as stimulus_id
-        mapping.set_index('mapped_video', inplace=True)
+        mapping.set_index('video_id', inplace=True)
         # return mapping as a dataframe
         return mapping
 

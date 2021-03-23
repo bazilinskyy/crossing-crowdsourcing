@@ -1,4 +1,4 @@
-﻿id_segment,set,video,mapped_video,start,interaction,cross-look,danger-B,danger-P,time_before_interaction,gesture,traffic_rules,extra,look_frame_ms,cross_frame_ms,look_moment,cross_moment,alternative_frame,alternative_frame
+﻿id_segment,set,video,video_id,start,interaction,cross-look,danger-B,danger-P,time_before_interaction,gesture,traffic_rules,extra,look_frame_ms,cross_frame_ms,look_moment,cross_moment,alternative_frame,alternative_frame
 1,1,2,video_0.mp4,00:04:08.200,00:04:16.200,C_L,1,,00:08.0,1,none,,256167,258600,04:16.2,04:18.6,,
 2,2,2,video_1.mp4,00:05:51.300,00:05:59.300,C_L,2,,00:08.0,0,ped_crossing,,359333,359033,05:59.3,05:59.3,,
 3,2,2,video_2.mp4,00:09:00.000,00:09:08.000,C_L,1,,00:08.0,0,none,,547966,550566,09:08.0,09:10.6,,
