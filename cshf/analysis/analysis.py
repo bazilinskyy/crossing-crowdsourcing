@@ -88,7 +88,7 @@ class Analysis:
         # remove extension
         file_no_path = os.path.splitext(file_no_path)[0]
         # create path
-        path = gz.settings.output_dir + output_subdir
+        path = cshf.settings.output_dir + output_subdir
         if not os.path.exists(path):
             os.makedirs(path)
         # save file
@@ -107,7 +107,7 @@ class Analysis:
         # remove extension
         file_no_path = os.path.splitext(file_no_path)[0]
         # create path
-        path = gz.settings.output_dir + output_subdir
+        path = cshf.settings.output_dir + output_subdir
         if not os.path.exists(path):
             os.makedirs(path)
         # save file

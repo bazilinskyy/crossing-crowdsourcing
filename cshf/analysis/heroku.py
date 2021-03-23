@@ -40,11 +40,7 @@ class Heroku:
                  'group_choice',
                  'image_ids']
     # prefixes used for files in node.js implementation
-    prefixes = {'training': 'training_',
-                'stimulus': 'image_',
-                'codeblock': 'cb_',
-                'sentinel': 'sentinel_',
-                'sentinel_cb': 'sentinel_cb_'}
+    prefixes = {'stimulus': 'video_'}  # noqa: E501
     # stimulus duration
     default_dur = 0
 
@@ -79,6 +75,7 @@ class Heroku:
             df = cshf.common.load_from_p(self.file_p,
                                          'heroku data')
         # process data
+        # todo: save browser interaction lists per stimulus
         else:
             # read files with heroku data one by one
             data_list = []
@@ -95,20 +92,10 @@ class Heroku:
                 dict_row = {}
                 # load data from a single row into a list
                 list_row = json.loads(row)
-                # flag that training image was detected
-                train_found = False
-                # last found training image
-                train_name = ''
                 # flag that stimulus was detected
                 stim_found = False
                 # last found stimulus
                 stim_name = ''
-                # duratoin of last found stimulus
-                stim_dur = -1
-                # flag that sentinel image was detected
-                sent_found = False
-                # last found sentinel image
-                sent_name = ''
                 # last time_elapsed
                 time_elapsed_last = -1
                 # go over cells in the row with data
@@ -131,143 +118,41 @@ class Heroku:
                         # instructions block
                         if (cshf.common.search_dict(self.prefixes, stim_no_path)  # noqa: E501
                            is not None):
-                            # training is found
+                            # stimulus is found
                             logger.debug('Found stimulus {}.', stim_no_path)
-                            if self.prefixes['training'] in stim_no_path:
-                                # Record that stimulus was detected for the
-                                # cells to follow
-                                train_found = True
-                                train_name = stim_no_path
-                            # stimulus image is found
-                            elif self.prefixes['stimulus'] in stim_no_path:
+                            if self.prefixes['stimulus'] in stim_no_path:
                                 # Record that stimulus was detected for the
                                 # cells to follow
                                 stim_found = True
                                 stim_name = stim_no_path
-                                # stimulus duration
-                                # todo: uncomment for next study with correct data recording
-                                # if 'stimulus_duration' in data_cell.keys():
-                                #     stim_dur = data_cell['stimulus_duration']  # noqa: E501
-                                if time_elapsed_last > -1:
-                                    stim_dur = data_cell['time_elapsed'] - time_elapsed_last  # noqa: E501
-                                    # find closest value in the list of
-                                    # durations
-                                    stim_dur = min(self.durations,
-                                                   key=lambda x: abs(x - stim_dur))  # noqa: E501
-                                else:  # assign default duration
-                                    stim_dur = self.default_dur
-                            # codeblock for sentinel image is found
-                            elif self.prefixes['sentinel_cb'] in stim_no_path:
-                                # record codeblock name for last stimulus
-                                if sent_name != '':
-                                    # extract ID of codeblock
-                                    num_found = re.findall(r'\d+',
-                                                           stim_no_path)
-                                    # Check if codeblocks were recorded previously  # noqa: E501
-                                    if sent_name + '-cb' not in dict_row.keys():  # noqa: E501
-                                        # first value
-                                        dict_row[sent_name + '-cb'] = [num_found[0]]  # noqa: E501
-                                    else:
-                                        # previous values found
-                                        dict_row[sent_name + '-cb'].append(num_found[0])  # noqa: E501
-                            # codeblock image is found
-                            elif self.prefixes['codeblock'] in stim_no_path:
-                                # record codeblock name for last stimulus or
-                                # training image
-                                if train_name != '':
-                                    # extract ID of codeblock
-                                    num_found = re.findall(r'\d+',
-                                                           stim_no_path)
-                                    # Check if codeblocks were recorded previously  # noqa: E501
-                                    if train_name + '-cb' not in dict_row.keys():  # noqa: E501
-                                        # first value
-                                        dict_row[train_name + '-cb'] = [num_found[0]]  # noqa: E501
-                                    else:
-                                        # previous values found
-                                        dict_row[train_name + '-cb'].append(num_found[0])  # noqa: E501
-                                elif stim_name != '':
-                                    # extract ID of codeblock
-                                    num_found = re.findall(r'\d+',
-                                                           stim_no_path)
-                                    # Check if codeblocks were recorded previously  # noqa: E501
-                                    if stim_name + '-' + str(stim_dur) + '-cb' not in dict_row.keys():  # noqa: E501
-                                        # first value
-                                        dict_row[stim_name + '-' + str(stim_dur) + '-cb'] = [num_found[0]]  # noqa: E501
-                                    else:
-                                        # previous values found
-                                        dict_row[stim_name + '-' + str(stim_dur) + '-cb'].append(num_found[0])  # noqa: E501
-                            # sentinel image is found
-                            elif self.prefixes['sentinel'] in stim_no_path:
-                                # Record that stimulus was detected for the
-                                # cells to follow
-                                sent_found = True
-                                sent_name = stim_no_path
-                    # data entry following a codechart found
-                    elif 'responses' in data_cell.keys():
-                        # record given input
-                        responses = json.loads(data_cell['responses'])
-                        logger.debug('Found input {}.',
-                                     responses['input-codeblock'])
-                        if train_name != '':
-                            # turn input to upper case
-                            str_in = responses['input-codeblock'].upper()
-                            # Check if inputted values were recorded previously
-                            if train_name + '-in' not in dict_row.keys():
-                                # first value
-                                dict_row[train_name + '-in'] = [str_in]
-                            else:
-                                # previous values found
-                                dict_row[train_name + '-in'].append(str_in)
-                            # Check if time spent values were recorded previously  # noqa: E501
-                            if train_name + '-rt' not in dict_row.keys():
-                                # first value
-                                dict_row[train_name + '-rt'] = [data_cell['rt']]  # noqa: E501
-                            else:
-                                # previous values found
-                                dict_row[train_name + '-rt'].append(data_cell['rt'])  # noqa: E501
-                            # reset flags for found stimulus
-                            train_found = False
-                            train_name = ''
+                    # keypresses
+                    if 'rts' in data_cell.keys():
+                        # record given keypresses
+                        responses = data_cell['rts']
+                        logger.debug('Found {} points in keypress data.',
+                                     len(responses))
                         if stim_name != '':
-                            # turn input to upper case
-                            str_in = responses['input-codeblock'].upper()
-                            # Check if inputted values were recorded previously  # noqa: E501
-                            if stim_name + '-' + str(stim_dur) + '-in' not in dict_row.keys():  # noqa: E501
+                            # extract pressed keys and rt values
+                            key = [point['key'] for point in responses]
+                            rt = [point['rt'] for point in responses]
+                            # Check if inputted values were recorded previously
+                            if stim_name + '-key' not in dict_row.keys():
                                 # first value
-                                dict_row[stim_name + '-' + str(stim_dur) + '-in'] = [str_in]  # noqa: E501
+                                dict_row[stim_name + '-key'] = key
                             else:
                                 # previous values found
-                                dict_row[stim_name + '-' + str(stim_dur) + '-in'].append(str_in)  # noqa: E501
-                            # Check if time spent values were recorded previously  # noqa: E501
-                            if stim_name + '-' + str(stim_dur) + '-rt' not in dict_row.keys():  # noqa: E501
+                                dict_row[stim_name + '-key'].append(key)
+                            # Check if time spent values were recorded
+                            # previously
+                            if stim_name + '-rt' not in dict_row.keys():
                                 # first value
-                                dict_row[stim_name + '-' + str(stim_dur) + '-rt'] = [data_cell['rt']]  # noqa: E501
+                                dict_row[stim_name + '-rt'] = rt
                             else:
                                 # previous values found
-                                dict_row[stim_name + '-' + str(stim_dur) + '-rt'].append(data_cell['rt'])  # noqa: E501
+                                dict_row[stim_name + '-rt'].append(rt)
                             # reset flags for found stimulus
                             stim_found = False
                             stim_name = ''
-                        elif sent_name != '':
-                            # turn input to upper case
-                            str_in = responses['input-codeblock'].upper()
-                            # Check if inputted values were recorded previously
-                            if sent_name + '-in' not in dict_row.keys():
-                                # first value
-                                dict_row[sent_name + '-in'] = [str_in]
-                            else:
-                                # previous values found
-                                dict_row[sent_name + '-in'].append(str_in)
-                            # Check if time spent values were recorded previously  # noqa: E501
-                            if sent_name + '-rt' not in dict_row.keys():
-                                # first value
-                                dict_row[sent_name + '-rt'] = [data_cell['rt']]
-                            else:
-                                # previous values found
-                                dict_row[sent_name + '-rt'].append(data_cell['rt'])  # noqa: E501
-                            # reset flags for found sentinel image
-                            sent_found = False
-                            sent_name = ''
                     # record time_elapsed
                     if 'time_elapsed' in data_cell.keys():
                         time_elapsed_last = data_cell['time_elapsed']
@@ -300,8 +185,9 @@ class Heroku:
             cshf.common.save_to_p(self.file_p,  df, 'heroku data')
         # save to csv
         if self.save_csv:
-            df.to_csv(gz.settings.output_dir + '/' + self.file_data_csv +
-                      '.csv')
+            # todo: check whith index=False is needed here
+            df.to_csv(cshf.settings.output_dir + '/' + self.file_data_csv +
+                      '.csv', index=False)
             logger.info('Saved heroku data to csv file {}',
                         self.file_data_csv + '.csv')
         # update attribute
@@ -316,7 +202,7 @@ class Heroku:
         # read mapping from a csv file
         mapping = pd.read_csv(cshf.common.get_configs('mapping_stimuli'))
         # set index as stimulus_id
-        mapping.set_index('video_id', inplace=True)
+        mapping.set_index('mapped_video', inplace=True)
         # return mapping as a dataframe
         return mapping
 
@@ -371,7 +257,7 @@ class Heroku:
         # save to csv
         if self.save_csv:
             # save to csv
-            mapping.to_csv(gz.settings.output_dir + '/' +
+            mapping.to_csv(cshf.settings.output_dir + '/' +
                            self.file_mapping_csv + '.csv')
         # return mapping
         return mapping
@@ -385,85 +271,16 @@ class Heroku:
         # more than allowed number of mistake with codes for sentinel images
         # load mapping of codes and coordinates
         logger.info('Filtering heroku data.')
-        logger.info('Filter-h1. People who made mistakes with sentinel '
-                    + 'images.')
-        with open(cshf.common.get_configs('mapping_sentinel_cb')) as f:
-            mapping = json.load(f)
-        allowed_mistakes = cshf.common.get_configs('allowed_mistakes_sent')
-        # number of sentinel images in trainig
-        training_total = cshf.common.get_configs('training_sent')
-        # df to store data to filter out
-        df_1 = pd.DataFrame()
-        # loop over rows in data
-        # tqdm adds progress bar
-        for index, row in tqdm(df.iterrows(), total=df.shape[0]):
-            # fill nans with empty lists
-            empty = pd.Series([[] for _ in range(len(row.index))],
-                              index=row.index)
-            row = row.fillna(empty)
-            # counter mistakes
-            mistakes_counter = 0
-            # counter sentinel images found in training
-            training_counter = 0
-            # loop over values in the row
-            for index_r, value_r in row.iteritems():
-                # check if input is given
-                if (value_r == []):
-                    # if no data present, move to the next cell
-                    continue
-                # sentinel image
-                if 'sentinel_' in index_r and '-in' in index_r:
-                    # sentinel image in training found
-                    if training_counter < training_total:
-                        # increase counter of sentinel images
-                        training_counter = training_counter + 1
-                        # skip since we are still in training data
-                        continue
-                    # sentinel image not in training found
-                    else:
-                        # increase counter of sentinel images
-                        training_counter = training_counter + 1
-                        sent_found = True
-                        # extract ID of image
-                        num_found = re.findall(r'\d+',
-                                               index_r)
-                        sent_name = num_found[0]
-                        # check if input is in list of correct codes
-                        mapping_cb = '../public/img/sentinel/sentinel_' + \
-                                     str(sent_name) + \
-                                     '.jpg'
-                        if (value_r[0] not in mapping[mapping_cb]['correct_codes']):  # noqa: E501
-                            # mistake found
-                            mistakes_counter = mistakes_counter + 1
-                            # check if limit was reached
-                            if mistakes_counter > allowed_mistakes:
-                                logger.debug('{}: found {} mistakes for '
-                                             + 'sentinel images.',
-                                             row['worker_code'],
-                                             mistakes_counter)
-                                # add to df with data to filter out
-                                df_1 = df_1.append(row)
-                                break
-        logger.info('Filter-h1. People who made more than {} mistakes with '
-                    + 'sentinel images: {}',
-                    allowed_mistakes,
-                    df_1.shape[0])
         # concatanate dfs with filtered data
         old_size = df.shape[0]
-        # one filter employed
-        df_filtered = df_1
+        df_filtered = df  # no filter applied
         # drop rows with filtered data
         unique_worker_codes = df_filtered['worker_code'].drop_duplicates()
         df = df[~df['worker_code'].isin(unique_worker_codes)]
-        logger.info('Filtered in total in heroku data: {}',
-                    old_size - df.shape[0])
-        return df
+        return df_filtered
 
     def show_info(self):
         """
         Output info for data in object.
         """
-        # info on age
-        # info on gender
-        count = Counter(self.heroku_data['group_choice'])
-        logger.info('Groups: {}', count.most_common())
+        logger.info('No info to show.')

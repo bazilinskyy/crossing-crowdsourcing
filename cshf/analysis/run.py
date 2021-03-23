@@ -5,7 +5,7 @@ import matplotlib._pylab_helpers
 
 import cshf
 
-cshf.logs(show_level='info', show_color=True)
+cshf.logs(show_level='debug', show_color=True)
 logger = cshf.CustomLogger(__name__)  # use custom logger
 
 # Const
@@ -53,7 +53,6 @@ if __name__ == '__main__':
     heroku_data = all_data[all_data.columns.intersection(heroku_data_keys)]
     heroku_data = heroku_data.set_index('worker_code')
     heroku.set_data(heroku_data)  # update object with filtered data
-    heroku.show_info()  # show info for filtered data
     appen_data = all_data[all_data.columns.intersection(appen_data_keys)]
     appen_data = appen_data.set_index('worker_code')
     appen.set_data(appen_data)  # update object with filtered data
@@ -67,5 +66,5 @@ if __name__ == '__main__':
     logger.info('Creating figures for {} stimuli.', num_stimuli)
     # todo: add analysis code here
     # show figures, if any
-    if figures:
-        plt.show()
+    # if figures:
+    #     plt.show()

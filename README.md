@@ -1,4 +1,4 @@
-Exploration of pedestrian crossing in traffic by means of crowdsourcing.
+Exploration of pedestrian crossing in traffic by means of crowdsourcing
 =======
 
 ## Setup

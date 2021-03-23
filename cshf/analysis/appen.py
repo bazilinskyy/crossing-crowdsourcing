@@ -69,7 +69,7 @@ class Appen:
         # load data
         if self.load_p:
             df = cshf.common.load_from_p(self.file_p,
-                                       'appen data')
+                                         'appen data')
         # process data
         else:
             # load from csv
@@ -96,7 +96,7 @@ class Appen:
             cshf.common.save_to_p(self.file_p,  df, 'appen data')
         # save to csv
         if self.save_csv:
-            df.to_csv(gz.settings.output_dir + '/' + self.file_csv)
+            df.to_csv(cshf.settings.output_dir + '/' + self.file_csv)
             logger.info('Saved appen data to csv file {}', self.file_csv)
         # assign to attribute
         self.appen_data = df
@@ -142,7 +142,7 @@ class Appen:
         # save to csv
         if self.save_csv:
             df_5 = df_5.reset_index()
-            df_5.to_csv(gz.settings.output_dir + '/' + self.file_cheaters_csv)
+            df_5.to_csv(cshf.settings.output_dir + '/' + self.file_cheaters_csv)
             logger.info('Filter-a5. Saved list of cheaters to csv file {}',
                         self.file_cheaters_csv)
         # concatanate dfs with filtered data
