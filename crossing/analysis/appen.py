@@ -71,7 +71,7 @@ class Appen:
         # load data
         if self.load_p:
             df = cs.common.load_from_p(self.file_p,
-                                         'appen data')
+                                       'appen data')
         # process data
         else:
             # load from csv
@@ -93,6 +93,8 @@ class Appen:
             df = self.filter_data(df)
             # mask IDs and IPs
             df = self.mask_ips_ids(df)
+            # sort columns alphabetically
+            df = df.reindex(sorted(df.columns), axis=1)
         # save to pickle
         if self.save_p:
             cs.common.save_to_p(self.file_p,  df, 'appen data')

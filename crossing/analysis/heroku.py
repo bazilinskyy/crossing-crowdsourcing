@@ -284,6 +284,8 @@ class Heroku:
                         unique_worker_codes.shape[0])
             # filter data
             df = self.filter_data(df)
+            # sort columns alphabetically
+            df = df.reindex(sorted(df.columns), axis=1)
         # save to pickle
         if self.save_p:
             cs.common.save_to_p(self.file_p,  df, 'heroku data')

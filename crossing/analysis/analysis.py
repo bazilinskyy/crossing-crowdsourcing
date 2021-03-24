@@ -82,17 +82,30 @@ class Analysis:
         # revert font
         self.reset_font()
 
-    def hist_stim_duration(self, df,  save_file=False):
+    def hist_stim_duration(self, df, nbins=0, save_file=True):
         """
         Output distribution of stimulus durations..
+
+        Args:
+            df (dataframe): dataframe with data from heroku.
+            nbins (int, optional): number of bins in histogram.
+            save_file (bool, optional): flag for saving an html file with plot.
         """
         logger.info('Creating histogram of stimulus durations.')
         df = df[df.columns[df.columns.to_series().str.contains('-dur')]]
         # create figure
-        # fig = plt.figure(figsize=(15, 8))
-        fig = px.histogram(df)
-        fig.update_layout(template='plotly_dark',)
-        self.save_plotly(fig, 'hist_stim_duration', self.folder)
+        if nbins:
+            fig = px.histogram(df, nbins=nbins)
+        else:
+            fig = px.histogram(df)
+        # update layout
+        fig.update_layout(template='plotly_dark')
+        # save file
+        if save_file:
+            self.save_plotly(fig, 'hist_stim_duration', self.folder)
+        # open it in localhost instead
+        else:
+            fig.show()
 
     def plot_plotly(self, df):
         """Plot figures with analysis.
@@ -137,8 +150,13 @@ class Analysis:
         fig['layout']['title'] = 'Title'
         # fig['layout']['showlegend'] = True
         fig['layout']['updatemenus'] = updatemenus
-        fig.update_layout(template='plotly_dark',)
-        self.save_plotly(fig, 'main_plot', self.folder)
+        fig.update_layout(template='plotly_dark')
+        # save file
+        if save_file:
+            self.save_plotly(fig, 'main_plot', self.folder)
+        # open it in localhost instead
+        else:
+            fig.show()
 
     def save_plotly(self, fig, name, output_subdir):
         """

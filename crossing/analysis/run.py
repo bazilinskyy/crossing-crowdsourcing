@@ -67,7 +67,7 @@ if __name__ == '__main__':
     # create correlation matrix
     analysis.corr_matrix(stimuli_mapped, save_file=True)
     # stimulus duration
-    analysis.hist_stim_duration(heroku_data, save_file=True)
+    analysis.hist_stim_duration(heroku_data, nbins=100, save_file=True)
     # check if any figures are to be rendered
     figures = [manager.canvas.figure
                for manager in
