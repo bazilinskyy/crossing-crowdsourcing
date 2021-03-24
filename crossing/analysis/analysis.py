@@ -24,16 +24,14 @@ logger = cs.CustomLogger(__name__)  # use custom logger
 
 
 class Analysis:
-    # used by animation
-    fig = None
-    g = None
-    image = None
-    stim_id = None
+    # folder for output
     folder = '/figures/'
 
-    def __init__(self):
+    def __init__(self, plotly_template):
         # set font to Times
         plt.rc('font', family='serif')
+        # set template for plots
+        self.template = plotly_template
 
     def corr_matrix(self, mapping, save_file=False):
         """
@@ -84,7 +82,7 @@ class Analysis:
 
     def hist_stim_duration(self, df, nbins=0, save_file=True):
         """
-        Output distribution of stimulus durations..
+        Output distribution of stimulus durations.
 
         Args:
             df (dataframe): dataframe with data from heroku.
@@ -95,14 +93,111 @@ class Analysis:
         df = df[df.columns[df.columns.to_series().str.contains('-dur')]]
         # create figure
         if nbins:
-            fig = px.histogram(df, nbins=nbins)
+            fig = px.histogram(df, nbins=nbins, marginal='rug')
         else:
-            fig = px.histogram(df)
+            fig = px.histogram(df, marginal='rug')
         # update layout
-        fig.update_layout(template='plotly_dark')
+        fig.update_layout(template=self.template)
         # save file
         if save_file:
             self.save_plotly(fig, 'hist_stim_duration', self.folder)
+        # open it in localhost instead
+        else:
+            fig.show()
+
+    def hist_browser_dimensions(self, df, nbins=0, save_file=True):
+        """
+        Output distribution of browser dimensions durations.
+
+        Args:
+            df (dataframe): dataframe with data from heroku.
+            nbins (int, optional): number of bins in histogram.
+            save_file (bool, optional): flag for saving an html file with plot.
+        """
+        logger.info('Creating histogram of window dimensions.')
+        df['window_area'] = df['window_height'] * df['window_width']
+        # plotly
+        fig = subplots.make_subplots(rows=1,
+                                     cols=1,
+                                     shared_xaxes=True)
+        # variables to plot
+        variables = ['window_height', 'window_width', 'window_area']
+        data = df[variables]
+        # plot each variable in data
+        for i, variable in enumerate(variables):
+            if nbins:
+                fig.add_trace(go.Histogram(x=df[variable],
+                                           nbinsx=nbins,
+                                           name=variable),
+                              row=1,
+                              col=1)
+            else:
+                fig.add_trace(go.Histogram(x=df[variable],
+                                           name=variable),
+                              row=1,
+                              col=1)
+        buttons = list([dict(label='All',
+                             method='update',
+                             args=[{'visible': [True] * 3 * len(variables)},
+                                   {'title': 'All',
+                                    'showlegend': True}])])
+        for i, label in enumerate(variables):
+            visibility = [[i == j] for j in range(len(variables))]
+            visibility = [item for sublist in visibility for item in sublist]
+            button = dict(label=label,
+                          method='update',
+                          args=[{'visible': visibility},
+                                {'title': label}])
+            buttons.append(button)
+        updatemenus = [dict(x=-0.15, buttons=buttons, showactive=True)]
+        # update layout
+        fig['layout']['title'] = 'Title'
+        # fig['layout']['showlegend'] = True
+        fig['layout']['updatemenus'] = updatemenus
+        fig.update_layout(template=self.template)
+        # save file
+        if save_file:
+            self.save_plotly(fig, 'hist_browser_dimensions', self.folder)
+        # open it in localhost instead
+        else:
+            fig.show()
+
+    def scatter_browser_dimensions(self, df, type_plot='scatter',
+                                   save_file=True):
+        """
+        Output distribution of browser dimensions durations.
+
+        Args:
+            df (dataframe): dataframe with data from heroku.
+            type_plot (str, optional): type of plot: scatter, density_heatmap.
+            save_file (bool, optional): flag for saving an html file with plot.
+        """
+        logger.info('Creating plot of type_plot %s for browser dimensions.',
+                    type_plot)
+        # scatter plot with histograms
+        if type_plot == 'scatter':
+            fig = px.scatter(df,
+                             x='window_width',
+                             y='window_height',
+                             marginal_x='violin',
+                             marginal_y='violin')
+        # density map with histograms
+        elif type_plot == 'density_heatmap':
+            fig = px.density_heatmap(df,
+                                     x='window_width',
+                                     y='window_height',
+                                     marginal_x='violin',
+                                     marginal_y='violin')
+        # unsopported type
+        else:
+            logger.error('Wrong type of plot %s given.', type_plot)
+            return -1
+
+        # update layout
+        fig.update_layout(template=self.template)
+        # save file
+        if save_file:
+            self.save_plotly(fig, 'scatter_browser_dimensions', self.folder)
         # open it in localhost instead
         else:
             fig.show()
@@ -150,7 +245,7 @@ class Analysis:
         fig['layout']['title'] = 'Title'
         # fig['layout']['showlegend'] = True
         fig['layout']['updatemenus'] = updatemenus
-        fig.update_layout(template='plotly_dark')
+        fig.update_layout(template=self.template)
         # save file
         if save_file:
             self.save_plotly(fig, 'main_plot', self.folder)
