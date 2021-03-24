@@ -17,3 +17,6 @@ secret
 # Ignore all files starting with an underscore.
 **/_*
 !__init__.py
+
+# Pickle files
+crossing/analysis/*.p
