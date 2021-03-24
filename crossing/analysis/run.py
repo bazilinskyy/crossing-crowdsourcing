@@ -70,7 +70,7 @@ if __name__ == '__main__':
     # stimulus duration
     analysis.hist_stim_duration(heroku_data, nbins=100, save_file=True)
     # browser window dimensions
-    analysis.hist_browser_dimensions(heroku_data, nbins=100, save_file=True)
+    # analysis.hist_browser_dimensions(heroku_data, nbins=100, save_file=True)
     analysis.scatter_browser_dimensions(heroku_data,
                                         type_plot='scatter',
                                         save_file=True)

@@ -96,6 +96,8 @@ class Analysis:
             fig = px.histogram(df, nbins=nbins, marginal='rug')
         else:
             fig = px.histogram(df, marginal='rug')
+        # ticks as numbers
+        fig.update_layout(xaxis=dict(tickformat='digits'))
         # update layout
         fig.update_layout(template=self.template)
         # save file
@@ -150,6 +152,8 @@ class Analysis:
                                 {'title': label}])
             buttons.append(button)
         updatemenus = [dict(x=-0.15, buttons=buttons, showactive=True)]
+        # ticks as numbers
+        fig.update_layout(xaxis=dict(tickformat='digits'))
         # update layout
         fig['layout']['title'] = 'Title'
         # fig['layout']['showlegend'] = True
