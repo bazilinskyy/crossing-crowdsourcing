@@ -97,6 +97,8 @@ class Heroku:
                 stim_name = ''
                 # trial last found stimulus
                 stim_trial = -1
+                # last time_elapsed for logging duration of trial
+                time_elapsed_last = 0
                 # go over cells in the row with data
                 for data_cell in list_row['data']:
                     # extract meta info form the call
@@ -130,6 +132,15 @@ class Heroku:
                                 stim_name = stim_no_path
                                 # record trial of stimulus
                                 stim_trial = data_cell['trial_index']
+                                # add trial duration
+                                if 'time_elapsed' in data_cell.keys():
+                                    dur = float(data_cell['time_elapsed']) - time_elapsed_last  # noqa: E501
+                                    if stim_name + '-dur' not in dict_row.keys():  # noqa: E501
+                                        # first value
+                                        dict_row[stim_name + '-dur'] = dur  # noqa: E501
+                                    else:
+                                        # previous values found
+                                        dict_row[stim_name + '-dur'].append(dur)  # noqa: E501
                     # keypresses
                     if 'rts' in data_cell.keys() and stim_name != '':
                         # record given keypresses
@@ -228,6 +239,9 @@ class Heroku:
                         if 'end-qs' not in dict_row.keys():
                             dict_row['end-qs'] = questions
                             dict_row['end-as'] = answers
+                # record last time_elapsed
+                if 'time_elapsed' in data_cell.keys():
+                    time_elapsed_last = float(data_cell['time_elapsed'])
                 # worker_code was ecnountered before
                 if dict_row['worker_code'] in data_dict.keys():
                     # iterate over items in the data dictionary
