@@ -22,6 +22,7 @@ class Heroku:
     # todo: parse browser interactions
     files_data = []  # list of files with heroku data
     heroku_data = pd.DataFrame()  # pandas dataframe with extracted data
+    mapping = pd.DataFrame()  # pandas dataframe with mapping
     save_p = False  # save data as pickle file
     load_p = False  # load data as pickle file
     save_csv = False  # save data as csv file
@@ -271,11 +272,34 @@ class Heroku:
         Read mapping.
         """
         # read mapping from a csv file
-        mapping = pd.read_csv(cs.common.get_configs('mapping_stimuli'))
+        df = pd.read_csv(cs.common.get_configs('mapping_stimuli'))
         # set index as stimulus_id
-        mapping.set_index('video_id', inplace=True)
+        df.set_index('video_id', inplace=True)
+        # update attribute
+        self.mapping = df
         # return mapping as a dataframe
-        return mapping
+        return df
+
+    def keypresses_td(res=10):
+        """Process keypress for resolution res.
+
+        Args:
+            res (int, optional): resolution of keypresses (per second).
+
+        Returns:
+            updated_mapping: updated mapping df.
+        """
+        for pp in self.heroku:
+            for video in videos:
+                mean_keypress = 0
+                for rt in rts:
+                    # with step of res
+                    # calculate average percent of people who pressed the key
+                    # in this
+                    # timestamps
+                    pass
+        updated_mapping = self.mapping + mean_keypress
+        return updated_mapping
 
     def filter_data(self, df):
         """
