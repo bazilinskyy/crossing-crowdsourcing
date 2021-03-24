@@ -286,6 +286,10 @@ class Heroku:
             df = self.filter_data(df)
             # sort columns alphabetically
             df = df.reindex(sorted(df.columns), axis=1)
+            # move worker_code to the front
+            worker_code_col = df['worker_code']
+            df.drop(labels=['worker_code'], axis=1, inplace=True)
+            df.insert(0, 'worker_code', worker_code_col)
         # save to pickle
         if self.save_p:
             cs.common.save_to_p(self.file_p,  df, 'heroku data')
