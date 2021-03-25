@@ -27,11 +27,11 @@ class Analysis:
     # folder for output
     folder = '/figures/'
 
-    def __init__(self, plotly_template):
+    def __init__(self):
         # set font to Times
         plt.rc('font', family='serif')
-        # set template for plots
-        self.template = plotly_template
+        # set template for plotly output
+        self.template = cs.common.get_configs('plotly_template')
 
     def corr_matrix(self, mapping, save_file=False):
         """

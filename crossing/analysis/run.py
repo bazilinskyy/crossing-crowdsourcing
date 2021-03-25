@@ -13,7 +13,6 @@ SAVE_P = True  # save pickle files with data
 LOAD_P = False  # load pickle files with data
 SAVE_CSV = True  # load csv files with data
 REJECT_CHEATERS = False  # reject cheaters on Appen
-PLOTLY_TEMPLATE = 'plotly_dark'  # visual template of plotly output
 file_coords = 'coords.p'  # file to save lists with coordinates
 file_mapping = 'mapping.p'  # file to save lists with coordinates
 
@@ -61,7 +60,7 @@ if __name__ == '__main__':
     # read in mapping of stimuli
     stimuli_mapped = heroku.read_mapping()
     # Output
-    analysis = cs.analysis.Analysis(PLOTLY_TEMPLATE)
+    analysis = cs.analysis.Analysis()
     # number of stimuli to process
     num_stimuli = cs.common.get_configs('num_stimuli')
     logger.info('Creating figures for {} stimuli.', num_stimuli)
