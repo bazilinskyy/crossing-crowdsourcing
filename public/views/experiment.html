@@ -161,6 +161,20 @@ var getUrlParameter = function getUrlParameter(sParam) {
     }
 };
 
+var debug = getUrlParameter('debug');
+if (!debug) {
+    debug = SHOW_DEBUG;
+}
+
+if (debug) {
+    console.log('debug', debug);
+}
+
+var save_data = getUrlParameter('save_data');
+if (!save_data) {
+    save_data = SAVE_DATA;
+}
+
 /**
  * Save data.
  */
@@ -170,7 +184,9 @@ function saveData() {
         // add worker ID and browser interactions
         jsPsych.data.get().addToLast({
             worker_code: worker_code,
-            interactions: interactions
+            interactions: interactions,
+            window_width: $(window).width(),
+            window_height: $(window).height()
         });
         interactions = [];  // reset interactions
 
@@ -196,28 +212,14 @@ function saveData() {
     }
 }
 
-var debug = getUrlParameter('debug');
-if (!debug) {
-    debug = SHOW_DEBUG;
-}
-
-if (debug) {
-    console.log('debug', debug);
-}
-
-var save_data = getUrlParameter('save_data');
-if (!save_data) {
-    save_data = SAVE_DATA;
-}
-
 if (debug) {
     console.log('browser name', br_name);
     console.log('browser full version', br_full_version);
     console.log('browser major version', br_major_version);
     console.log('browser navigator.appName', navigator.appName);
     console.log('browser navigator.userAgent', navigator.userAgent);
-    console.log('window width', window_width);
-    console.log('window height', window_height);
+    console.log('window width initial', window_width);
+    console.log('window height initial', window_height);
 }
 
 // Arrays for storing data
@@ -237,8 +239,8 @@ var instructions_block = {
         browser_app_name: navigator.appName,
         browser_user_agent: navigator.userAgent,
         video_ids: video_ids,
-        window_height: window_height,
-        window_width: window_width
+        window_height_init: window_height,
+        window_width_init: window_width
     }
 };
 
@@ -377,8 +379,8 @@ for (var i = 0; i < n_videos_per_participant * n_videos_repeat; i++) {
 }
 timeline.push(qs_end);  // questions in the end
 timeline.push(qs_signs);  // radio box questions with signs
-timeline.push(save_data_block);  // save data
 timeline.push(fullscreen_exit);  // exit full screen
+timeline.push(save_data_block);  // save data
 
 if (debug) {
     console.log('timeline', timeline);
