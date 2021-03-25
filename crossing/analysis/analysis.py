@@ -184,7 +184,8 @@ class Analysis:
                              x='window_width',
                              y='window_height',
                              marginal_x='violin',
-                             marginal_y='violin')
+                             marginal_y='violin',
+                             color='browser_name')
         # density map with histograms
         elif type_plot == 'density_heatmap':
             fig = px.density_heatmap(df,
