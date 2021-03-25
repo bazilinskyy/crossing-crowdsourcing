@@ -73,6 +73,8 @@ if __name__ == '__main__':
     analysis.scatter_browser_dimensions(heroku_data,
                                         type_plot='scatter',
                                         save_file=True)
+    # time of participation
+    analysis.hist_time_participation(appen_data, save_file=True)
     # check if any figures are to be rendered
     figures = [manager.canvas.figure
                for manager in

@@ -89,6 +89,8 @@ class Appen:
             df['start'] = pd.to_datetime(df['start'])
             df['end'] = pd.to_datetime(df['end'])
             df['time'] = (df['end'] - df['start']) / pd.Timedelta(seconds=1)
+            # remove underscores in the beginning of column name
+            df.columns = df.columns.str.lstrip('_')
             # filter data
             df = self.filter_data(df)
             # mask IDs and IPs
@@ -137,7 +139,7 @@ class Appen:
                     ' sec: {}',
                     df_3.shape[0])
         # people that completed the study from the same IP address
-        df_4 = df[df['_ip'].duplicated(keep='first')]
+        df_4 = df[df['ip'].duplicated(keep='first')]
         logger.info('Filter-a4. People who completed the study from the ' +
                     'same IP: {}',
                     df_4.shape[0])
@@ -175,28 +177,28 @@ class Appen:
         if mask_id:
             proc_ids = []  # store masked ID's here
             logger.info('Replacing IDs in appen data.')
-        for i in range(len(df['_ip'])):  # loop through ips
+        for i in range(len(df['ip'])):  # loop through ips
             # anonymise IPs
             if mask_ip:
                 # IP address
                 # new IP
-                if not any(d['o'] == df['_ip'][i] for d in proc_ips):
+                if not any(d['o'] == df['ip'][i] for d in proc_ips):
                     # mask in format 0.0.0.ID
                     masked_ip = '0.0.0.' + str(len(proc_ips))
                     # record IP as already replaced
                     # o=original; m=masked
-                    proc_ips.append({'o': df['_ip'][i], 'm': masked_ip})
-                    df.at[i, '_ip'] = masked_ip
+                    proc_ips.append({'o': df['ip'][i], 'm': masked_ip})
+                    df.at[i, 'ip'] = masked_ip
                     logger.debug('{}: replaced IP {} with {}.',
                                  df['worker_code'][i],
                                  proc_ips[-1]['o'],
                                  proc_ips[-1]['m'])
                 else:  # already replaced
                     for item in proc_ips:
-                        if item['o'] == df['_ip'][i]:
+                        if item['o'] == df['ip'][i]:
 
                             # fetch previously used mask for the IP
-                            df.at[i, '_ip'] = item['m']
+                            df.at[i, 'ip'] = item['m']
                             logger.debug('{}: replaced repeating IP {} with ' +
                                          '{}.',
                                          df['worker_code'][i],
@@ -205,14 +207,14 @@ class Appen:
             # anonymise worker IDs
             if mask_id:
                 # new worker ID
-                if not any(d['o'] == df['_worker_id'][i] for d in proc_ids):
+                if not any(d['o'] == df['worker_id'][i] for d in proc_ids):
                     # mask in format random_int - worker_id
                     masked_id = (str(cs.common.get_configs('mask_id') -
-                                 df['_worker_id'][i]))
+                                 df['worker_id'][i]))
                     # record IP as already replaced
-                    proc_ids.append({'o': df['_worker_id'][i],
+                    proc_ids.append({'o': df['worker_id'][i],
                                      'm': masked_id})
-                    df.at[i, '_worker_id'] = masked_id
+                    df.at[i, 'worker_id'] = masked_id
                     logger.debug('{}: replaced ID {} with {}.',
                                  df['worker_code'][i],
                                  proc_ids[-1]['o'],
@@ -220,9 +222,9 @@ class Appen:
                 # already replaced
                 else:
                     for item in proc_ids:
-                        if item['o'] == df['_worker_id'][i]:
+                        if item['o'] == df['worker_id'][i]:
                             # fetch previously used mask for the ID
-                            df.at[i, '_worker_id'] = item['m']
+                            df.at[i, 'worker_id'] = item['m']
                             logger.debug('{}: replaced repeating ID {} '
                                          + 'with {}.',
                                          df['worker_code'][i],
@@ -250,7 +252,7 @@ class Appen:
         count = Counter(self.appen_data['gender'])
         logger.info('Gender: {}', count.most_common())
         # info on most represted countries in minutes
-        count = Counter(self.appen_data['_country'])
+        count = Counter(self.appen_data['country'])
         logger.info('Countires: {}', count.most_common())
         # info on duration in minutes
         logger.info('Time of participation: mean={:,.2f} min, '

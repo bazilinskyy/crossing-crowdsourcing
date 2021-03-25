@@ -107,9 +107,39 @@ class Analysis:
         else:
             fig.show()
 
+    def hist_time_participation(self, df, nbins=0, save_file=True):
+        """
+        Output histogram of time of participation.
+
+        Args:
+            df (dataframe): dataframe with data from heroku.
+            nbins (int, optional): number of bins in histogram.
+            save_file (bool, optional): flag for saving an html file with plot.
+        """
+        logger.info('Creating histogram of time of study.')
+        # create figure
+        if nbins:
+            fig = px.histogram(df,
+                               x='time',
+                               nbins=nbins,
+                               marginal='rug',
+                               color='country')
+        else:
+            fig = px.histogram(df, x='time', marginal='rug', color='country')
+        # ticks as numbers
+        fig.update_layout(xaxis=dict(tickformat='digits'))
+        # update layout
+        fig.update_layout(template=self.template)
+        # save file
+        if save_file:
+            self.save_plotly(fig, 'hist_time_participation', self.folder)
+        # open it in localhost instead
+        else:
+            fig.show()
+
     def hist_browser_dimensions(self, df, nbins=0, save_file=True):
         """
-        Output distribution of browser dimensions durations.
+        Output distribution of browser dimensions.
 
         Args:
             df (dataframe): dataframe with data from heroku.
@@ -169,7 +199,7 @@ class Analysis:
     def scatter_browser_dimensions(self, df, type_plot='scatter',
                                    save_file=True):
         """
-        Output distribution of browser dimensions durations.
+        Output scatter plot of browser dimensions.
 
         Args:
             df (dataframe): dataframe with data from heroku.
