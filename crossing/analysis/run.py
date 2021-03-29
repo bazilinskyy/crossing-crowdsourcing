@@ -59,6 +59,10 @@ if __name__ == '__main__':
     appen.show_info()  # show info for filtered data
     # read in mapping of stimuli
     stimuli_mapped = heroku.read_mapping()
+
+    mapping_updated = heroku.keypresses_td()
+    #df_new.to_csv('mapping_updated.csv')
+    
     # Output
     analysis = cs.analysis.Analysis()
     # number of stimuli to process
