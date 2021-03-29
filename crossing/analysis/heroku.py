@@ -334,7 +334,7 @@ class Heroku:
         num_stimuli = cs.common.get_configs('num_stimuli')
         video_len = cs.common.get_configs('video_len')
         #from resolution to length of bins(ms)
-        res = (1/res)*1000
+        res = int((1/res)*1000)
 
         vid_names = []
         for i in range(0,num_stimuli):
@@ -387,7 +387,7 @@ class Heroku:
         #Add column to old mapping file 
         updated_mapping = self.mapping  
         updated_mapping['bin_data'] = mapping_rt
-        
+
         #update own objects' mapping
         self.mapping = updated_mapping
         #return new mapping

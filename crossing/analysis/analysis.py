@@ -398,3 +398,11 @@ class Analysis:
         plt.rc('ytick', labelsize=s_font)   # fontsize of the tick labels
         plt.rc('legend', fontsize=s_font)   # legend fontsize
         plt.rc('figure', titlesize=l_font)  # fontsize of the figure title
+
+    def keypress_plot(self, updated_mapping):
+    
+        #add updated mapping to get keydata
+        df = updated_mapping
+
+        fig = px.bar(df, x='time', y='video_0-rt', labels={'video_0-rt': ' percentage button presses ', 'time':'Time (ms)'})
+        fig.show()

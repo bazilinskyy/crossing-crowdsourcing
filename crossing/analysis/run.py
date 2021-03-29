@@ -61,6 +61,11 @@ if __name__ == '__main__':
     stimuli_mapped = heroku.read_mapping()
 
     mapping_updated = heroku.keypresses_td()
+    logger.info('keys in file updated_mapping: {}',
+                 mapping_updated.keys() )
+
+    logger.info('output of .head in file updated_mapping: {}',
+                 mapping_updated.head() )
     #df_new.to_csv('mapping_updated.csv')
     
     # Output
