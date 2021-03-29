@@ -319,7 +319,7 @@ class Heroku:
         # return mapping as a dataframe
         return df
 
-    def keypresses_td(self, res=100):
+    def keypresses_td(self, res=10):
         """Process keypress for resolution res.
 
         Args:
@@ -362,6 +362,7 @@ class Heroku:
                             #if list contains more then one value, go through list to remove keyholds
                             elif len(row)>1:
                                 for i in range(1,len(row)):
+                                    #if time between 2 stimuli is more then 35 ms, add to array (no hold)
                                     if row[i]-row[i-1] > 35:
                                         #append buttonpress data to rt array
                                         rt_data.append(row[i])

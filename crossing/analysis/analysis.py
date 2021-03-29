@@ -399,10 +399,33 @@ class Analysis:
         plt.rc('legend', fontsize=s_font)   # legend fontsize
         plt.rc('figure', titlesize=l_font)  # fontsize of the figure title
 
-    def keypress_plot(self, updated_mapping):
-    
-        #add updated mapping to get keydata
-        df = updated_mapping
+    def keypress_plot(self, updated_mapping, res=10):
+        """Plot figures with analysis.
 
-        fig = px.bar(df, x='time', y='video_0-rt', labels={'video_0-rt': ' percentage button presses ', 'time':'Time (ms)'})
-        fig.show()
+        Args:
+            df (dataframe): updated mapping dataframe with bin_data included.
+        """
+        # todo: Add or update code to make plot of classes (combined data) 
+        # todo: Beautify plots
+        # todo: Save plots in output file
+
+        df = updated_mapping
+        video_len = cs.common.get_configs('video_len')
+        res = int((1/res)*1000)
+        #create time array based on resolution for plotting purposes
+        time_array = list(range(res, video_len + res, res))
+        
+        counter = 0
+        vid_nr = 0
+        for index, row in df.iterrows():
+            #retrieve keypress array from mapping
+            keypresses = row['bin_data']
+            vid_name = 'video-' + str(vid_nr)
+
+            #remove this later. in here for quickly showing data of first 2 videos.
+            if vid_nr < 2:
+                fig = go.Figure(data=[
+                             go.Bar(name = vid_name, x=time_array, y=keypresses)])
+                             #labels={keypresses: ' % button presses of total', time_array:'Time (ms)'})
+                #fig.show()
+            vid_nr += 1
