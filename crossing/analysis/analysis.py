@@ -237,7 +237,59 @@ class Analysis:
         else:
             fig.show()
 
-    def plot_plotly(self, df):
+    def plot_variable(self, df, variable, values=None):
+        """Take in a vriable with values which are optional
+
+        Args:
+            df (TYPE): Description
+            variable (TYPE): Description
+            values (None, optional): if None, it will plot all.
+        """
+        logger.info('Creating visualisations with plotly.')
+        # plotly
+        fig = subplots.make_subplots(rows=1,
+                                     cols=1,
+                                     shared_xaxes=True)
+        times = [dt.datetime.fromtimestamp(time) for time in ride.time]
+        # variables to plot
+        variables = []
+        data = df[variables]
+        # plot each variable in data
+        for i, variable in enumerate(variables):
+            fig.add_trace(go.Scatter(y=data,
+                                     mode='lines',
+                                     x=times,
+                                     name=variable),
+                          row=1,
+                          col=1)
+        buttons = list([dict(label='All',
+                             method='update',
+                             args=[{'visible': [True] * 3 * len(variables)},
+                                   {'title': 'All',
+                                    'showlegend': True}])])
+        for i, label in enumerate(variables):
+            visibility = [[i == j] for j in range(len(variables))]
+            visibility = [item for sublist in visibility for item in sublist]
+            button = dict(label=label,
+                          method='update',
+                          args=[{'visible': visibility},
+                                {'title': label}])
+            buttons.append(button)
+
+        updatemenus = [dict(x=-0.15, buttons=buttons, showactive=True)]
+        # update layout
+        fig['layout']['title'] = 'Title'
+        # fig['layout']['showlegend'] = True
+        fig['layout']['updatemenus'] = updatemenus
+        fig.update_layout(template=self.template)
+        # save file
+        if save_file:
+            self.save_plotly(fig, 'main_plot', self.folder)
+        # open it in localhost instead
+        else:
+            fig.show()
+
+    def plot_variables(self, df, variables=None):
         """Plot figures with analysis.
 
         Args:
@@ -250,9 +302,12 @@ class Analysis:
                                      cols=1,
                                      shared_xaxes=True)
         times = [dt.datetime.fromtimestamp(time) for time in ride.time]
-        # variables to plot
-        variables = []
-        data = df[variables]
+        # variables to plot not given. Use all
+        if not variables:
+            data = df
+        # variables to plot not given. Use all
+        else:
+            data = df[variables]
         # plot each variable in data
         for i, variable in enumerate(variables):
             fig.add_trace(go.Scatter(y=data,
