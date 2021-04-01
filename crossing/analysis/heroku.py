@@ -321,18 +321,16 @@ class Heroku:
 
     def keypresses_td(self, res=10):
         """Process keypress for resolution res.
-
         Args:
             res (int, optional): resolution of keypresses (per second).
 
         Returns:
             updated_mapping: updated mapping df.
         """
-
         #retrieve heruko_data from object
         df = pd.read_csv(cs.common.get_configs('heroku_output'))
         num_stimuli = cs.common.get_configs('num_stimuli')
-        video_len = cs.common.get_configs('video_len')
+        video_len = cs.common.get_configs('video_length')
         #from resolution to length of bins(ms)
         res = int((1/res)*1000)
 
@@ -379,7 +377,7 @@ class Heroku:
                                 #if data is found, up bin counter
                                 bin_counter =+ 1
                         danger_percentage = bin_counter/counter_data
-                        bin_data.append(round(danger_percentage*100))    
+                        bin_data.append(round(danger_percentage*100) )   
 
                     #append data from one video to the mapping array
                     mapping_rt.append(bin_data)     

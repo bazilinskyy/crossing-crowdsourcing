@@ -237,11 +237,102 @@ class Analysis:
         else:
             fig.show()
 
-    def plot_plotly(self, df):
-        """Plot figures with analysis.
-
+    def filter_data(self, mapping_upd, variable=None, values=None):
+        """Filter data using inputs of choice.
         Args:
-            df (dataframe): dataframe with data.
+            mapping_upd (dataframe): updated dataframe with keypress data.
+            variable (array, optional): array with column names in which to look
+            values (array, optional): array with column data which to filter. 
+                                      position of items within variable and values should respectively belong together, and be same length
+        """
+        vid_counter = 0
+        #check if variable input is given. If not, take all data
+        if not variable:
+            for index, row in mapping_upd.iterrows():
+                #first iteration, add video 0 to list
+                if vid_counter == 0:
+                   data = row['bin_data']
+                #next iterations, add new list to keypress list.
+                else:
+                   data = [x+y for x,y in zip(data, row['bin_data'])]
+                vid_counter += 1
+        
+        #If variable input is given, check which variables and filter accordingly
+        else:
+            for i in range(0, len(variable)):
+                    mapping_upd = mapping_upd[mapping_upd[variable[i]] == values[i]]
+
+            for index, row in mapping_upd.iterrows():
+            #if plotting traffic rule oriented data:
+                    if vid_counter == 0:
+                        data = row['bin_data']
+                    else:
+                        data = [x+y for x,y in zip(data, row['bin_data'])]
+        
+                    vid_counter += 1
+
+        #store percentage of button presses in array
+        data = np.array(data)/(vid_counter-1)
+        return data
+
+    def plot_variables(self, data, titles, save_file=True):
+        """Take in a variable with values which are optional
+        Args:
+            data (array of keypress data): Array containing data of all classes to plot
+            titles (array of strings): Array with the same length as data, which are the plot names
+        """
+
+        #constants used to create a time array matching the data
+        res = cs.common.get_configs('resolution')
+        video_len = cs.common.get_configs('video_length')
+        times = np.array(range(res, video_len + res, res))/1000
+
+        logger.info('Creating visualisations with plotly.')
+        # plotly
+        fig = subplots.make_subplots(rows=1,
+                                     cols=1,
+                                     shared_xaxes=True)
+
+        # plot each variable in data
+        for i, variable in enumerate(data):
+            fig.add_trace(go.Scatter(y=variable,
+                                     mode='lines',
+                                     x=times,
+                                     name= titles[i]),
+                          row=1,
+                          col=1)
+        buttons = list([dict(label='All',
+                             method='update',
+                             args=[{'visible': [True] * 3 * len(data)},
+                                   {'title': 'All',
+                                    'showlegend': True}])])
+
+        for i, label in enumerate(data):
+            visibility = [[i == j] for j in range(len(data))]
+            visibility = [item for sublist in visibility for item in sublist]
+            button = dict(label= titles[i],
+                          method='update',
+                          args=[{'visible': visibility},
+                                {'title': titles[i]}])
+            buttons.append(button)
+
+        updatemenus = [dict(x=-0.15, buttons=buttons, showactive=True)]
+        # update layout
+        fig['layout']['title'] = 'All'
+        # fig['layout']['showlegend'] = True
+        fig['layout']['updatemenus'] = updatemenus
+        fig.update_layout(template=self.template)
+        # save file
+        if save_file:
+            self.save_plotly(fig, 'main_plot', self.folder)
+        # open it in localhost instead
+        else:
+            fig.show()
+
+    def plot_videos(self, mapping_upd, save_file=True):
+        """Plot figures of individual videos with analysis.
+        Args:
+            mapping_upd (dataframe): updated dataframe with keypress data.
         """
         # todo: plotly plot
         logger.info('Creating visualisations with plotly.')
@@ -249,30 +340,34 @@ class Analysis:
         fig = subplots.make_subplots(rows=1,
                                      cols=1,
                                      shared_xaxes=True)
-        times = [dt.datetime.fromtimestamp(time) for time in ride.time]
-        # variables to plot
-        variables = []
-        data = df[variables]
+
+        #times = [dt.datetime.fromtimestamp(time) for time in ride.time]
+        res = 100
+        video_len = 16000
+        times = np.array(range(res, video_len + res, res))/1000
+
+        # variables to plot not given. Use all
+        data = mapping_upd['bin_data']    
         # plot each variable in data
-        for i, variable in enumerate(variables):
-            fig.add_trace(go.Scatter(y=data,
+        for i, variable in enumerate(data):
+            fig.add_trace(go.Scatter(y=variable,
                                      mode='lines',
                                      x=times,
-                                     name=variable),
+                                     name= 'video-' + str(i)),
                           row=1,
                           col=1)
         buttons = list([dict(label='All',
                              method='update',
-                             args=[{'visible': [True] * 3 * len(variables)},
+                             args=[{'visible': [True] * 3 * len(data)},
                                    {'title': 'All',
                                     'showlegend': True}])])
-        for i, label in enumerate(variables):
-            visibility = [[i == j] for j in range(len(variables))]
+        for i, label in enumerate(data):
+            visibility = [[i == j] for j in range(len(data))]
             visibility = [item for sublist in visibility for item in sublist]
-            button = dict(label=label,
+            button = dict(label='video-' + str(i),
                           method='update',
                           args=[{'visible': visibility},
-                                {'title': label}])
+                                {'title': 'video-' + str(i)}])
             buttons.append(button)
 
         updatemenus = [dict(x=-0.15, buttons=buttons, showactive=True)]
@@ -398,34 +493,3 @@ class Analysis:
         plt.rc('ytick', labelsize=s_font)   # fontsize of the tick labels
         plt.rc('legend', fontsize=s_font)   # legend fontsize
         plt.rc('figure', titlesize=l_font)  # fontsize of the figure title
-
-    def keypress_plot(self, updated_mapping, res=10):
-        """Plot figures with analysis.
-
-        Args:
-            df (dataframe): updated mapping dataframe with bin_data included.
-        """
-        # todo: Add or update code to make plot of classes (combined data) 
-        # todo: Beautify plots
-        # todo: Save plots in output file
-
-        df = updated_mapping
-        video_len = cs.common.get_configs('video_len')
-        res = int((1/res)*1000)
-        #create time array based on resolution for plotting purposes
-        time_array = list(range(res, video_len + res, res))
-        
-        counter = 0
-        vid_nr = 0
-        for index, row in df.iterrows():
-            #retrieve keypress array from mapping
-            keypresses = row['bin_data']
-            vid_name = 'video-' + str(vid_nr)
-
-            #remove this later. in here for quickly showing data of first 2 videos.
-            if vid_nr < 2:
-                fig = go.Figure(data=[
-                             go.Bar(name = vid_name, x=time_array, y=keypresses)])
-                             #labels={keypresses: ' % button presses of total', time_array:'Time (ms)'})
-                #fig.show()
-            vid_nr += 1
