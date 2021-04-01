@@ -290,7 +290,8 @@ class Analysis:
             values (None, optional): Description
             save_file (bool, optional): Description.
         """
-        logger.info('Creating visualisations with plotly.')
+        logger.info('Creating visuatliation of keypresses based on values ' +
+                    '%s of variable %s .', variable, values)
         # plotly
         fig = subplots.make_subplots(rows=1,
                                      cols=1,
@@ -374,7 +375,50 @@ class Analysis:
             variables (TYPE): Description
             save_file (bool, optional): Description
         """
-        pass
+        logger.info('Creating visuatliation of keypresses based on ' +
+                    'variables %s .', variables)
+        # plotly
+        fig = subplots.make_subplots(rows=1,
+                                     cols=1,
+                                     shared_xaxes=True)
+        # calculate times
+        times = np.array(range(res, df['video_length'].max() + res, res)) / 1000  # noqa: E501
+        # if no values specified, plot value
+        if not values:
+            values = df[variable].unique()
+        # plot each variable in data
+        for i, value in enumerate(values):
+            fig.add_trace(go.Scatter(y=df['keypresses'].loc[df[variable] == value],  # noqa: E501
+                                     mode='lines',
+                                     x=times,
+                                     name=value),
+                          row=1,
+                          col=1)
+        buttons = list([dict(label='All',
+                             method='update',
+                             args=[{'visible': [True] * len(values)},
+                                   {'title': 'All',
+                                    'showlegend': True}])])
+        for i, value in enumerate(values):
+            visibility = [[i == j] for j in range(len(values))]
+            visibility = [item for sublist in visibility for item in sublist]  # noqa: E501
+            button = dict(label=value,
+                          method='update',
+                          args=[{'visible': visibility},
+                                {'title': value}])
+            buttons.append(button)
+        updatemenus = [dict(x=-0.15, buttons=buttons, showactive=True)]
+        fig['layout']['updatemenus'] = updatemenus
+
+        # update layout
+        fig['layout']['title'] = variable
+        fig.update_layout(template=self.template)
+        # save file
+        if save_file:
+            self.save_plotly(fig, 'main_plot', self.folder)
+        # open it in localhost instead
+        else:
+            fig.show()
 
     def save_plotly(self, fig, name, output_subdir):
         """
