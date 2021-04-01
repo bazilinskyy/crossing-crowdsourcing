@@ -350,11 +350,11 @@ class Heroku:
                     # loop through rows in column
                     for row in columnData:
                         # check if data is string to filter out nan data
-                        if type(row) == str:
+                        if type(row) == list:
                             # saving amount of times the video has been watched
                             counter_data += 1
                             # transform string data to list
-                            row = ast.literal_eval(row)
+                            #row = ast.literal_eval(row)
                             # if list contains only one value, append to
                             # rt_data
                             if len(row) == 1:
@@ -381,7 +381,7 @@ class Heroku:
                             if rt - res < data <= rt:
                                 # if data is found, up bin counter
                                 bin_counter = + 1
-                        print(vid, counter_data, video_len[counter_data], bin_counter, counter_data, len(bin_data))
+                        #print(vid, counter_data, video_len[counter_data], bin_counter, counter_data, len(bin_data))
                         danger_percentage = bin_counter / counter_data
                         bin_data.append(round(danger_percentage * 100))
 

@@ -61,7 +61,7 @@ if __name__ == '__main__':
     stimuli_mapped = heroku.read_mapping()
 
     mapping_updated = heroku.keypresses_td()
-    # mapping_updated.to_csv('mapping_updated.csv')
+    #mapping_updated.to_csv('mapping_updated.csv')
 
     # Outputs
     analysis = cs.analysis.Analysis()
