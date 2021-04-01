@@ -64,10 +64,15 @@ if __name__ == '__main__':
     stimuli_mapped = heroku.keypresses_td(RES)
     # Output
     analysis = cs.analysis.Analysis()
-    analysis.plot_variable(stimuli_mapped, RES, 'cross_look')  # 1 var, all values
-    analysis.plot_variable(stimuli_mapped, RES, 'cross_look', ['C_L', 'nC_L'])  # 1 var, certain values
-    # analysis.plot_variables(stimuli_mapped)  # all vars
-    # analysis.plot_variables(stimuli_mapped, ['cross_look', 'danger_b'])  # certain vars
+    # all keypresses
+    analysis.plot_keypresses(stimuli_mapped, RES)
+    # 1 var, all values
+    analysis.plot_variable(stimuli_mapped, RES, 'cross_look')
+    # 1 var, certain values
+    analysis.plot_variable(stimuli_mapped, RES, 'cross_look', ['C_L', 'nC_L'])
+    # multiple variables
+    analysis.plot_variables(stimuli_mapped, RES, [{'variable': 'cross_look', 'value': 'cross_look'},  # noqa: E501
+                                                  {'variable': 'traffic_rules', 'value': 'ped_crossing'}])  # noqa: E501
     # number of stimuli to process
     # num_stimuli = cs.common.get_configs('num_stimuli')
     # logger.info('Creating figures for {} stimuli.', num_stimuli)
@@ -82,7 +87,7 @@ if __name__ == '__main__':
     #                                     save_file=True)
     # # time of participation
     # analysis.hist_time_participation(appen_data, save_file=True)
-    # check ifç any figures are to be rendered
+    # check if any figures are to be rendered
     figures = [manager.canvas.figure
                for manager in
                matplotlib._pylab_helpers.Gcf.get_all_fig_managers()]
