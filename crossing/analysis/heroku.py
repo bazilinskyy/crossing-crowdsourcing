@@ -353,8 +353,6 @@ class Heroku:
                         if type(row) == list:
                             # saving amount of times the video has been watched
                             counter_data += 1
-                            # transform string data to list
-                            #row = ast.literal_eval(row)
                             # if list contains only one value, append to
                             # rt_data
                             if len(row) == 1:
@@ -381,22 +379,16 @@ class Heroku:
                             if rt - res < data <= rt:
                                 # if data is found, up bin counter
                                 bin_counter = + 1
-                        #print(vid, counter_data, video_len[counter_data], bin_counter, counter_data, len(bin_data))
                         danger_percentage = bin_counter / counter_data
                         bin_data.append(round(danger_percentage * 100))
 
                     # append data from one video to the mapping array
                     mapping_rt.append(bin_data)
                     break
-
-        # Add column to old mapping file
-        updated_mapping = self.mapping
-        updated_mapping['bin_data'] = mapping_rt
-
-        # update own objects' mapping
-        self.mapping = updated_mapping
+        
+        self.mapping['bin_data'] = mapping_rt
         # return new mapping
-        return updated_mapping
+        return self.mapping
 
     def filter_data(self, df):
         """
