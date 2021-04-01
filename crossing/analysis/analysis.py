@@ -291,10 +291,11 @@ class Analysis:
 
         # constants used to create a time array matching the data
         res = cs.common.get_configs('resolution')
-        video_len = cs.common.get_configs('video_length')
+        video_len = self.mapping['video_length']
+        # todo: support different length of stimuli
         times = np.array(range(res, video_len + res, res)) / 1000
 
-        logger.info('Creating visualisations with plotly.')
+        logger.info('Creating visualisations of keypress data for variables.')
         # plotly
         fig = subplots.make_subplots(rows=1,
                                      cols=1,
