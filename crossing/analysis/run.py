@@ -82,7 +82,7 @@ if __name__ == '__main__':
     #                                     save_file=True)
     # # time of participation
     # analysis.hist_time_participation(appen_data, save_file=True)
-    # check if any figures are to be rendered
+    # check ifç any figures are to be rendered
     figures = [manager.canvas.figure
                for manager in
                matplotlib._pylab_helpers.Gcf.get_all_fig_managers()]
