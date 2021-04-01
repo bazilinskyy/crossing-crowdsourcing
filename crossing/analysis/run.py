@@ -62,7 +62,10 @@ if __name__ == '__main__':
 
     mapping_updated = heroku.keypresses_td()
     #mapping_updated.to_csv('mapping_updated.csv')
-    
+    # analysis.plot_variable(df, 'cross_look')  # 1 var, all values
+    # analysis.plot_variable(df, 'cross_look', ['C_L', 'nC_L'])  # 1 var, certain values
+    analysis.plot_variables(df)  # all vars
+    analysis.plot_variables(df, ['cross_look', 'danger_b'])  # certain vars
     # Outputs
     analysis = cs.analysis.Analysis()
 
