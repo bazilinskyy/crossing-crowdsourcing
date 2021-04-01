@@ -6,9 +6,6 @@ import numpy as np
 from tqdm import tqdm
 import re
 import ast
-from shapely.geometry import Point
-from shapely.geometry.polygon import Polygon
-from collections import Counter
 
 import crossing as cs
 
@@ -160,7 +157,6 @@ class Heroku:
                                     else:
                                         # previous values found
                                         dict_row[stim_name + '-dur'].append(dur)  # noqa: E501
-
                     # keypresses
                     if 'rts' in data_cell.keys() and stim_name != '':
                         # record given keypresses
@@ -326,28 +322,25 @@ class Heroku:
         """Process keypresses for resolution self.res.
 
         Returns:
-            updated_mapping: updated mapping df.
+            mapping: updated mapping df.
         """
-        # retrieve heruko_data from object
-        df = self.heroku_data
         # get info from config file
         num_stimuli = cs.common.get_configs('num_stimuli')
-        video_len = self.mapping['video_length'].max()
-        # from resolution to length of bins(ms)
-        vid_names = []
-        for i in range(0, num_stimuli):
-            vid_names.append('video_' + str(i) + '-rt')
         # array to store all binned rt data in
         mapping_rt = []
         # loop through all videos
-        for vid in vid_names:
+        for i in range(0, num_stimuli):
+            print(i)
+            video_rt = 'video_' + str(i) + '-rt'
+            video_len = self.mapping.loc['video_' + str(i)]['video_length']
             rt_data = []
             counter_data = 0
-            for (columnName, columnData) in df.iteritems():
+            for (columnName, columnData) in self.heroku_data.iteritems():
                 # find the right column to loop through
-                if vid == columnName:
+                if video_rt == columnName:
                     # loop through rows in column
                     for row in columnData:
+                        print(row)
                         # check if data is string to filter out nan data
                         if type(row) == list:
                             # saving amount of times the video has been watched
@@ -365,9 +358,7 @@ class Heroku:
                                     if row[i] - row[i - 1] > 35:
                                         # append buttonpress data to rt array
                                         rt_data.append(row[i])
-                            # loop through array data
-
-                    # if all data for one vid was found, divide them in bins
+                    # if all data for one video was found, divide them inbins
                     keypresses = []
                     # loop over all bins, dependent on resolution
                     for rt in range(self.res, video_len + self.res, self.res):
@@ -380,7 +371,6 @@ class Heroku:
                                 bin_counter = + 1
                         danger_percentage = bin_counter / counter_data
                         keypresses.append(round(danger_percentage * 100))
-
                     # append data from one video to the mapping array
                     mapping_rt.append(keypresses)
                     break

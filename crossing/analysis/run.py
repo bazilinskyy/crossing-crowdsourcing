@@ -70,7 +70,7 @@ if __name__ == '__main__':
                             stimuli_mapped,
                             'mapping with keypress data')
     else:
-        stimuli_mapped = gz.common.load_from_p(file_mapping,
+        stimuli_mapped = cs.common.load_from_p(file_mapping,
                                                'mapping of stimuli')
     # Output
     analysis = cs.analysis.Analysis(res=RES)

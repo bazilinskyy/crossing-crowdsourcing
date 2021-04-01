@@ -121,6 +121,8 @@ class Analysis:
             save_file (bool, optional): flag for saving an html file with plot.
         """
         logger.info('Creating histogram of time of study.')
+        # cater for missing country
+        df['country'] = df['country'].fillna('NaN')
         # create figure
         if nbins:
             fig = px.histogram(df,
@@ -257,6 +259,9 @@ class Analysis:
         # add all data together. Must be converted to np array to add together
         kp_data = np.array([0] * len(times))
         for i, data in enumerate(df['keypresses']):
+            # append zeros to match longest duration
+            data = np.pad(data, (0, len(times) - len(data)), 'constant')
+            # add data
             kp_data += np.array(data)
         kp_data = (kp_data / i)
         # plot keypresses
@@ -285,14 +290,12 @@ class Analysis:
             res (TYPE): Description
             save_file (bool, optional): Description
         """
-        # name of video file
-        video_file = stimulus + '.' + extention
         # extract video length
-        video_len = df.loc[video_file]['video_length']
+        video_len = df.loc[stimulus]['video_length']
         # calculate times
         times = np.array(range(self.res, video_len + self.res, self.res)) / 1000  # noqa: E501
         # plot keypresses
-        fig = px.line(y=df.loc[video_file]['keypresses'],
+        fig = px.line(y=df.loc[stimulus]['keypresses'],
                       x=times,
                       title='Keypresses for stimulus ' + stimulus)
         # update layout
@@ -430,7 +433,8 @@ class Analysis:
         # save file
         if save_file:
             self.save_plotly(fig,
-                             'kp_' + variable + '-' + ','.join(values),
+                             'kp_' + variable + '-' +
+                             ','.join(str(val) for val in values),
                              self.folder)
         # open it in localhost instead
         else:
@@ -538,6 +542,9 @@ class Analysis:
         # add all data together. Must be converted to np array to add together
         kp_data = np.array([0] * len(times))
         for i, data in enumerate(df['keypresses']):
+            # append zeros to match longest duration
+            data = np.pad(data, (0, len(times) - len(data)), 'constant')
+            # add data
             kp_data += np.array(data)
         kp_data = (kp_data / i)
         # plot keypresses
