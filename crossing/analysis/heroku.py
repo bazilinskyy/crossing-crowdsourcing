@@ -353,8 +353,6 @@ class Heroku:
                         if type(row) == list:
                             # saving amount of times the video has been watched
                             counter_data += 1
-                            # transform string data to list
-                            #row = ast.literal_eval(row)
                             # if list contains only one value, append to
                             # rt_data
                             if len(row) == 1:
@@ -387,7 +385,6 @@ class Heroku:
                     # append data from one video to the mapping array
                     mapping_rt.append(keypresses)
                     break
-
         # Add column to old mapping file
         updated_mapping = self.mapping
         updated_mapping['keypresses'] = mapping_rt
@@ -395,7 +392,7 @@ class Heroku:
         # update own objects' mapping
         self.mapping = updated_mapping
         # return new mapping
-        return updated_mapping
+        return self.mapping
 
     def filter_data(self, df):
         """
