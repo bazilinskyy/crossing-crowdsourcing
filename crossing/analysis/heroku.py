@@ -23,6 +23,7 @@ class Heroku:
     files_data = []  # list of files with heroku data
     heroku_data = pd.DataFrame()  # pandas dataframe with extracted data
     mapping = pd.DataFrame()  # pandas dataframe with mapping
+    res = 0  # resolution for keypress data
     save_p = False  # save data as pickle file
     load_p = False  # load data as pickle file
     save_csv = False  # save data as csv file
@@ -48,10 +49,12 @@ class Heroku:
     default_dur = 0
 
     def __init__(self,
+                 res: int,
                  files_data: list,
                  save_p: bool,
                  load_p: bool,
                  save_csv: bool):
+        self.res = res
         self.files_data = files_data
         self.save_p = save_p
         self.load_p = load_p
@@ -189,7 +192,7 @@ class Heroku:
                                      responses)
                         # extract pressed keys and rt values
                         responses = ast.literal_eval(re.search('({.+})',
-                                                               responses).group(0))
+                                                               responses).group(0))  # noqa: E501
                         # unpack questions and answers
                         questions = []
                         answers = []
@@ -245,7 +248,7 @@ class Heroku:
                                      responses)
                         # extract pressed keys and rt values
                         responses = ast.literal_eval(re.search('({.+})',
-                                                               responses).group(0))
+                                                               responses).group(0))  # noqa: E501
                         # unpack questions and answers
                         questions = []
                         answers = []
@@ -319,10 +322,8 @@ class Heroku:
         # return mapping as a dataframe
         return df
 
-    def keypresses_td(self, res):
-        """Process keypress for resolution res.
-        Args:
-            res (int, optional): resolution of keypresses (per second).
+    def process_kp(self):
+        """Process keypresses for resolution self.res.
 
         Returns:
             updated_mapping: updated mapping df.
@@ -333,7 +334,6 @@ class Heroku:
         num_stimuli = cs.common.get_configs('num_stimuli')
         video_len = self.mapping['video_length'].max()
         # from resolution to length of bins(ms)
-
         vid_names = []
         for i in range(0, num_stimuli):
             vid_names.append('video_' + str(i) + '-rt')
@@ -370,12 +370,12 @@ class Heroku:
                     # if all data for one vid was found, divide them in bins
                     keypresses = []
                     # loop over all bins, dependent on resolution
-                    for rt in range(res, video_len + res, res):
+                    for rt in range(self.res, video_len + self.res, self.res):
                         bin_counter = 0
                         for data in rt_data:
                             # go through all video data to find all data within
                             # specific bin
-                            if rt - res < data <= rt:
+                            if rt - self.res < data <= rt:
                                 # if data is found, up bin counter
                                 bin_counter = + 1
                         danger_percentage = bin_counter / counter_data
@@ -384,9 +384,13 @@ class Heroku:
                     # append data from one video to the mapping array
                     mapping_rt.append(keypresses)
                     break
-        
-        #update own mapping to include keypress data
-        self.mapping['keypresses'] = mapping_rt 
+        # update own mapping to include keypress data
+        self.mapping['keypresses'] = mapping_rt
+        # save to csv
+        if self.save_csv:
+            # save to csv
+            self.mapping.to_csv(cs.settings.output_dir + '/' +
+                                self.file_mapping_csv + '.csv')
         # return new mapping
         return self.mapping
 
