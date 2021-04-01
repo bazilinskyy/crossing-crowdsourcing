@@ -330,7 +330,6 @@ class Heroku:
         mapping_rt = []
         # loop through all videos
         for i in range(0, num_stimuli):
-            print(i)
             video_rt = 'video_' + str(i) + '-rt'
             video_len = self.mapping.loc['video_' + str(i)]['video_length']
             rt_data = []
@@ -340,7 +339,6 @@ class Heroku:
                 if video_rt == columnName:
                     # loop through rows in column
                     for row in columnData:
-                        print(row)
                         # check if data is string to filter out nan data
                         if type(row) == list:
                             # saving amount of times the video has been watched
