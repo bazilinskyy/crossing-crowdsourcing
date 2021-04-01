@@ -371,7 +371,7 @@ class Heroku:
                             # loop through array data
 
                     # if all data for one vid was found, divide them in bins
-                    bin_data = []
+                    keypresses = []
                     # loop over all bins, dependent on resolution
                     for rt in range(res, video_len[counter_data] + res, res):
                         bin_counter = 0
@@ -381,17 +381,16 @@ class Heroku:
                             if rt - res < data <= rt:
                                 # if data is found, up bin counter
                                 bin_counter = + 1
-                        #print(vid, counter_data, video_len[counter_data], bin_counter, counter_data, len(bin_data))
                         danger_percentage = bin_counter / counter_data
-                        bin_data.append(round(danger_percentage * 100))
+                        keypresses.append(round(danger_percentage * 100))
 
                     # append data from one video to the mapping array
-                    mapping_rt.append(bin_data)
+                    mapping_rt.append(keypresses)
                     break
 
         # Add column to old mapping file
         updated_mapping = self.mapping
-        updated_mapping['bin_data'] = mapping_rt
+        updated_mapping['keypresses'] = mapping_rt
 
         # update own objects' mapping
         self.mapping = updated_mapping
