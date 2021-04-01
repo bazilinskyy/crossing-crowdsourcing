@@ -189,7 +189,7 @@ class Heroku:
                                      responses)
                         # extract pressed keys and rt values
                         responses = ast.literal_eval(re.search('({.+})',
-                                                     responses).group(0))
+                                                               responses).group(0))
                         # unpack questions and answers
                         questions = []
                         answers = []
@@ -245,7 +245,7 @@ class Heroku:
                                      responses)
                         # extract pressed keys and rt values
                         responses = ast.literal_eval(re.search('({.+})',
-                                                     responses).group(0))
+                                                               responses).group(0))
                         # unpack questions and answers
                         questions = []
                         answers = []
@@ -293,7 +293,7 @@ class Heroku:
             df.insert(0, 'worker_code', worker_code_col)
         # save to pickle
         if self.save_p:
-            cs.common.save_to_p(self.file_p,  df, 'heroku data')
+            cs.common.save_to_p(self.file_p, df, 'heroku data')
         # save to csv
         if self.save_csv:
             # todo: check whith index=False is needed here
@@ -327,69 +327,76 @@ class Heroku:
         Returns:
             updated_mapping: updated mapping df.
         """
-        #retrieve heruko_data from object
-        df = pd.read_csv(cs.common.get_configs('heroku_output'))
+        # retrieve heruko_data from object
+        df = self.heroku_data
+        # get info from config file
         num_stimuli = cs.common.get_configs('num_stimuli')
-        video_len = cs.common.get_configs('video_length')
-        #from resolution to length of bins(ms)
-        res = int((1/res)*1000)
+        # todo: use dynamic video_length instead of hardcoded to support studies with differnt stimulus duration
+        video_len = self.mapping['video_length']
+        # from resolution to length of bins(ms)
+        res = int((1 / res) * 1000)
 
         vid_names = []
-        for i in range(0,num_stimuli):
+        for i in range(0, num_stimuli):
             vid_names.append('video_' + str(i) + '-rt')
-        #array to store all binned rt data in
+        # array to store all binned rt data in
         mapping_rt = []
-        #loop through all videos
+        # loop through all videos
         for vid in vid_names:
             rt_data = []
             counter_data = 0
             for (columnName, columnData) in df.iteritems():
-                #find the right column to loop through
+                # find the right column to loop through
                 if vid == columnName:
-                    #loop through rows in column
+                    # loop through rows in column
                     for row in columnData:
-                        #check if data is string to filter out nan data
+                        # check if data is string to filter out nan data
                         if type(row) == str:
-                            #saving amount of times the video has been watched
+                            # saving amount of times the video has been watched
                             counter_data += 1
-                            #transform string data to list
+                            # transform string data to list
                             row = ast.literal_eval(row)
-                            #if list contains only one value, append to rt_data
-                            if len(row)==1:
+                            # if list contains only one value, append to
+                            # rt_data
+                            if len(row) == 1:
                                 rt_data.append(row[0])
-                            #if list contains more then one value, go through list to remove keyholds
-                            elif len(row)>1:
-                                for i in range(1,len(row)):
-                                    #if time between 2 stimuli is more then 35 ms, add to array (no hold)
-                                    if row[i]-row[i-1] > 35:
-                                        #append buttonpress data to rt array
+                            # if list contains more then one value, go through
+                            # list to remove keyholds
+                            elif len(row) > 1:
+                                for i in range(1, len(row)):
+                                    # if time between 2 stimuli is more then
+                                    # 35 ms, add to array (no hold)
+                                    if row[i] - row[i - 1] > 35:
+                                        # append buttonpress data to rt array
                                         rt_data.append(row[i])
-                            #loop through array data
-                    
-                    #if all data for one vid was found, divide them in bins   
+                            # loop through array data
+
+                    # if all data for one vid was found, divide them in bins
                     bin_data = []
-                    #loop over all bins, dependent on resolution
-                    for rt in range(res, video_len + res, res):
+                    # loop over all bins, dependent on resolution
+                    for rt in range(res, video_len[counter_data] + res, res):
                         bin_counter = 0
                         for data in rt_data:
-                            #go through all video data to find all data within specific bin
-                            if rt-res < data <= rt:
-                                #if data is found, up bin counter
-                                bin_counter =+ 1
-                        danger_percentage = bin_counter/counter_data
-                        bin_data.append(round(danger_percentage*100) )   
+                            # go through all video data to find all data within
+                            # specific bin
+                            if rt - res < data <= rt:
+                                # if data is found, up bin counter
+                                bin_counter = + 1
+                        print(counter_data, bin_counter, counter_data)
+                        danger_percentage = bin_counter / counter_data
+                        bin_data.append(round(danger_percentage * 100))
 
-                    #append data from one video to the mapping array
-                    mapping_rt.append(bin_data)     
+                    # append data from one video to the mapping array
+                    mapping_rt.append(bin_data)
                     break
 
-        #Add column to old mapping file 
-        updated_mapping = self.mapping  
+        # Add column to old mapping file
+        updated_mapping = self.mapping
         updated_mapping['bin_data'] = mapping_rt
 
-        #update own objects' mapping
+        # update own objects' mapping
         self.mapping = updated_mapping
-        #return new mapping
+        # return new mapping
         return updated_mapping
 
     def filter_data(self, df):
