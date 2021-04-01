@@ -280,9 +280,8 @@ class Analysis:
     #     data = np.array(data) / (vid_counter - 1)
     #     return data
 
-    def plot_variable(self, df, res, variable, values=None, save_file=True):
+    def plot_variable(self, df, res, variable, values=None, save_file=False):
         """Plot figures of individual videos with analysis.
-
         Args:
             df (TYPE): updated dataframe with keypress data.
             res (TYPE): Description
@@ -292,36 +291,52 @@ class Analysis:
         """
         logger.info('Creating visuatliation of keypresses based on values ' +
                     '%s of variable %s .', variable, values)
-        # plotly
-        fig = subplots.make_subplots(rows=1,
-                                     cols=1,
-                                     shared_xaxes=True)
+        
         # calculate times
         times = np.array(range(res, df['video_length'].max() + res, res)) / 1000  # noqa: E501
         # if no values specified, plot value
         if not values:
             values = df[variable].unique()
+            print(values)
+
+        dict_arr = []
+        for data in values:
+            temp_df = df[df[variable] == data]
+            keypress_data = np.array([0] * len(times))
+            for index, row in temp_df.iterrows():
+                keypress_data = keypress_data + np.array(row['keypresses'])
+            dict_arr.append({data: keypress_data/len(keypress_data)})
+
+        # plotly
+        fig = subplots.make_subplots(rows=1,
+                                     cols=1,
+                                     shared_xaxes=True)
+
         # plot each variable in data
-        for i, value in enumerate(values):
-            fig.add_trace(go.Scatter(y=df['keypresses'].loc[df[variable] == value],  # noqa: E501
-                                     mode='lines',
-                                     x=times,
-                                     name=value),
-                          row=1,
-                          col=1)
+        for dicts in dict_arr:
+            for key, value in dicts.items():
+                fig.add_trace(go.Scatter(y=value,  # noqa: E501
+                                         mode='lines',
+                                         x=times,
+                                         name=key),
+                              row=1,
+                              col=1)
         buttons = list([dict(label='All',
                              method='update',
                              args=[{'visible': [True] * len(values)},
                                    {'title': 'All',
                                     'showlegend': True}])])
-        for i, value in enumerate(values):
-            visibility = [[i == j] for j in range(len(values))]
-            visibility = [item for sublist in visibility for item in sublist]  # noqa: E501
-            button = dict(label=value,
-                          method='update',
-                          args=[{'visible': visibility},
-                                {'title': value}])
-            buttons.append(button)
+        for dicts in dict_arr:
+            i = 0
+            for key, value in dicts.items():
+                visibility = [[i == j] for j in range(len(value))]
+                visibility = [item for sublist in visibility for item in sublist]  # noqa: E501
+                button = dict(label= key,
+                              method='update',
+                              args=[{'visible': visibility},
+                                    {'title': key}])
+                buttons.append(button)
+                i += 1
         updatemenus = [dict(x=-0.15, buttons=buttons, showactive=True)]
         fig['layout']['updatemenus'] = updatemenus
 
@@ -335,7 +350,7 @@ class Analysis:
         else:
             fig.show()
 
-    def plot_keypresses(self, df, res, save_file=True):
+    def plot_keypresses(self, df, res, save_file=False):
         """Take in a variable with values which are optional
         Args:
             data (array of keypress data): Array containing data of all classes
@@ -343,14 +358,22 @@ class Analysis:
             titles (array of strings): Array with the same length as data,
                                        which are the plot names.
         """
+        # calculate times
+        times = np.array(range(res, df['video_length'].max() + res, res)) / 1000  # noqa: E501
+        
+        # add all data together. Must be converted to np array to add together
+        keypress_data = np.array([0] * len(times))
+        for i, data in enumerate(df['keypresses']):
+            keypress_data += np.array(data)
+        keypress_data = (keypress_data/i)
+
         logger.info('Creating visualisations of keypresses for all data.')
         # plotly
         fig = subplots.make_subplots(rows=1,
                                      cols=1,
                                      shared_xaxes=True)
-        # calculate times
-        times = np.array(range(res, df['video_length'].max() + res, res)) / 1000  # noqa: E501
-        fig.add_trace(go.Scatter(y=df['keypresses'],
+
+        fig.add_trace(go.Scatter(y=keypress_data,
                                  mode='lines',
                                  x=times,
                                  name='keypresses'),
@@ -366,7 +389,62 @@ class Analysis:
         else:
             fig.show()
 
-    def plot_variables(self, df, res, variables, save_file=True):
+    def plot_videos(self, df, res, save_file=False):
+        """Plot keypresses with multiple variables as a filter.
+
+        Args:
+            df (TYPE): Description
+            res (TYPE): Description
+            save_file (bool, optional): Description
+        """
+        # calculate times
+        times = np.array(range(res, df['video_length'].max() + res, res)) / 1000
+
+        # plotly
+        fig = subplots.make_subplots(rows=1,
+                                     cols=1,
+                                     shared_xaxes=True)
+        # noqa: E501
+        # if no values specified, plot value
+        # plot each variable in data
+        for index, row in df.iterrows():
+            values = row['keypresses']
+            fig.add_trace(go.Scatter(y=values,  # noqa: E501
+                                     mode='lines',
+                                     x=times,
+                                     name=index),
+                          row=1,
+                          col=1)
+            buttons = list([dict(label='All',
+                                 method='update',
+                                 args=[{'visible': [True] * len(values)},
+                                       {'title': 'All',
+                                        'showlegend': True}])])
+        for index, row in df.iterrows():
+            values = row['keypresses']
+            visibility = [[index == j] for j in range(len(values))]
+            visibility = [item for sublist in visibility for item in sublist]  # noqa: E501
+            button = dict(label=index,
+                          method='update',
+                          args=[{'visible': visibility},
+                                {'title':index}])
+            buttons.append(button)
+
+        updatemenus = [dict(x=-0.15, buttons=buttons, showactive=True)]
+        fig['layout']['updatemenus'] = updatemenus
+
+        # update layout
+        fig['layout']['title'] = 'Individual videos'
+        fig.update_layout(template=self.template)
+        # save file
+        if save_file:
+            self.save_plotly(fig, 'main_plot', self.folder)
+        # open it in localhost instead
+        else:
+            fig.show()
+
+
+    def plot_variables(self, df, res, var_dict, save_file=False):
         """Plot keypresses with multiple variables as a filter.
 
         Args:

@@ -319,7 +319,7 @@ class Heroku:
         # return mapping as a dataframe
         return df
 
-    def keypresses_td(self, res=10):
+    def keypresses_td(self, res):
         """Process keypress for resolution res.
         Args:
             res (int, optional): resolution of keypresses (per second).
@@ -331,9 +331,8 @@ class Heroku:
         df = self.heroku_data
         # get info from config file
         num_stimuli = cs.common.get_configs('num_stimuli')
-        video_len = self.mapping['video_length']
+        video_len = self.mapping['video_length'].max()
         # from resolution to length of bins(ms)
-        res = int((1 / res) * 1000)
 
         vid_names = []
         for i in range(0, num_stimuli):
@@ -371,7 +370,7 @@ class Heroku:
                     # if all data for one vid was found, divide them in bins
                     keypresses = []
                     # loop over all bins, dependent on resolution
-                    for rt in range(res, video_len[counter_data] + res, res):
+                    for rt in range(res, video_len + res, res):
                         bin_counter = 0
                         for data in rt_data:
                             # go through all video data to find all data within
@@ -385,12 +384,9 @@ class Heroku:
                     # append data from one video to the mapping array
                     mapping_rt.append(keypresses)
                     break
-        # Add column to old mapping file
-        updated_mapping = self.mapping
-        updated_mapping['keypresses'] = mapping_rt
-
-        # update own objects' mapping
-        self.mapping = updated_mapping
+        
+        #update own mapping to include keypress data
+        self.mapping['keypresses'] = mapping_rt 
         # return new mapping
         return self.mapping
 

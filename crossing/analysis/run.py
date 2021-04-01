@@ -65,13 +65,15 @@ if __name__ == '__main__':
     # Output
     analysis = cs.analysis.Analysis()
     # all keypresses
-    analysis.plot_keypresses(stimuli_mapped, RES)
+    analysis.plot_keypresses(stimuli_mapped, RES) 
+    # keypresses of individual videos
+    analysis.plot_videos(stimuli_mapped,RES) 
     # 1 var, all values
-    analysis.plot_variable(stimuli_mapped, RES, 'cross_look')
+    analysis.plot_variable(stimuli_mapped, RES, 'cross_look') 
     # 1 var, certain values
-    analysis.plot_variable(stimuli_mapped, RES, 'cross_look', ['C_L', 'nC_L'])
+    analysis.plot_variable(stimuli_mapped, RES, 'cross_look', ['C_L', 'nC_L']) 
     # multiple variables
-    analysis.plot_variables(stimuli_mapped, RES, [{'variable': 'cross_look', 'value': 'cross_look'},  # noqa: E501
+    analysis.plot_variables(stimuli_mapped, RES, [{'variable': 'cross_look', 'value': 'C_L'},  # noqa: E501
                                                   {'variable': 'traffic_rules', 'value': 'ped_crossing'}])  # noqa: E501
     # number of stimuli to process
     # num_stimuli = cs.common.get_configs('num_stimuli')
