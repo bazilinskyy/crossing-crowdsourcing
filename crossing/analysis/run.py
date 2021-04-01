@@ -61,25 +61,30 @@ if __name__ == '__main__':
     stimuli_mapped = heroku.read_mapping()
 
     mapping_updated = heroku.keypresses_td()
-    #mapping_updated.to_csv('mapping_updated.csv')
+    # mapping_updated.to_csv('mapping_updated.csv')
 
     # Outputs
     analysis = cs.analysis.Analysis()
 
-    #analysis.keypress_plot(mapping_updated)
-    #analysis.plot_variable(mapping_updated)  # all vars
+    # analysis.keypress_plot(mapping_updated)
+    # analysis.plot_variable(mapping_updated)  # all vars
 
-    #Filter data to inputs of choice and append to array
+    # Filter data to inputs of choice and append to array
     data = []
     data.append(analysis.filter_data(mapping_updated))
-    data.append(analysis.filter_data(mapping_updated, ['cross_look','traffic_rules'],['nC_L', 'none']))
-    data.append(analysis.filter_data(mapping_updated, ['cross_look','traffic_rules'],['C_L', 'none']))
-    data.append(analysis.filter_data(mapping_updated, ['traffic_rules'],['stop_sign']))
-    data.append(analysis.filter_data(mapping_updated, ['traffic_rules'],['ped_crossing']))
-    titles = ['All data', 'Not crossing & Looking', 'Crossing & Looking', 'Stop-signs', 'Pedestrian_crossing']
+    data.append(analysis.filter_data(mapping_updated, [
+                'cross_look', 'traffic_rules'], ['nC_L', 'none']))
+    data.append(analysis.filter_data(mapping_updated, [
+                'cross_look', 'traffic_rules'], ['C_L', 'none']))
+    data.append(analysis.filter_data(
+        mapping_updated, ['traffic_rules'], ['stop_sign']))
+    data.append(analysis.filter_data(mapping_updated,
+                                     ['traffic_rules'], ['ped_crossing']))
+    titles = ['All data', 'Not crossing & Looking',
+              'Crossing & Looking', 'Stop-signs', 'Pedestrian_crossing']
     analysis.plot_variables(data, titles)
 
-    #analysis.keypress_plot_indiv(mapping_updated)
+    # analysis.keypress_plot_indiv(mapping_updated)
 
     # number of stimuli to process
     num_stimuli = cs.common.get_configs('num_stimuli')

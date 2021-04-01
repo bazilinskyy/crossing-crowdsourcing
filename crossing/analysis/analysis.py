@@ -241,51 +241,58 @@ class Analysis:
         """Filter data using inputs of choice.
         Args:
             mapping_upd (dataframe): updated dataframe with keypress data.
-            variable (array, optional): array with column names in which to look
-            values (array, optional): array with column data which to filter. 
-                                      position of items within variable and values should respectively belong together, and be same length
+            variable (array, optional): array with column names in which to
+                                        look.
+            values (array, optional): array with column data which to filter.
+                                      position of items within variable and
+                                      values should respectively belong
+                                      together, and be same length
         """
         vid_counter = 0
-        #check if variable input is given. If not, take all data
+        # check if variable input is given. If not, take all data
         if not variable:
             for index, row in mapping_upd.iterrows():
-                #first iteration, add video 0 to list
+                # first iteration, add video 0 to list
                 if vid_counter == 0:
-                   data = row['bin_data']
-                #next iterations, add new list to keypress list.
+                    data = row['bin_data']
+                # next iterations, add new list to keypress list.
                 else:
-                   data = [x+y for x,y in zip(data, row['bin_data'])]
+                    data = [x + y for x, y in zip(data, row['bin_data'])]
                 vid_counter += 1
-        
-        #If variable input is given, check which variables and filter accordingly
+
+        # If variable input is given, check which variables and filter
+        # accordingly
         else:
             for i in range(0, len(variable)):
-                    mapping_upd = mapping_upd[mapping_upd[variable[i]] == values[i]]
+                mapping_upd = mapping_upd[mapping_upd[variable[i]]
+                                          == values[i]]
 
             for index, row in mapping_upd.iterrows():
-            #if plotting traffic rule oriented data:
-                    if vid_counter == 0:
-                        data = row['bin_data']
-                    else:
-                        data = [x+y for x,y in zip(data, row['bin_data'])]
-        
-                    vid_counter += 1
+                # if plotting traffic rule oriented data:
+                if vid_counter == 0:
+                    data = row['bin_data']
+                else:
+                    data = [x + y for x, y in zip(data, row['bin_data'])]
 
-        #store percentage of button presses in array
-        data = np.array(data)/(vid_counter-1)
+                vid_counter += 1
+
+        # store percentage of button presses in array
+        data = np.array(data) / (vid_counter - 1)
         return data
 
     def plot_variables(self, data, titles, save_file=True):
         """Take in a variable with values which are optional
         Args:
-            data (array of keypress data): Array containing data of all classes to plot
-            titles (array of strings): Array with the same length as data, which are the plot names
+            data (array of keypress data): Array containing data of all classes
+                                           to plot.
+            titles (array of strings): Array with the same length as data,
+                                       which are the plot names.
         """
 
-        #constants used to create a time array matching the data
+        # constants used to create a time array matching the data
         res = cs.common.get_configs('resolution')
         video_len = cs.common.get_configs('video_length')
-        times = np.array(range(res, video_len + res, res))/1000
+        times = np.array(range(res, video_len + res, res)) / 1000
 
         logger.info('Creating visualisations with plotly.')
         # plotly
@@ -298,7 +305,7 @@ class Analysis:
             fig.add_trace(go.Scatter(y=variable,
                                      mode='lines',
                                      x=times,
-                                     name= titles[i]),
+                                     name=titles[i]),
                           row=1,
                           col=1)
         buttons = list([dict(label='All',
@@ -310,7 +317,7 @@ class Analysis:
         for i, label in enumerate(data):
             visibility = [[i == j] for j in range(len(data))]
             visibility = [item for sublist in visibility for item in sublist]
-            button = dict(label= titles[i],
+            button = dict(label=titles[i],
                           method='update',
                           args=[{'visible': visibility},
                                 {'title': titles[i]}])
@@ -341,19 +348,19 @@ class Analysis:
                                      cols=1,
                                      shared_xaxes=True)
 
-        #times = [dt.datetime.fromtimestamp(time) for time in ride.time]
+        # times = [dt.datetime.fromtimestamp(time) for time in ride.time]
         res = 100
         video_len = 16000
-        times = np.array(range(res, video_len + res, res))/1000
+        times = np.array(range(res, video_len + res, res)) / 1000
 
         # variables to plot not given. Use all
-        data = mapping_upd['bin_data']    
+        data = mapping_upd['bin_data']
         # plot each variable in data
         for i, variable in enumerate(data):
             fig.add_trace(go.Scatter(y=variable,
                                      mode='lines',
                                      x=times,
-                                     name= 'video-' + str(i)),
+                                     name='video-' + str(i)),
                           row=1,
                           col=1)
         buttons = list([dict(label='All',
