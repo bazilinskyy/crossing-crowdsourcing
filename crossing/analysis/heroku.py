@@ -333,6 +333,7 @@ class Heroku:
         num_stimuli = cs.common.get_configs('num_stimuli')
         # todo: use dynamic video_length instead of hardcoded to support studies with differnt stimulus duration
         video_len = self.mapping['video_length']
+        print(video_len)
         # from resolution to length of bins(ms)
         res = int((1 / res) * 1000)
 
@@ -382,7 +383,7 @@ class Heroku:
                             if rt - res < data <= rt:
                                 # if data is found, up bin counter
                                 bin_counter = + 1
-                        print(counter_data, bin_counter, counter_data)
+                        print(counter_data, video_len[counter_data], bin_counter, counter_data)
                         danger_percentage = bin_counter / counter_data
                         bin_data.append(round(danger_percentage * 100))
 
