@@ -397,7 +397,7 @@ class Heroku:
             # append data from one video to the mapping array
             mapping_rt.append(kp_mean)
         # update own mapping to include keypress data
-        self.mapping['keypresses'] = mapping_rt
+        self.mapping['kp'] = mapping_rt
         # save to csv
         if self.save_csv:
             # save to csv

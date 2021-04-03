@@ -258,7 +258,7 @@ class Analysis:
         times = np.array(range(self.res, df['video_length'].max() + self.res, self.res)) / 1000  # noqa: E501
         # add all data together. Must be converted to np array to add together
         kp_data = np.array([0.0] * len(times))
-        for i, data in enumerate(df['keypresses']):
+        for i, data in enumerate(df['kp']):
             # append zeros to match longest duration
             data = np.pad(data, (0, len(times) - len(data)), 'constant')
             # add data
@@ -295,7 +295,7 @@ class Analysis:
         # calculate times
         times = np.array(range(self.res, video_len + self.res, self.res)) / 1000  # noqa: E501
         # plot keypresses
-        fig = px.line(y=df.loc[stimulus]['keypresses'],
+        fig = px.line(y=df.loc[stimulus]['kp'],
                       x=times,
                       title='Keypresses for stimulus ' + stimulus)
         # update layout
@@ -328,7 +328,7 @@ class Analysis:
                                      shared_xaxes=True)
         # plot for all videos
         for index, row in df.iterrows():
-            values = row['keypresses']
+            values = row['kp']
             fig.add_trace(go.Scatter(y=values,
                                      mode='lines',
                                      x=times,
@@ -390,7 +390,7 @@ class Analysis:
         for data in values:
             keypress_data = np.array([0.0] * len(times))
             for index, row in df[df[variable] == data].iterrows():
-                keypress_data = keypress_data + np.array(row['keypresses'])
+                keypress_data = keypress_data + np.array(row['kp'])
             extracted_data.append({'value': data,
                                    'data': keypress_data / len(keypress_data)})
         # plotly figure
@@ -465,7 +465,7 @@ class Analysis:
         for var in variables:
             keypress_data = np.array([0.0] * len(times))
             for index, row in df[df[var['variable']] == var['value']].iterrows():  # noqa: E501
-                keypress_data = keypress_data + np.array(row['keypresses'])
+                keypress_data = keypress_data + np.array(row['kp'])
             extracted_data.append({'value': var['variable'] + '-' + var['value'],  # noqa: E501
                                    'data': keypress_data / len(keypress_data)})
         # plotly figure
@@ -541,7 +541,7 @@ class Analysis:
             return
         # add all data together. Must be converted to np array to add together
         kp_data = np.array([0.0] * len(times))
-        for i, data in enumerate(df['keypresses']):
+        for i, data in enumerate(df['kp']):
             # append zeros to match longest duration
             data = np.pad(data, (0, len(times) - len(data)), 'constant')
             # add data
