@@ -334,11 +334,12 @@ class Heroku:
             video_len = self.mapping.loc['video_' + str(i)]['video_length']
             rt_data = []
             counter_data = 0
-            for (columnName, columnData) in self.heroku_data.iteritems():
+            for (col_name, col_data) in self.heroku_data.iteritems():
                 # find the right column to loop through
-                if video_rt == columnName:
+                if video_rt == col_name:
+                    print(col_name, col_data)
                     # loop through rows in column
-                    for row in columnData:
+                    for row in col_data:
                         # check if data is string to filter out nan data
                         if type(row) == list:
                             # saving amount of times the video has been watched
@@ -350,13 +351,13 @@ class Heroku:
                             # if list contains more then one value, go through
                             # list to remove keyholds
                             elif len(row) > 1:
-                                for i in range(1, len(row)):
+                                for j in range(1, len(row)):
                                     # if time between 2 stimuli is more then
                                     # 35 ms, add to array (no hold)
-                                    if row[i] - row[i - 1] > 35:
+                                    if row[j] - row[j - 1] > 35:
                                         # append buttonpress data to rt array
-                                        rt_data.append(row[i])
-                    # if all data for one video was found, divide them inbins
+                                        rt_data.append(row[j])
+                    # if all data for one video was found, divide them in bins
                     keypresses = []
                     # loop over all bins, dependent on resolution
                     for rt in range(self.res, video_len + self.res, self.res):
@@ -370,6 +371,7 @@ class Heroku:
                         danger_percentage = bin_counter / counter_data
                         keypresses.append(round(danger_percentage * 100))
                     # append data from one video to the mapping array
+                    print(video_rt, keypresses)
                     mapping_rt.append(keypresses)
                     break
         # update own mapping to include keypress data
