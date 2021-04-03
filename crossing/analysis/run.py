@@ -75,34 +75,34 @@ if __name__ == '__main__':
     # Output
     analysis = cs.analysis.Analysis(res=RES)
     logger.info('Creating figures.')
-    # # all keypresses
-    # analysis.plot_kp(stimuli_mapped)
-    # # keypresses of all videos individually
-    # analysis.plot_kp_video(stimuli_mapped, 'video_0')
-    # # keypresses of an individual stimulus
-    # analysis.plot_kp_videos(stimuli_mapped)
-    # # 1 var, all values
-    # analysis.plot_kp_variable(stimuli_mapped, 'cross_look')
-    # # 1 var, certain values
-    # analysis.plot_kp_variable(stimuli_mapped, 'cross_look', ['C_L', 'nC_L'])
-    # # separate plots for multiple variables
-    # analysis.plot_kp_variables_or(stimuli_mapped, [{'variable': 'cross_look', 'value': 'C_L'},  # noqa: E501
-    #                                                {'variable': 'traffic_rules', 'value': 'traffic_lights'},  # noqa: E501
-    #                                                {'variable': 'traffic_rules', 'value': 'ped_crossing'}])  # noqa: E501
-    # # multiple variables as a single filter
-    # analysis.plot_kp_variables_and(stimuli_mapped, [{'variable': 'cross_look', 'value': 'C_L'},  # noqa: E501
-    #                                                 {'variable': 'traffic_rules', 'value': 'traffic_lights'}])  # noqa: E501
-    # # create correlation matrix
-    # analysis.corr_matrix(stimuli_mapped, save_file=True)
-    # # stimulus duration
-    # analysis.hist_stim_duration(heroku_data, nbins=100, save_file=True)
-    # # browser window dimensions
-    # # analysis.hist_browser_dimensions(heroku_data, nbins=100, save_file=True)
-    # analysis.scatter_browser_dimensions(heroku_data,
-    #                                     type_plot='scatter',
-    #                                     save_file=True)
-    # # time of participation
-    # analysis.hist_time_participation(appen_data, save_file=True)
+    # all keypresses
+    analysis.plot_kp(stimuli_mapped)
+    # keypresses of all videos individually
+    analysis.plot_kp_video(stimuli_mapped, 'video_0')
+    # keypresses of an individual stimulus
+    analysis.plot_kp_videos(stimuli_mapped)
+    # 1 var, all values
+    analysis.plot_kp_variable(stimuli_mapped, 'cross_look')
+    # 1 var, certain values
+    analysis.plot_kp_variable(stimuli_mapped, 'cross_look', ['C_L', 'nC_L'])
+    # separate plots for multiple variables
+    analysis.plot_kp_variables_or(stimuli_mapped, [{'variable': 'cross_look', 'value': 'C_L'},  # noqa: E501
+                                                   {'variable': 'traffic_rules', 'value': 'traffic_lights'},  # noqa: E501
+                                                   {'variable': 'traffic_rules', 'value': 'ped_crossing'}])  # noqa: E501
+    # multiple variables as a single filter
+    analysis.plot_kp_variables_and(stimuli_mapped, [{'variable': 'cross_look', 'value': 'C_L'},  # noqa: E501
+                                                    {'variable': 'traffic_rules', 'value': 'traffic_lights'}])  # noqa: E501
+    # create correlation matrix
+    analysis.corr_matrix(stimuli_mapped, save_file=True)
+    # stimulus duration
+    analysis.hist_stim_duration(heroku_data, nbins=100, save_file=True)
+    # browser window dimensions
+    # analysis.hist_browser_dimensions(heroku_data, nbins=100, save_file=True)
+    analysis.scatter_browser_dimensions(heroku_data,
+                                        type_plot='scatter',
+                                        save_file=True)
+    # time of participation
+    analysis.hist_time_participation(appen_data, save_file=True)
     # check if any figures are to be rendered
     figures = [manager.canvas.figure
                for manager in

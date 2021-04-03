@@ -6,6 +6,7 @@ import numpy as np
 from tqdm import tqdm
 import re
 import ast
+from statistics import mean
 
 import crossing as cs
 
@@ -57,6 +58,7 @@ class Heroku:
         self.load_p = load_p
         self.save_csv = save_csv
         self.num_stimuli = cs.common.get_configs('num_stimuli')
+        self.num_repeat = cs.common.get_configs('num_repeat')
 
     def set_data(self, heroku_data):
         """
@@ -271,7 +273,14 @@ class Heroku:
                         else:
                             # udpate only if it is a list
                             if isinstance(data_dict[dict_row['worker_code']][key], list):  # noqa: E501
-                                data_dict[dict_row['worker_code']][key].extend(value)  # noqa: E501
+                                # traverse repetition ids untill get new
+                                # repetition
+                                for rep in range(1, self.num_repeat):
+                                    # build new key with id of repetition
+                                    # (starting from 1)
+                                    new_key = key + '-' + str(rep)
+                                    if new_key not in data_dict[dict_row['worker_code']].keys():  # noqa: E501
+                                        data_dict[dict_row['worker_code']][new_key] = value  # noqa: E501
                 # worker_code is ecnountered for the first time
                 else:
                     data_dict[dict_row['worker_code']] = dict_row
@@ -324,56 +333,69 @@ class Heroku:
         Returns:
             mapping: updated mapping df.
         """
-        # get info from config file
-        num_stimuli = cs.common.get_configs('num_stimuli')
         # array to store all binned rt data in
         mapping_rt = []
         # loop through all videos
-        for i in range(0, num_stimuli):
-            video_rt = 'video_' + str(i) + '-rt'
-            video_len = self.mapping.loc['video_' + str(i)]['video_length']
-            rt_data = []
-            counter_data = 0
-            for (col_name, col_data) in self.heroku_data.iteritems():
-                # find the right column to loop through
-                if video_rt == col_name:
-                    print(col_name, col_data)
-                    # loop through rows in column
-                    for row in col_data:
-                        # check if data is string to filter out nan data
-                        if type(row) == list:
-                            # saving amount of times the video has been watched
-                            counter_data += 1
-                            # if list contains only one value, append to
-                            # rt_data
-                            if len(row) == 1:
-                                rt_data.append(row[0])
-                            # if list contains more then one value, go through
-                            # list to remove keyholds
-                            elif len(row) > 1:
-                                for j in range(1, len(row)):
-                                    # if time between 2 stimuli is more then
-                                    # 35 ms, add to array (no hold)
-                                    if row[j] - row[j - 1] > 35:
-                                        # append buttonpress data to rt array
-                                        rt_data.append(row[j])
-                    # if all data for one video was found, divide them in bins
-                    keypresses = []
-                    # loop over all bins, dependent on resolution
-                    for rt in range(self.res, video_len + self.res, self.res):
-                        bin_counter = 0
-                        for data in rt_data:
-                            # go through all video data to find all data within
-                            # specific bin
-                            if rt - self.res < data <= rt:
-                                # if data is found, up bin counter
-                                bin_counter = + 1
-                        danger_percentage = bin_counter / counter_data
-                        keypresses.append(round(danger_percentage * 100))
-                    # append data from one video to the mapping array
-                    print(video_rt, keypresses)
-                    mapping_rt.append(keypresses)
-                    break
+        for i in range(0, self.num_stimuli):
+            video_kp = []
+            for rep in range(self.num_repeat):
+                # 0th repetition has no suffix with repetition ID
+                if rep == 0:
+                    video_rt = 'video_' + str(i) + '-rt'
+                # add suffix with repetition ID
+                else:
+                    video_rt = 'video_' + str(i) + '-rt-' + str(rep)
+                video_len = self.mapping.loc['video_' + str(i)]['video_length']
+                rt_data = []
+                counter_data = 0
+                for (col_name, col_data) in self.heroku_data.iteritems():
+                    # find the right column to loop through
+                    if video_rt == col_name:
+                        # loop through rows in column
+                        for row in col_data:
+                            # check if data is string to filter out nan data
+                            # print('row', row)
+                            if type(row) == list:
+                                # saving amount of times the video has been
+                                # watched
+                                counter_data = counter_data + 1
+                                # if list contains only one value, append to
+                                # rt_data
+                                if len(row) == 1:
+                                    rt_data.append(row[0])
+                                # if list contains more then one value, go
+                                # through list to remove keyholds
+                                elif len(row) > 1:
+                                    for j in range(1, len(row)):
+                                        # if time between 2 stimuli is more
+                                        # than 35 ms, add to array (no hold)
+                                        if row[j] - row[j - 1] > 35:
+                                            # append buttonpress data to rt
+                                            # array
+                                            rt_data.append(row[j])
+                        # if all data for one video was found, divide them in
+                        # bins
+                        kp = []
+                        # loop over all bins, dependent on resolution
+                        for rt in range(self.res, video_len + self.res,
+                                        self.res):
+                            bin_counter = 0
+                            for data in rt_data:
+                                # go through all video data to find all data
+                                # within
+                                # specific bin
+                                if rt - self.res < data <= rt:
+                                    # if data is found, up bin counter
+                                    bin_counter = bin_counter + 1
+                            percentage = bin_counter / counter_data
+                            kp.append(round(percentage * 100))
+                        # store keypresse from repetition
+                        video_kp.append(kp)
+                        break
+            # calculate mean keypresse from all repetitions
+            kp_mean = [*map(mean, zip(*video_kp))]
+            # append data from one video to the mapping array
+            mapping_rt.append(kp_mean)
         # update own mapping to include keypress data
         self.mapping['keypresses'] = mapping_rt
         # save to csv

@@ -257,7 +257,7 @@ class Analysis:
         # calculate times
         times = np.array(range(self.res, df['video_length'].max() + self.res, self.res)) / 1000  # noqa: E501
         # add all data together. Must be converted to np array to add together
-        kp_data = np.array([0] * len(times))
+        kp_data = np.array([0.0] * len(times))
         for i, data in enumerate(df['keypresses']):
             # append zeros to match longest duration
             data = np.pad(data, (0, len(times) - len(data)), 'constant')
@@ -388,7 +388,7 @@ class Analysis:
         # extract data for values
         extracted_data = []
         for data in values:
-            keypress_data = np.array([0] * len(times))
+            keypress_data = np.array([0.0] * len(times))
             for index, row in df[df[variable] == data].iterrows():
                 keypress_data = keypress_data + np.array(row['keypresses'])
             extracted_data.append({'value': data,
@@ -463,7 +463,7 @@ class Analysis:
         # extract data for values
         extracted_data = []
         for var in variables:
-            keypress_data = np.array([0] * len(times))
+            keypress_data = np.array([0.0] * len(times))
             for index, row in df[df[var['variable']] == var['value']].iterrows():  # noqa: E501
                 keypress_data = keypress_data + np.array(row['keypresses'])
             extracted_data.append({'value': var['variable'] + '-' + var['value'],  # noqa: E501
@@ -540,7 +540,7 @@ class Analysis:
             logger.error('Provided variables yielded empty dataframe.')
             return
         # add all data together. Must be converted to np array to add together
-        kp_data = np.array([0] * len(times))
+        kp_data = np.array([0.0] * len(times))
         for i, data in enumerate(df['keypresses']):
             # append zeros to match longest duration
             data = np.pad(data, (0, len(times) - len(data)), 'constant')
