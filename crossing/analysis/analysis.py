@@ -38,18 +38,22 @@ class Analysis:
         # store resolution for keypress data
         self.res = res
 
-    def corr_matrix(self, mapping, save_file=False):
+    def corr_matrix(self, df, save_file=False):
         """
         Output correlation matrix.
+
+        Args:
+            df (dataframe): mapping dataframe.
+            save_file (bool, optional): flag for saving an html file with plot.
         """
         logger.info('Creating correlation matrix.')
         # drop not needed columns
         columns_drop = ['id_segment', 'set', 'video', 'extra',
                         'alternative_frame', 'alternative_frame']
-        mapping = mapping.drop(columns_drop, 1)
-        # mapping.fillna(0, inplace=True)
+        df = df.drop(columns_drop, 1)
+        # df.fillna(0, inplace=True)
         # create correlation matrix
-        corr = mapping.corr()
+        corr = df.corr()
         # create mask
         mask = np.zeros_like(corr)
         mask[np.triu_indices_from(mask)] = True
@@ -297,13 +301,14 @@ class Analysis:
 
     def plot_kp(self, df, save_file=True,
                 xaxis_title='Time (ms)',
-                yaxis_title='Percentage of keypresses',):
+                yaxis_title='Percentage of trials with response key pressed'):
         """Take in a variable with values which are optional
+
         Args:
-            data (array of keypress data): Array containing data of all classes
-                                           to plot.
-            titles (array of strings): Array with the same length as data,
-                                       which are the plot names.
+            df (dataframe): dataframe with keypress data.
+            xaxis_title (str, optional): title for x axis.
+            yaxis_title (str, optional): title for y axis.
+            save_file (bool, optional): flag for saving an html file with plot.
         """
         logger.info('Creating visualisations of keypresses for all data.')
         # calculate times
@@ -333,14 +338,18 @@ class Analysis:
 
     def plot_kp_video(self, df, stimulus, extention='mp4',
                       xaxis_title='Time (ms)',
-                      yaxis_title='Percentage of keypresses',
+                      yaxis_title='Percentage of trials with ' +
+                                  'response key pressed',
                       save_file=True):
         """Plot keypresses with multiple variables as a filter.
 
         Args:
-            df (TYPE): Description
-            res (TYPE): Description
-            save_file (bool, optional): Description
+            df (dataframe): dataframe with keypress data.
+            stimulus (TYPE): Description
+            extention (str, optional): Description
+            xaxis_title (str, optional): title for x axis.
+            yaxis_title (str, optional): title for y axis.
+            save_file (bool, optional): flag for saving an html file with plot.
         """
         # extract video length
         video_len = df.loc[stimulus]['video_length']
@@ -362,14 +371,16 @@ class Analysis:
             fig.show()
 
     def plot_kp_videos(self, df, xaxis_title='Time (ms)',
-                       yaxis_title='Percentage of keypresses',
+                       yaxis_title='Percentage of trials with ' +
+                                   'response key pressed',
                        save_file=True):
         """Plot keypresses with multiple variables as a filter.
 
         Args:
-            df (TYPE): Description
-            res (TYPE): Description
-            save_file (bool, optional): Description
+            df (dataframe): dataframe with keypress data.
+            xaxis_title (str, optional): title for x axis.
+            yaxis_title (str, optional): title for y axis.
+            save_file (bool, optional): flag for saving an html file with plot.
         """
         # calculate times
         times = np.array(range(self.res, df['video_length'].max() + self.res, self.res)) / 1000  # noqa: E501
@@ -419,15 +430,19 @@ class Analysis:
 
     def plot_kp_variable(self, df, variable, values=None,
                          xaxis_title='Time (ms)',
-                         yaxis_title='Percentage of keypresses',
+                         yaxis_title='Percentage of trials with ' +
+                                     'response key pressed',
                          save_file=True):
         """Plot figures of individual videos with analysis.
+
         Args:
-            df (TYPE): updated dataframe with keypress data.
-            res (TYPE): Description
-            variable (TYPE): Description
-            values (None, optional): Description
-            save_file (bool, optional): Description.
+            df (dataframe): dataframe with keypress data.
+            variable (str): variable to plot.
+            values (list, optional): values of variable to plot. If None, all
+                                     values are plotted.
+            xaxis_title (str, optional): title for x axis.
+            yaxis_title (str, optional): title for y axis.
+            save_file (bool, optional): flag for saving an html file with plot.
         """
         logger.info('Creating visualisation of keypresses based on values ' +
                     '{} of variable {} .', values, variable)
@@ -500,15 +515,17 @@ class Analysis:
             fig.show()
 
     def plot_kp_variables_or(self, df, variables, xaxis_title='Time (ms)',
-                             yaxis_title='Percentage of keypresses',
+                             yaxis_title='Percentage of trials with ' +
+                                         'response key pressed',
                              save_file=True):
         """Separate plots of keypresses with multiple variables as a filter.
 
         Args:
-            df (TYPE): Description
-            res (TYPE): Description
-            variables (TYPE): Description
-            save_file (bool, optional): Description
+            df (dataframe): dataframe with keypress data.
+            variables (list): variables to plot.
+            xaxis_title (str, optional): title for x axis.
+            yaxis_title (str, optional): title for y axis.
+            save_file (bool, optional): flag for saving an html file with plot.
         """
         logger.info('Creating visualisation of keypresses based on ' +
                     'variables {} with OR filter.', variables)
@@ -577,15 +594,17 @@ class Analysis:
 
     def plot_kp_variables_and(self, df, variables,
                               xaxis_title='Time (ms)',
-                              yaxis_title='Percentage of keypresses',
+                              yaxis_title='Percentage of trials with ' +
+                                          'response key pressed',
                               save_file=True):
         """Separate plots of keypresses with multiple variables as a filter.
 
         Args:
-            df (TYPE): Description
-            res (TYPE): Description
-            variables (TYPE): Description
-            save_file (bool, optional): Description
+            df (dataframe): dataframe with keypress data.
+            variables (list): variables to plot.
+            xaxis_title (str, optional): title for x axis.
+            yaxis_title (str, optional): title for y axis.
+            save_file (bool, optional): flag for saving an html file with plot.
         """
         logger.info('Creating visualisation of keypresses based on ' +
                     'variables {} with AND filter.', variables)
@@ -626,7 +645,12 @@ class Analysis:
 
     def save_plotly(self, fig, name, output_subdir):
         """
-        Helper function to save figure as file.
+        Helper function to save figure as html file.
+
+        Args:
+            fig (plotly figure): figure object.
+            name (str): name of html file.
+            output_subdir (str): Folder for saving file.
         """
         # build path
         path = cs.settings.output_dir + output_subdir
@@ -639,6 +663,13 @@ class Analysis:
     def save_fig(self, image, fig, output_subdir, suffix, pad_inches=0):
         """
         Helper function to save figure as file.
+
+        Args:
+            image (str): name of figure to save.
+            fig (matplotlib figure): figure object.
+            output_subdir (str): folder for saving file.
+            suffix (str): suffix to add in the end of the filename.
+            pad_inches (int, optional): padding.
         """
         # extract name of stimulus after last slash
         file_no_path = image.rsplit('/', 1)[-1]
@@ -658,6 +689,12 @@ class Analysis:
     def save_anim(self, image, anim, output_subdir, suffix):
         """
         Helper function to save figure as file.
+
+        Args:
+            image (str): name of figure to save.
+            anim (matplotlib animation): animation object.
+            output_subdir (str): folder for saving file.
+            suffix (str): suffix to add in the end of the filename.
         """
         # extract name of stimulus after last slash
         file_no_path = image.rsplit('/', 1)[-1]
@@ -674,7 +711,12 @@ class Analysis:
 
     def autolabel(self, ax, on_top=False, decimal=True):
         """
-        Attach a text label above each bar in *rects*, displaying its height.
+        Attach a text label above each bar in, displaying its height.
+
+        Args:
+            ax (matplotlib axis): bas objects in figure.
+            on_top (bool, optional): add labels on top of bars.
+            decimal (bool, optional): add 2 decimal digits.
         """
         # todo: optimise to use the same method
         # on top of bar
