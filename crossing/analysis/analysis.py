@@ -436,15 +436,22 @@ class Analysis:
         # if no values specified, plot value
         if not values:
             values = df[variable].unique()
-        print(values)
         # extract data for values
         extracted_data = []
-        for data in values:
-            keypress_data = np.array([0.0] * len(times))
-            for index, row in df[df[variable] == data].iterrows():
-                keypress_data = keypress_data + np.array(row['kp'])
-            extracted_data.append({'value': data,
-                                   'data': keypress_data / len(keypress_data)})
+        for value in values:
+            kp_data = np.array([0.0] * len(times))
+            df_f = df[df[variable] == value]
+            for index, row in df_f.iterrows():
+                # append zeros to match longest duration
+                data_row = np.array(row['kp'])
+                data_row = np.pad(data_row, (0, len(times) - len(data_row)),
+                                  'constant')
+                kp_data = kp_data + data_row
+            # divide sums of values over number of rows that qualify
+            if df_f.shape[0]:
+                kp_data = kp_data / df_f.shape[0]
+            extracted_data.append({'value': value,
+                                   'data': kp_data})
         # plotly figure
         fig = subplots.make_subplots(rows=1,
                                      cols=1,
@@ -515,11 +522,15 @@ class Analysis:
         # extract data for values
         extracted_data = []
         for var in variables:
-            keypress_data = np.array([0.0] * len(times))
-            for index, row in df[df[var['variable']] == var['value']].iterrows():  # noqa: E501
-                keypress_data = keypress_data + np.array(row['kp'])
+            kp_data = np.array([0.0] * len(times))
+            df_f = df[df[var['variable']] == var['value']]
+            for index, row in df_f.iterrows():  # noqa: E501
+                kp_data = kp_data + np.array(row['kp'])
+            # divide sums of values over number of rows that qualify
+            if df_f.shape[0]:
+                kp_data = kp_data / df_f.shape[0]
             extracted_data.append({'value': str(var['variable']) + '-' + str(var['value']),  # noqa: E501
-                                   'data': keypress_data / len(keypress_data)})
+                                   'data': kp_data})
         # plotly figure
         fig = subplots.make_subplots(rows=1,
                                      cols=1,
@@ -591,14 +602,13 @@ class Analysis:
         if df.empty:
             logger.error('Provided variables yielded empty dataframe.')
             return
-        # add all data together. Must be converted to np array to add together
+        # add all data together. Must be converted to np array
         kp_data = np.array([0.0] * len(times))
         for i, data in enumerate(df['kp']):
-            # append zeros to match longest duration
-            data = np.pad(data, (0, len(times) - len(data)), 'constant')
-            # add data
             kp_data += np.array(data)
-        kp_data = (kp_data / i)
+        # divide sums of values over number of rows that qualify
+        if df.shape[0]:
+            kp_data = kp_data / df.shape[0]
         # plot keypresses
         fig = px.line(y=kp_data,
                       x=times,
