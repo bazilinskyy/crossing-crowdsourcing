@@ -356,7 +356,6 @@ class Heroku:
                         # loop through rows in column
                         for row in col_data:
                             # check if data is string to filter out nan data
-                            # print('row', row)
                             if type(row) == list:
                                 # saving amount of times the video has been
                                 # watched
