@@ -16,6 +16,7 @@ import plotly.graph_objs as go
 import plotly.io as pio
 import plotly.express as px
 from plotly import subplots
+import datetime as dt
 
 import crossing as cs
 
@@ -107,6 +108,56 @@ class Analysis:
         # save file
         if save_file:
             self.save_plotly(fig, 'hist_stim_duration', self.folder)
+        # open it in localhost instead
+        else:
+            fig.show()
+
+    def hist_stim_duration_time(self, df, time_ranges, nbins=0,
+                                save_file=True):
+        """
+        Output distribution of stimulus durations for time ranges.
+
+        Args:
+            df (dataframe): dataframe with data from heroku.
+            time_ranges (dictionaries): time ranges for analysis.
+            nbins (int, optional): number of bins in histogram.
+            save_file (bool, optional): flag for saving an html file with plot.
+        """
+        logger.info('Creating histogram of stimulus durations.')
+        # columns with durations
+        col_dur = df.columns[df.columns.to_series().str.contains('-dur')]
+        # extract durations of stimuli
+        df_dur = df[col_dur]
+        df = df_dur.join(df['start'])
+        df['range'] = np.nan
+        # add column with labels based on time ranges
+        for i, t in enumerate(time_ranges):
+            for index, row in df.iterrows():
+                if t['start'] <= row['start'] <= t['end']:
+                    start_str = t['start'].strftime('%m.%d.%Y, %H:%M:%S')
+                    end_str = t['end'].strftime('%m.%d.%Y, %H:%M:%S')
+                    df.loc[index, 'range'] = start_str + ' - ' + end_str
+        # create figure
+        if nbins:
+            fig = px.histogram(df[col_dur], nbins=nbins, marginal='rug',
+                               color=df['range'], barmode='overlay')
+        else:
+            fig = px.histogram(df[col_dur], marginal='rug', color='range',
+                               barmode='overlay')
+        # ticks as numbers
+        fig.update_layout(xaxis=dict(tickformat='digits'))
+        # update layout
+        fig.update_layout(template=self.template)
+        # save file
+        if save_file:
+
+            self.save_plotly(fig,
+                             'hist_stim_duration' +
+                             ','.join(t['start'].strftime('%m.%d.%Y,%H:%M:%S') +  # noqa: E501
+                                      '-' +
+                                      t['end'].strftime('%m.%d.%Y,%H:%M:%S')
+                                      for t in time_ranges),
+                             self.folder)
         # open it in localhost instead
         else:
             fig.show()

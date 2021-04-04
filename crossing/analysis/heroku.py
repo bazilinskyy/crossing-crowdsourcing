@@ -333,6 +333,8 @@ class Heroku:
         Returns:
             mapping: updated mapping df.
         """
+        logger.info('Processing keypress data with resolution of {} ms.',
+                    self.res)
         # array to store all binned rt data in
         mapping_rt = []
         # loop through all videos
