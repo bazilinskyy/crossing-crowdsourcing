@@ -15,6 +15,8 @@ SAVE_CSV = True  # load csv files with data
 REJECT_CHEATERS = False  # reject cheaters on Appen
 UPDATE_MAPPING = True  # update mapping with keypress data
 RES = 100  # resolution of keypress data plots
+MIN_DUR = -1  # minimal allowed length of stimulus. -1 for any video length
+MAX_DUR = -1  # maximal allowed length of stimulus. -1 for any video length
 file_coords = 'coords.p'  # file to save lists with coordinates
 file_mapping = 'mapping.p'  # file to save lists with coordinates
 
@@ -65,7 +67,7 @@ if __name__ == '__main__':
         # read in mapping of stimuli
         stimuli_mapped = heroku.read_mapping()
         # read in mapping of stimuli
-        stimuli_mapped = heroku.process_kp()
+        stimuli_mapped = heroku.process_kp(min_dur=MIN_DUR, max_dur=MAX_DUR)
         cs.common.save_to_p(file_mapping,
                             stimuli_mapped,
                             'mapping with keypress data')

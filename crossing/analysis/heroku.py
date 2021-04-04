@@ -327,14 +327,19 @@ class Heroku:
         # return mapping as a dataframe
         return df
 
-    def process_kp(self):
+    def process_kp(self, min_dur=-1, max_dur=-1):
         """Process keypresses for resolution self.res.
 
         Returns:
             mapping: updated mapping df.
+
+        Args:
+            min_dur (int, optional): minimal allowed duration of video.
+            max_dur (int, optional): miximal allowed duration of video.
         """
-        logger.info('Processing keypress data with resolution of {} ms.',
-                    self.res)
+        logger.info('Processing keypress data with res={} ms, min_dur={}, ' +
+                    'max_dur={}.',
+                    self.res, min_dur, max_dur)
         # array to store all binned rt data in
         mapping_rt = []
         # loop through all videos
@@ -344,9 +349,11 @@ class Heroku:
                 # 0th repetition has no suffix with repetition ID
                 if rep == 0:
                     video_rt = 'video_' + str(i) + '-rt'
+                    video_dur = 'video_' + str(i) + '-dur'
                 # add suffix with repetition ID
                 else:
                     video_rt = 'video_' + str(i) + '-rt-' + str(rep)
+                    video_dur = 'video_' + str(i) + '-dur-' + str(rep)
                 video_len = self.mapping.loc['video_' + str(i)]['video_length']
                 rt_data = []
                 counter_data = 0
@@ -354,7 +361,13 @@ class Heroku:
                     # find the right column to loop through
                     if video_rt == col_name:
                         # loop through rows in column
-                        for row in col_data:
+                        for row_index, row in enumerate(col_data):
+                            # consider only videos of allowed length
+                            if min_dur >= 0 and max_dur >= 0 \
+                              and video_dur in self.heroku_data.keys():
+                                dur = self.heroku_data.iloc[row_index][video_dur]  # noqa: E501
+                                if dur < min_dur or dur > max_dur:
+                                    continue
                             # check if data is string to filter out nan data
                             if type(row) == list:
                                 # saving amount of times the video has been
@@ -388,8 +401,11 @@ class Heroku:
                                 if rt - self.res < data <= rt:
                                     # if data is found, up bin counter
                                     bin_counter = bin_counter + 1
-                            percentage = bin_counter / counter_data
-                            kp.append(round(percentage * 100))
+                            if counter_data:
+                                percentage = bin_counter / counter_data
+                                kp.append(round(percentage * 100))
+                            else:
+                                kp.append(0)
                         # store keypresse from repetition
                         video_kp.append(kp)
                         break
