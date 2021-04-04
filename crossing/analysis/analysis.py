@@ -123,7 +123,8 @@ class Analysis:
             nbins (int, optional): number of bins in histogram.
             save_file (bool, optional): flag for saving an html file with plot.
         """
-        logger.info('Creating histogram of stimulus durations.')
+        logger.info('Creating histogram of stimulus durations for time ' +
+                    'ranges.')
         # columns with durations
         col_dur = df.columns[df.columns.to_series().str.contains('-dur')]
         # extract durations of stimuli
@@ -507,8 +508,8 @@ class Analysis:
         # build string with variables
         variables_str = ''
         for variable in variables:
-            variables_str = variables_str + '_' + variable['variable'] + \
-                '-' + variable['value']
+            variables_str = variables_str + '_' + str(variable['variable']) + \
+                '-' + str(variable['value'])
         # calculate times
         times = np.array(range(self.res, df['video_length'].max() + self.res, self.res)) / 1000  # noqa: E501
         # extract data for values
@@ -517,7 +518,7 @@ class Analysis:
             keypress_data = np.array([0.0] * len(times))
             for index, row in df[df[var['variable']] == var['value']].iterrows():  # noqa: E501
                 keypress_data = keypress_data + np.array(row['kp'])
-            extracted_data.append({'value': var['variable'] + '-' + var['value'],  # noqa: E501
+            extracted_data.append({'value': str(var['variable']) + '-' + str(var['value']),  # noqa: E501
                                    'data': keypress_data / len(keypress_data)})
         # plotly figure
         fig = subplots.make_subplots(rows=1,
@@ -580,7 +581,7 @@ class Analysis:
         # build string with variables
         variables_str = ''
         for variable in variables:
-            variables_str = variables_str + '_' + variable['variable']
+            variables_str = variables_str + '_' + str(variable['variable'])
         # calculate times
         times = np.array(range(self.res, df['video_length'].max() + self.res, self.res)) / 1000  # noqa: E501
         # filter df based on variables given

@@ -77,9 +77,9 @@ if __name__ == '__main__':
     logger.info('Creating figures.')
     # all keypresses
     analysis.plot_kp(stimuli_mapped)
-    # keypresses of all videos individually
-    analysis.plot_kp_video(stimuli_mapped, 'video_0')
     # keypresses of an individual stimulus
+    analysis.plot_kp_video(stimuli_mapped, 'video_0')
+    # keypresses of all videos individually
     analysis.plot_kp_videos(stimuli_mapped)
     # 1 var, all values
     analysis.plot_kp_variable(stimuli_mapped, 'cross_look')
