@@ -142,7 +142,7 @@ class Analysis:
             fig = px.histogram(df[col_dur], nbins=nbins, marginal='rug',
                                color=df['range'], barmode='overlay')
         else:
-            fig = px.histogram(df[col_dur], marginal='rug', color='range',
+            fig = px.histogram(df[col_dur], marginal='rug', color=df['range'],
                                barmode='overlay')
         # ticks as numbers
         fig.update_layout(xaxis=dict(tickformat='digits'))
