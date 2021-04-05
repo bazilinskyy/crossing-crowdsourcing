@@ -258,43 +258,84 @@ class Analysis:
         else:
             fig.show()
 
-    def scatter_browser_dimensions(self, df, type_plot='scatter',
-                                   save_file=True):
+    def scatter_questions(self, df, x, y, color=None, size=None,
+                          marginal_x='violin', marginal_y='violin',
+                          save_file=True):
         """
-        Output scatter plot of browser dimensions.
+        Output scatter plot of variables x and y with optinal assignment of
+        colour and size.
 
         Args:
             df (dataframe): dataframe with data from heroku.
-            type_plot (str, optional): type of plot: scatter, density_heatmap.
+            x (str): dataframe column to plot on x axis.
+            y (str): dataframe column to plot on y axis.
+            color (str, optional): dataframe column to assign color of circles.
+            size (str, optional):  dataframe column to assign soze of circles.
+            marginal_x (str, optional): type of marginal on x axis. Can be
+                                        'histogram', 'rug', 'box', or 'violin'.
+            marginal_y (str, optional): type of marginal on y axis. Can be
+                                        'histogram', 'rug', 'box', or 'violin'.
             save_file (bool, optional): flag for saving an html file with plot.
         """
-        logger.info('Creating plot of type_plot {} for browser dimensions.',
-                    type_plot)
+        # todo: add trendline
+        logger.info('Creating scatter plot for x={} and y={}.',
+                    x, y)
+        # handle nan values
+        # todo: handle ints and strings for nans properly
+        if color:
+            df[color] = df[color].fillna(0)
+        if size:
+            df[size] = df[size].fillna(0)
         # scatter plot with histograms
-        if type_plot == 'scatter':
-            fig = px.scatter(df,
-                             x='window_width',
-                             y='window_height',
-                             marginal_x='violin',
-                             marginal_y='violin',
-                             color='browser_name')
-        # density map with histograms
-        elif type_plot == 'density_heatmap':
-            fig = px.density_heatmap(df,
-                                     x='window_width',
-                                     y='window_height',
-                                     marginal_x='violin',
-                                     marginal_y='violin')
-        # unsopported type
-        else:
-            logger.error('Wrong type of plot {} given.', type_plot)
-            return -1
+        fig = px.scatter(df,
+                         x=x,
+                         y=y,
+                         marginal_x=marginal_x,
+                         marginal_y=marginal_y,
+                         color=color,
+                         size=size)
 
         # update layout
         fig.update_layout(template=self.template)
         # save file
         if save_file:
-            self.save_plotly(fig, 'scatter_browser_dimensions', self.folder)
+            self.save_plotly(fig,
+                             'scatter_' + x + ',' + y,
+                             self.folder)
+        # open it in localhost instead
+        else:
+            fig.show()
+
+    def heatmap_questions(self, df, x, y,
+                          marginal_x='violin', marginal_y='violin',
+                          save_file=True):
+        """
+        Output heatmpan plot of variables x and y.
+
+        Args:
+            df (dataframe): dataframe with data from heroku.
+            x (str): dataframe column to plot on x axis.
+            y (str): dataframe column to plot on y axis.
+            color (str, optional): dataframe column to assign color of circles.
+            size (str, optional):  dataframe column to assign soze of circles.
+            marginal_x (str, optional): Description
+            save_file (bool, optional): flag for saving an html file with plot.
+        """
+        logger.info('Creating heatmap for x={} and y={}.',
+                    x, y)
+        # density map with histograms
+        fig = px.density_heatmap(df,
+                                 x='window_width',
+                                 y='window_height',
+                                 marginal_x='violin',
+                                 marginal_y='violin')
+        # update layout
+        fig.update_layout(template=self.template)
+        # save file
+        if save_file:
+            self.save_plotly(fig,
+                             'heatmap_' + x + ',' + y,
+                             self.folder)
         # open it in localhost instead
         else:
             fig.show()

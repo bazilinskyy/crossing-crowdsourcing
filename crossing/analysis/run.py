@@ -100,11 +100,23 @@ if __name__ == '__main__':
     analysis.hist_stim_duration(heroku_data, nbins=100, save_file=True)
     # browser window dimensions
     # analysis.hist_browser_dimensions(heroku_data, nbins=100, save_file=True)
-    analysis.scatter_browser_dimensions(heroku_data,
-                                        type_plot='scatter',
-                                        save_file=True)
+    analysis.scatter_questions(heroku_data,
+                               x='window_width',
+                               y='window_height',
+                               color='browser_name',
+                               save_file=True)
+    analysis.heatmap_questions(heroku_data,
+                               x='window_width',
+                               y='window_height',
+                               save_file=True)
     # time of participation
     analysis.hist_time_participation(appen_data, save_file=True)
+    # questions
+    analysis.scatter_questions(appen_data,
+                               x='ec_driver',
+                               y='ec_pedestrian',
+                               color='year_license',  # noqa: E501
+                               save_file=True)
     # check if any figures are to be rendered
     figures = [manager.canvas.figure
                for manager in
