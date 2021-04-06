@@ -77,6 +77,18 @@ if __name__ == '__main__':
     # Output
     analysis = cs.analysis.Analysis(res=RES)
     logger.info('Creating figures.')
+
+    pre_q = 'how_do_you_feel_about_the_following_communication_between_driver_and_pedestrian_is_important_for_road_safety'
+    # Barplot of communication data
+    analysis.communication_questions_bar(all_data, pre_q, 
+                                        ['importance eye contact pedestrian',
+                                         'importance hand gestures pedestrian',
+                                         'importance eye contact driver',
+                                         'importance light signaling driver',
+                                         'importance waiting slowing down car']
+                                         )
+    
+    analysis.barplot_question(appen_data, ['dbq1_anger', 'dbq2_speed_motorway', 'dbq3_speed_residential'])
     # all keypresses
     analysis.plot_kp(stimuli_mapped)
     # keypresses of an individual stimulus
@@ -100,6 +112,10 @@ if __name__ == '__main__':
     analysis.hist_stim_duration(heroku_data, nbins=100, save_file=True)
     # browser window dimensions
     # analysis.hist_browser_dimensions(heroku_data, nbins=100, save_file=True)
+
+
+
+
     analysis.scatter_questions(heroku_data,
                                x='window_width',
                                y='window_height',
@@ -117,7 +133,7 @@ if __name__ == '__main__':
                                y='ec_pedestrian',
                                color='year_license',
                                save_file=True)
-    # before and after
+
     # analysis.scatter_questions(appen_data,
     #                            x='',
     #                            y='',

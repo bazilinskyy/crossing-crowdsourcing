@@ -258,6 +258,107 @@ class Analysis:
         else:
             fig.show()
 
+    def communication_questions_bar(self, df, pre_q, post_q, save_file = False):
+        """
+        Barplot of all communication data in pre and post-questionaire
+
+        Args:
+            df (dataframe): dataframe with data from appen  
+            pre_q: column name of pre-questionairre data
+            post_q: names to show in graph of post-questionaire data
+        """
+        # todo: optimize function to be more modular
+        logger.info('Visualisation of communication questions')
+
+        communication_data = ['completely_disagree',
+                              'disagree',
+                              'neither_disagree_nor_agree',
+                              'agree',
+                              'completely_agree',
+                              'i_prefer_not_to_respond'
+                             ]
+        
+        importance = 0.0
+        counts = 0
+        # get unique values + counts
+        comm_data = df[pre_q].value_counts()
+
+        # loop over all data in column of choice
+        for i, data in enumerate(comm_data.values):
+            #Match answers to array, for order purposes
+            for j, data2 in enumerate(communication_data):
+                if comm_data.index[i] == data2 and j<(len(communication_data)-1):
+                    #quantify answers by string matching
+                    importance = importance + (j/(len(communication_data)-2)*data)
+                    counts = counts + data
+
+        # average quantification of values 
+        importance = [(importance/counts)*100]
+        print(importance)
+        # name to plot with. Could be taken as an argument in function
+        importance_name = ['Communication between driver and pedestrian is important for road safety']
+
+        pe_data = np.array([0.0] * len(df['end-as'][0]))
+        for i, data in enumerate(df['end-as'][df['end-as'].notnull()]):
+            #create numpy array for adding vectors
+            data = np.asfarray(data, float)
+            pe_data = pe_data + data
+
+        # calculate average value of post-experiment questionairre data    
+        pe_data = (pe_data / (i+1))
+
+        fig = go.Figure(data=[
+                             go.Bar(name='Communication between driver and pedestrian is important for road safety',
+                                    x=importance_name, 
+                                    y=importance),
+                             go.Bar(name='Which behaviour increases feeling of safety?',
+                                    x=post_q, 
+                                    y=pe_data)
+                             ])
+
+        # update layout
+        fig.update_layout(template=self.template,
+                          yaxis_range=[0,100])
+        # save file
+        if save_file:
+            self.save_plotly(fig,
+                             'communication_questions', 
+                             self.folder)
+        # open it in localhost instead
+        else:
+            fig.show()
+
+    def barplot_question(self, df, x, save_file=False):
+        """
+        Barplot of all communication data in pre and post-questionaire
+
+        Args:
+            df (dataframe): dataframe with data from appen
+            x: column name of dataframe to plot    
+
+        """
+        logger.info('Creating barplot for x={}',
+                    x)
+
+        fig = go.Figure()
+
+        for i in range(len(x)):
+            fig.add_trace(go.Bar(x=df[x[i]].value_counts().index,
+                                 y=df[x[i]].value_counts().values,
+                                 name = x[i]
+                                 )      
+                         )
+        # update layout
+        fig.update_layout(template=self.template)
+        # save file
+        if save_file:
+            self.save_plotly(fig,
+                             'barplot_' + x, 
+                             self.folder)
+        # open it in localhost instead
+        else:
+            fig.show()
+
     def scatter_questions(self, df, x, y, color=None, size=None,
                           marginal_x='violin', marginal_y='violin',
                           save_file=True):
