@@ -423,6 +423,9 @@ class Heroku:
         # return new mapping
         return self.mapping
 
+    def process_post_stimulus_questions(self, df):
+        x = "do something"
+
     def filter_data(self, df):
         """
         Filter data based on the folllowing criteria:
