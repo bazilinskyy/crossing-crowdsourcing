@@ -164,6 +164,7 @@ if __name__ == '__main__':
                   save_file=True)
     # post-trial questions. level of danger
     analysis.bar(stimuli_mapped,
+                 x=stimuli_mapped.index,
                  y=['risky_slider'],
                  show_all_xticks=True,
                  xaxis_title='Video ID',
@@ -171,6 +172,7 @@ if __name__ == '__main__':
                  save_file=True)
     # post-trial questions. eye contact
     analysis.bar(stimuli_mapped,
+                 x=stimuli_mapped.index,
                  y=['eye-contact-yes',
                     'eye-contact-yes_but_too_late',
                     'eye-contact-no',
@@ -179,6 +181,7 @@ if __name__ == '__main__':
                  show_all_xticks=True,
                  xaxis_title='Video ID',
                  yaxis_title='Count',
+                 pretty_ticks=True,
                  save_file=True)
     # check if any figures are to be rendered
     figures = [manager.canvas.figure

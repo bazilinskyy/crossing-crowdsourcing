@@ -166,8 +166,8 @@ class Analysis:
 
         Args:
             df (dataframe): dataframe with data from appen.
-            y (list): column names of dataframe to plot.
             x (list): values in index of dataframe to plot for.
+            y (list): column names of dataframe to plot.
             stacked (bool, optional): show as stacked chart.
             pretty_ticks (bool, optional): prettify ticks by replacing _ with
                                            spaces and capitilisng each value.
@@ -184,15 +184,6 @@ class Analysis:
         logger.info('Creating bar chart for x={} and y={}', x, y)
         # prettify ticks
         if pretty_ticks:
-            # if x is given
-            if x:
-                for variable in x:
-                    # check if column contains strings
-                    if isinstance(df.iloc[0][variable], str):
-                        # replace underscores with spaces
-                        df[variable] = df[variable].str.replace('_', ' ')
-                        # capitlise
-                        df[variable] = df[variable].str.capitalize()
             for variable in y:
                 # check if column contains strings
                 if isinstance(df.iloc[0][variable], str):
@@ -209,21 +200,13 @@ class Analysis:
                 text = df[variable]
             else:
                 text = None
-            # x values were given
-            if x:
-                fig.add_trace(go.Bar(x=df[x],
-                                     y=df[variable],
-                                     name=variable,
-                                     orientation=orientation,
-                                     text=text,
-                                     textposition='auto'))
-            # x values were not given, plot against index
-            else:
-                fig.add_trace(go.Bar(y=df[variable],
-                                     name=variable,
-                                     orientation=orientation,
-                                     text=text,
-                                     textposition='auto'))
+            # plot variable
+            fig.add_trace(go.Bar(x=x,
+                                 y=df[variable],
+                                 name=variable,
+                                 orientation=orientation,
+                                 text=text,
+                                 textposition='auto'))
         # add tabs if multiple variables are plotted
         if len(y) > 1:
             fig.update_layout(barmode='group')
@@ -264,13 +247,8 @@ class Analysis:
             fig.update_layout(barmode='stack')
         # save file
         if save_file:
-            # x values were given
-            if x:
-                file_name = 'bar_' + ','.join(str(val) for val in x) + '_' + \
-                            ','.join(str(val) for val in y)
-            # x values were not given
-            else:
-                file_name = 'bar_' + ','.join(str(val) for val in y)
+            file_name = 'bar_' + ','.join(str(val) for val in y) + '_' + \
+                        ','.join(str(val) for val in x)
             self.save_plotly(fig,
                              file_name,
                              self.folder)
