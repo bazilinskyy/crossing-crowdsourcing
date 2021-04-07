@@ -114,11 +114,11 @@ if __name__ == '__main__':
                                color='year_license',
                                save_file=True)
     # barchart of communication data
-    post_qs = ['importance eye contact pedestrian',
-               'importance hand gestures pedestrian',
-               'importance eye contact driver',
-               'importance light signaling driver',
-               'importance waiting slowing down car']
+    post_qs = ['Importance of eye contact to pedestrian',
+               'Importance of hand gestures to pedestrian',
+               'Importance of eye contact to driver',
+               'Importance of light signaling to driver',
+               'Importance of waiting for car slow down']
     analysis.communication_questions_bar(all_data,
                                          pre_q='communication_importance',
                                          post_qs=post_qs,

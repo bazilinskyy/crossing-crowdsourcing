@@ -24,6 +24,7 @@ matplotlib.use('TkAgg')
 logger = cs.CustomLogger(__name__)  # use custom logger
 
 
+# todo: add optinal arguments to pass axis labels
 class Analysis:
     # folder for output
     folder = '/figures/'
