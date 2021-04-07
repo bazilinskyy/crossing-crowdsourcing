@@ -393,8 +393,7 @@ class Heroku:
                             bin_counter = 0
                             for data in rt_data:
                                 # go through all video data to find all data
-                                # within
-                                # specific bin
+                                # within specific bin
                                 if rt - self.res < data <= rt:
                                     # if data is found, up bin counter
                                     bin_counter = bin_counter + 1
@@ -443,7 +442,6 @@ class Heroku:
                                 video_as_arr.append(row)
                         # save video data in array
                         mapping_as.append(video_as_arr)
-
         # add column with data to current mapping file
         self.mapping['as'] = mapping_as
         # save to csv
