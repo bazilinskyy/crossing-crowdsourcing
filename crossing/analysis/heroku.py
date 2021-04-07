@@ -213,39 +213,6 @@ class Heroku:
                         else:
                             # previous values found
                             dict_row[stim_name + '-as'].append(answers)
-                    # question order
-                    if 'question_order' in data_cell.keys() \
-                       and stim_name != '':
-                        # unpack question order
-                        qo_str = data_cell['question_order']
-                        # remove brackets []
-                        qo_str = qo_str[1:]
-                        qo_str = qo_str[:-1]
-                        # unpack to int
-                        question_order = [int(x) for x in qo_str.split(',')]
-                        logger.debug('Found question order {}.',
-                                     question_order)
-                        # check if values were recorded previously
-                        if stim_name + '-qo' not in dict_row.keys():
-                            # first value
-                            dict_row[stim_name + '-qo'] = question_order
-                        else:
-                            # previous values found
-                            dict_row[stim_name + '-qo'].append(question_order)
-                    # injection question
-                    if 'injection_q' in data_cell.keys() \
-                       and stim_name != '':
-                        # record given keypresses
-                        injection_q = data_cell['injection_q']
-                        logger.debug('Found injection question {}.',
-                                     injection_q)
-                        # check if values were recorded previously
-                        if stim_name + '-qi' not in dict_row.keys():
-                            # first value
-                            dict_row[stim_name + '-qi'] = [injection_q]
-                        else:
-                            # previous values found
-                            dict_row[stim_name + '-qi'].append(injection_q)
                     # browser interaction events
                     if 'interactions' in data_cell.keys() and stim_name != '':
                         interactions = data_cell['interactions']

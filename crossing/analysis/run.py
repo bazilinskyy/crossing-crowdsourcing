@@ -94,57 +94,75 @@ if __name__ == '__main__':
     # create correlation matrix
     analysis.corr_matrix(stimuli_mapped, save_file=True)
     # stimulus duration
-    analysis.hist_stim_duration(heroku_data, nbins=100, save_file=True)
+    analysis.hist(heroku_data,
+              x=heroku_data.columns[heroku_data.columns.to_series().str.contains('-dur')],  # noqa: E501
+              nbins=100,
+              pretty_ticks=True,
+              save_file=True)
     # browser window dimensions
-    # analysis.hist_browser_dimensions(heroku_data, nbins=100, save_file=True)
-    analysis.scatter_questions(heroku_data,
-                               x='window_width',
-                               y='window_height',
-                               color='browser_name',
-                               pretty_ticks=True,
-                               save_file=True)
-    analysis.heatmap_questions(heroku_data,
-                               x='window_width',
-                               y='window_height',
-                               pretty_ticks=True,
-                               save_file=True)
+    analysis.scatter(heroku_data,
+                     x='window_width',
+                     y='window_height',
+                     color='browser_name',
+                     pretty_ticks=True,
+                     save_file=True)
+    analysis.heatmap(heroku_data,
+                     x='window_width',
+                     y='window_height',
+                     pretty_ticks=True,
+                     save_file=True)
     # time of participation
-    analysis.hist_time_participation(appen_data, save_file=True)
+    analysis.hist(appen_data,
+                  x=['time'],
+                  color='country',
+                  pretty_ticks=True,
+                  save_file=True)
     # eye contact of driver and pedestrian
-    analysis.scatter_questions(appen_data,
-                               x='ec_driver',
-                               y='ec_pedestrian',
-                               color='year_license',
-                               pretty_ticks=True,
-                               save_file=True)
+    analysis.scatter(appen_data,
+                     x='ec_driver',
+                     y='ec_pedestrian',
+                     color='year_license',
+                     pretty_ticks=True,
+                     save_file=True)
     # barchart of communication data
     post_qs = ['Importance of eye contact to pedestrian',
                'Importance of hand gestures to pedestrian',
                'Importance of eye contact to driver',
                'Importance of light signaling to driver',
                'Importance of waiting for car slow down']
-    analysis.communication_questions_bar(all_data,
-                                         pre_q='communication_importance',
-                                         post_qs=post_qs,
-                                         save_file=True)
+    analysis.communication(all_data,
+                           pre_q='communication_importance',
+                           post_qs=post_qs,
+                           save_file=True)
     # barchart for driving frequency
-    analysis.bar_questions(appen_data,
-                           x=['driving_freq'],
-                           color='year_license',
-                           pretty_ticks=True,
-                           save_file=True)
+    analysis.bar(appen_data,
+                 x=['driving_freq'],
+                 pretty_ticks=True,
+                 save_file=True)
     # grouped barchart of DBQ data
-    analysis.bar_questions(appen_data,
-                           x=['dbq1_anger',
-                              'dbq2_speed_motorway',
-                              'dbq3_speed_residential',
-                              'dbq4_headway',
-                              'dbq5_traffic_lights',
-                              'dbq6_horn',
-                              'dbq7_mobile'],
-                           pretty_ticks=True,
-                           orientation='h',
-                           save_file=True)
+    analysis.bar(appen_data,
+                 x=['dbq1_anger',
+                    'dbq2_speed_motorway',
+                    'dbq3_speed_residential',
+                    'dbq4_headway',
+                    'dbq5_traffic_lights',
+                    'dbq6_horn',
+                    'dbq7_mobile'],
+                 pretty_ticks=True,
+                 xaxis_title='DBQ',
+                 yaxis_title='Counts',
+                 save_file=True,)
+    analysis.hist(appen_data,
+                  x=['dbq1_anger',
+                     'dbq2_speed_motorway',
+                     'dbq3_speed_residential',
+                     'dbq4_headway',
+                     'dbq5_traffic_lights',
+                     'dbq6_horn',
+                     'dbq7_mobile'],
+                  marginal='violin',
+                  pretty_ticks=True,
+                  save_file=True)
     # danger levels based on post trial data
     analysis.danger_values(stimuli_mapped, save_file=True)
     # check if any figures are to be rendered
