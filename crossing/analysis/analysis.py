@@ -807,6 +807,7 @@ class Analysis:
         Args:
             df (dataframe): dataframe containing mappping data
         """
+        # todo: add optional column with values, to filter specific data
         # repetitions already included in data
         num_stimuli = cs.common.get_configs('num_stimuli')
 
