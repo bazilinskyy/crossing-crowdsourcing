@@ -339,7 +339,8 @@ class Analysis:
                                    plot.
             pretty_ticks (bool, optional): prettify ticks by replacing _ with
                                            spaces and capitilisng each value.
-            orientation (str, optional): orientation of bars. v=vertical, h=horizontal.
+            orientation (str, optional): orientation of bars. v=vertical,
+                                         h=horizontal.
             save_file (bool, optional): flag for saving an html file with plot.
         """
         logger.info('Creating bar chart for x={}', x)
@@ -409,7 +410,7 @@ class Analysis:
         if size:
             df[size] = df[size].fillna(0)
         # prettify ticks
-        if pretty_ticks:     
+        if pretty_ticks:
             if isinstance(df.iloc[0][x], str):  # check if string
                 # replace underscores with spaces
                 df[x] = df[x].str.replace('_', ' ')
