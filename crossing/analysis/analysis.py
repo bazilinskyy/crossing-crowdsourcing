@@ -346,6 +346,10 @@ class Analysis:
         logger.info('Creating bar chart for x={}', x)
         # handle nan values
         # todo: handle ints and strings for nans properly
+        if color and len(x) > 1:
+            logger.error('Color property can be used only with a sinlg' +
+                         ' variable to plot.')
+            return -1
         if color:
             df[color] = df[color].fillna(0)
         # prettify ticks
@@ -363,7 +367,8 @@ class Analysis:
             for variable in x:
                 fig.add_trace(go.Bar(x=df[variable],
                                      name=variable,
-                                     orientation=orientation))
+                                     orientation=orientation,
+                                     textposition='auto'))
             fig.update_layout(barmode='group')
         # single variable to plot
         else:

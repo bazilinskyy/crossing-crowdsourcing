@@ -143,6 +143,7 @@ if __name__ == '__main__':
                               'dbq6_horn',
                               'dbq7_mobile'],
                            pretty_ticks=True,
+                           orientation='h',
                            save_file=True)
     # danger levels based on post trial data
     analysis.danger_values(stimuli_mapped, save_file=True)
