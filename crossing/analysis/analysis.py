@@ -801,6 +801,53 @@ class Analysis:
         else:
             fig.show()
 
+    def post_trial_data(self, df, save_file=True):
+        """Plotting danger values of post-trial data
+
+        Args:
+            df (dataframe): dataframe containing mappping data
+        """
+        # repetitions already included in data
+        num_stimuli = cs.common.get_configs('num_stimuli')
+
+        # create array with names of the data
+        name_array = []
+        for i in range(0, num_stimuli):
+            name_array.append('video_' + str(i))
+        
+        # go through all data of a single video
+        vid_data = []
+        for index, row in df.iterrows():
+            # go through array to get data
+            avg_danger = 0
+            for counter, data in enumerate(row['as']):
+                # add all danger values in one
+                print(data[0])
+                avg_danger = avg_danger + int(data[0])
+            # calculate average danger value per vid and append to array
+            # counter starts add 0, so add 1
+            avg_danger = avg_danger/(counter+1)
+            vid_data.append(avg_danger)
+
+        fig = go.Figure(data=[
+                              go.Bar(name='Danger values',
+                                     x=name_array,
+                                     y=vid_data)
+                             ])
+            
+        # update layout
+        fig.update_layout(template=self.template,
+                          yaxis_range=[0, 100],
+                          yaxis_title="Level of Danger")
+        # save file
+        if save_file:
+            self.save_plotly(fig,
+                             'danger_values',
+                             self.folder)
+        # open it in localhost instead
+        else:
+            fig.show()
+
     def save_plotly(self, fig, name, output_subdir):
         """
         Helper function to save figure as html file.

@@ -453,8 +453,38 @@ class Heroku:
         # return new mapping
         return self.mapping
 
-    def process_post_stimulus_questions(self, df):
-        x = "do something"
+    def process_post_stimulus_questions(self):
+        # array in which arrays of video_as data is stored
+        mapping_as = []
+        # loop through all videos
+        for i in range(0, self.num_stimuli):
+            # array in which data of a single video is stored
+            video_as_arr = []
+            # for number of repetitions in survey, add extra number
+            for rep in range(self.num_repeat):
+                # add suffix with repetition ID
+                video_as = 'video_' + str(i) + '-as-' + str(rep)
+                # loop over columns
+                for (col_name, col_data) in self.heroku_data.iteritems():
+                    # when col_name equals video, then check
+                    if col_name == video_as:
+                        # loop over rows in column
+                        for row_index, row in enumerate(col_data):
+                            # filter out empty values
+                            if type(row) == list:
+                                video_as_arr.append(row)
+                        # save video data in array
+                        mapping_as.append(video_as_arr)
+
+        # add column with data to current mapping file
+        self.mapping['as'] = mapping_as
+        # save to csv
+        if self.save_csv:
+            # save to csv
+            self.mapping.to_csv(cs.settings.output_dir + '/' +
+                                self.file_mapping_csv + '.csv')
+        # return new mapping
+        return self.mapping
 
     def filter_data(self, df):
         """

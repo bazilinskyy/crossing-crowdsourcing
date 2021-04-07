@@ -64,6 +64,7 @@ if __name__ == '__main__':
         stimuli_mapped = heroku.read_mapping()
         # read in mapping of stimuli
         stimuli_mapped = heroku.process_kp()
+        stimuli_mapping = heroku.process_post_stimulus_questions()
         cs.common.save_to_p(file_mapping,
                             stimuli_mapped,
                             'mapping with keypress data')
@@ -72,76 +73,78 @@ if __name__ == '__main__':
                                                'mapping of stimuli')
     # Output
     analysis = cs.analysis.Analysis()
+
+    analysis.post_trial_data(stimuli_mapped, save_file=False)
     logger.info('Creating figures.')
-    # all keypresses
-    analysis.plot_kp(stimuli_mapped)
-    # keypresses of an individual stimulus
-    analysis.plot_kp_video(stimuli_mapped, 'video_0')
-    # keypresses of all videos individually
-    analysis.plot_kp_videos(stimuli_mapped)
-    # 1 var, all values
-    analysis.plot_kp_variable(stimuli_mapped, 'cross_look')
-    # 1 var, certain values
-    analysis.plot_kp_variable(stimuli_mapped, 'cross_look', ['C_L', 'nC_L'])
-    # separate plots for multiple variables
-    analysis.plot_kp_variables_or(stimuli_mapped, [{'variable': 'cross_look', 'value': 'C_L'},  # noqa: E501
-                                                   {'variable': 'traffic_rules', 'value': 'traffic_lights'},  # noqa: E501
-                                                   {'variable': 'traffic_rules', 'value': 'ped_crossing'}])  # noqa: E501
-    # multiple variables as a single filter
-    analysis.plot_kp_variables_and(stimuli_mapped, [{'variable': 'cross_look', 'value': 'C_L'},  # noqa: E501
-                                                    {'variable': 'traffic_rules', 'value': 'traffic_lights'}])  # noqa: E501
-    # create correlation matrix
-    analysis.corr_matrix(stimuli_mapped, save_file=True)
-    # stimulus duration
-    analysis.hist_stim_duration(heroku_data, nbins=100, save_file=True)
-    # browser window dimensions
-    # analysis.hist_browser_dimensions(heroku_data, nbins=100, save_file=True)
-    analysis.scatter_questions(heroku_data,
-                               x='window_width',
-                               y='window_height',
-                               color='browser_name',
-                               save_file=True)
-    analysis.heatmap_questions(heroku_data,
-                               x='window_width',
-                               y='window_height',
-                               save_file=True)
-    # time of participation
-    analysis.hist_time_participation(appen_data, save_file=True)
-    # eye contact of driver and pedestrian
-    analysis.scatter_questions(appen_data,
-                               x='ec_driver',
-                               y='ec_pedestrian',
-                               color='year_license',
-                               save_file=True)
-    # barchart of communication data
-    post_qs = ['Importance of eye contact to pedestrian',
-               'Importance of hand gestures to pedestrian',
-               'Importance of eye contact to driver',
-               'Importance of light signaling to driver',
-               'Importance of waiting for car slow down']
-    analysis.communication_questions_bar(all_data,
-                                         pre_q='communication_importance',
-                                         post_qs=post_qs,
-                                         save_file=True)
-    # barchart foq question
-    analysis.barchart_question(appen_data,
-                               x='driving_freq',
-                               color='year_license',
-                               save_file=True)
-    # grouped barchart of DBQ data
-    analysis.grouped_barchart_questions(appen_data,
-                                        ['dbq1_anger',
-                                         'dbq2_speed_motorway',
-                                         'dbq3_speed_residential',
-                                         'dbq4_headway',
-                                         'dbq5_traffic_lights',
-                                         'dbq6_horn',
-                                         'dbq7_mobile'],
-                                        save_file=True)
-    # check if any figures are to be rendered
-    figures = [manager.canvas.figure
-               for manager in
-               matplotlib._pylab_helpers.Gcf.get_all_fig_managers()]
-    # show figures, if any
-    if figures:
-        plt.show()
+    # # all keypresses
+    # analysis.plot_kp(stimuli_mapped)
+    # # keypresses of an individual stimulus
+    # analysis.plot_kp_video(stimuli_mapped, 'video_0')
+    # # keypresses of all videos individually
+    # analysis.plot_kp_videos(stimuli_mapped)
+    # # 1 var, all values
+    # analysis.plot_kp_variable(stimuli_mapped, 'cross_look')
+    # # 1 var, certain values
+    # analysis.plot_kp_variable(stimuli_mapped, 'cross_look', ['C_L', 'nC_L'])
+    # # separate plots for multiple variables
+    # analysis.plot_kp_variables_or(stimuli_mapped, [{'variable': 'cross_look', 'value': 'C_L'},  # noqa: E501
+    #                                                {'variable': 'traffic_rules', 'value': 'traffic_lights'},  # noqa: E501
+    #                                                {'variable': 'traffic_rules', 'value': 'ped_crossing'}])  # noqa: E501
+    # # multiple variables as a single filter
+    # analysis.plot_kp_variables_and(stimuli_mapped, [{'variable': 'cross_look', 'value': 'C_L'},  # noqa: E501
+    #                                                 {'variable': 'traffic_rules', 'value': 'traffic_lights'}])  # noqa: E501
+    # # create correlation matrix
+    # analysis.corr_matrix(stimuli_mapped, save_file=True)
+    # # stimulus duration
+    # analysis.hist_stim_duration(heroku_data, nbins=100, save_file=True)
+    # # browser window dimensions
+    # # analysis.hist_browser_dimensions(heroku_data, nbins=100, save_file=True)
+    # analysis.scatter_questions(heroku_data,
+    #                            x='window_width',
+    #                            y='window_height',
+    #                            color='browser_name',
+    #                            save_file=True)
+    # analysis.heatmap_questions(heroku_data,
+    #                            x='window_width',
+    #                            y='window_height',
+    #                            save_file=True)
+    # # time of participation
+    # analysis.hist_time_participation(appen_data, save_file=True)
+    # # eye contact of driver and pedestrian
+    # analysis.scatter_questions(appen_data,
+    #                            x='ec_driver',
+    #                            y='ec_pedestrian',
+    #                            color='year_license',
+    #                            save_file=True)
+    # # barchart of communication data
+    # post_qs = ['Importance of eye contact to pedestrian',
+    #            'Importance of hand gestures to pedestrian',
+    #            'Importance of eye contact to driver',
+    #            'Importance of light signaling to driver',
+    #            'Importance of waiting for car slow down']
+    # analysis.communication_questions_bar(all_data,
+    #                                      pre_q='communication_importance',
+    #                                      post_qs=post_qs,
+    #                                      save_file=True)
+    # # barchart foq question
+    # analysis.barchart_question(appen_data,
+    #                            x='driving_freq',
+    #                            color='year_license',
+    #                            save_file=True)
+    # # grouped barchart of DBQ data
+    # analysis.grouped_barchart_questions(appen_data,
+    #                                     ['dbq1_anger',
+    #                                      'dbq2_speed_motorway',
+    #                                      'dbq3_speed_residential',
+    #                                      'dbq4_headway',
+    #                                      'dbq5_traffic_lights',
+    #                                      'dbq6_horn',
+    #                                      'dbq7_mobile'],
+    #                                     save_file=True)
+    # # check if any figures are to be rendered
+    # figures = [manager.canvas.figure
+    #            for manager in
+    #            matplotlib._pylab_helpers.Gcf.get_all_fig_managers()]
+    # # show figures, if any
+    # if figures:
+    #     plt.show()
