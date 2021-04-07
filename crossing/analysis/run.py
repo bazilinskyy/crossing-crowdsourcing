@@ -15,8 +15,12 @@ SAVE_CSV = True  # load csv files with data
 REJECT_CHEATERS = False  # reject cheaters on Appen
 UPDATE_MAPPING = True  # update mapping with keypress data
 RES = 100  # resolution of keypress data plots
-MIN_DUR = -1  # minimal allowed length of stimulus. -1 for any video length
-MAX_DUR = -1  # maximal allowed length of stimulus. -1 for any video length
+# minimal allowed percentage of length of stimulus. -1 for any video length
+# todo: change this to percentage, for example 0.8
+MIN_DUR = -1
+# maximal allowed percentage of length of stimulus. -1 for any video length
+# todo: change this to percentage, for example 1.2
+MAX_DUR = -1
 file_coords = 'coords.p'  # file to save lists with coordinates
 file_mapping = 'mapping.p'  # file to save lists with coordinates
 
@@ -77,18 +81,6 @@ if __name__ == '__main__':
     # Output
     analysis = cs.analysis.Analysis(res=RES)
     logger.info('Creating figures.')
-
-    pre_q = 'how_do_you_feel_about_the_following_communication_between_driver_and_pedestrian_is_important_for_road_safety'
-    # Barplot of communication data
-    analysis.communication_questions_bar(all_data, pre_q, 
-                                        ['importance eye contact pedestrian',
-                                         'importance hand gestures pedestrian',
-                                         'importance eye contact driver',
-                                         'importance light signaling driver',
-                                         'importance waiting slowing down car']
-                                         )
-    
-    analysis.barplot_question(appen_data, ['dbq1_anger', 'dbq2_speed_motorway', 'dbq3_speed_residential'])
     # all keypresses
     analysis.plot_kp(stimuli_mapped)
     # keypresses of an individual stimulus
@@ -112,10 +104,6 @@ if __name__ == '__main__':
     analysis.hist_stim_duration(heroku_data, nbins=100, save_file=True)
     # browser window dimensions
     # analysis.hist_browser_dimensions(heroku_data, nbins=100, save_file=True)
-
-
-
-
     analysis.scatter_questions(heroku_data,
                                x='window_width',
                                y='window_height',
@@ -133,12 +121,31 @@ if __name__ == '__main__':
                                y='ec_pedestrian',
                                color='year_license',
                                save_file=True)
-
-    # analysis.scatter_questions(appen_data,
-    #                            x='',
-    #                            y='',
-    #                            color='',
-    #                            save_file=True)
+    # barchart of communication data
+    post_qs = ['importance eye contact pedestrian',
+               'importance hand gestures pedestrian',
+               'importance eye contact driver',
+               'importance light signaling driver',
+               'importance waiting slowing down car']
+    analysis.communication_questions_bar(all_data,
+                                         pre_q='communication_importance',
+                                         post_qs=post_qs,
+                                         save_file=True)
+    # barchart foq question
+    analysis.barchart_question(appen_data,
+                               x='driving_freq',
+                               color='year_license',
+                               save_file=True)
+    # grouped barchart of DBQ data
+    analysis.grouped_barchart_questions(appen_data,
+                                        ['dbq1_anger',
+                                         'dbq2_speed_motorway',
+                                         'dbq3_speed_residential',
+                                         'dbq4_headway',
+                                         'dbq5_traffic_lights',
+                                         'dbq6_horn',
+                                         'dbq7_mobile'],
+                                        save_file=True)
     # check if any figures are to be rendered
     figures = [manager.canvas.figure
                for manager in

@@ -47,7 +47,8 @@ class Appen:
                        'which_input_device_are_you_using_now': 'device',
                        'if_you_answered_other_in_the_previous_question_please_describe_your_input_device_below': 'device_other',  # noqa: E501
                        'as_a_driver_what_does_it_mean_to_you_when_a_pedestrian_makes_eye_contact_with_you': 'ec_driver',  # noqa: E501
-                       'as_a_pedestrian_what_does_it_mean_to_you_when_a_driver_makes_eye_contact_with_you': 'ec_pedestrian'}  # noqa: E501
+                       'as_a_pedestrian_what_does_it_mean_to_you_when_a_driver_makes_eye_contact_with_you': 'ec_pedestrian',  # noqa: E501
+                       'how_do_you_feel_about_the_following_communication_between_driver_and_pedestrian_is_important_for_road_safety': 'communication_importance'}  # noqa: E501
 
     def __init__(self,
                  file_data: list,
