@@ -30,13 +30,13 @@ class Analysis:
     # resolution of keypress data
     res = 0
 
-    def __init__(self, res: int):
+    def __init__(self):
         # set font to Times
         plt.rc('font', family='serif')
         # set template for plotly output
         self.template = cs.common.get_configs('plotly_template')
         # store resolution for keypress data
-        self.res = res
+        self.res = cs.common.get_configs('kp_resolution')
 
     def corr_matrix(self, df, save_file=False):
         """
