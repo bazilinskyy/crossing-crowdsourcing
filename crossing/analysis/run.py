@@ -73,10 +73,7 @@ if __name__ == '__main__':
                                                'mapping of stimuli')
     # Output
     analysis = cs.analysis.Analysis()
-
     logger.info('Creating figures.')
-
-    analysis.post_trial_data(stimuli_mapped, save_file=False)
     # all keypresses
     analysis.plot_kp(stimuli_mapped)
     # keypresses of an individual stimulus
@@ -104,10 +101,12 @@ if __name__ == '__main__':
                                x='window_width',
                                y='window_height',
                                color='browser_name',
+                               pretty_ticks=True,
                                save_file=True)
     analysis.heatmap_questions(heroku_data,
                                x='window_width',
                                y='window_height',
+                               pretty_ticks=True,
                                save_file=True)
     # time of participation
     analysis.hist_time_participation(appen_data, save_file=True)
@@ -116,6 +115,7 @@ if __name__ == '__main__':
                                x='ec_driver',
                                y='ec_pedestrian',
                                color='year_license',
+                               pretty_ticks=True,
                                save_file=True)
     # barchart of communication data
     post_qs = ['Importance of eye contact to pedestrian',
@@ -127,21 +127,25 @@ if __name__ == '__main__':
                                          pre_q='communication_importance',
                                          post_qs=post_qs,
                                          save_file=True)
-    # barchart foq question
-    analysis.barchart_question(appen_data,
-                               x='driving_freq',
-                               color='year_license',
-                               save_file=True)
+    # barchart for driving frequency
+    analysis.bar_questions(appen_data,
+                           x=['driving_freq'],
+                           color='year_license',
+                           pretty_ticks=True,
+                           save_file=True)
     # grouped barchart of DBQ data
-    analysis.grouped_barchart_questions(appen_data,
-                                        ['dbq1_anger',
-                                         'dbq2_speed_motorway',
-                                         'dbq3_speed_residential',
-                                         'dbq4_headway',
-                                         'dbq5_traffic_lights',
-                                         'dbq6_horn',
-                                         'dbq7_mobile'],
-                                        save_file=True)
+    analysis.bar_questions(appen_data,
+                           x=['dbq1_anger',
+                              'dbq2_speed_motorway',
+                              'dbq3_speed_residential',
+                              'dbq4_headway',
+                              'dbq5_traffic_lights',
+                              'dbq6_horn',
+                              'dbq7_mobile'],
+                           pretty_ticks=True,
+                           save_file=True)
+    # danger levels based on post trial data
+    analysis.danger_values(stimuli_mapped, save_file=True)
     # check if any figures are to be rendered
     figures = [manager.canvas.figure
                for manager in

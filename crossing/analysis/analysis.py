@@ -38,6 +38,8 @@ class Analysis:
         self.template = cs.common.get_configs('plotly_template')
         # store resolution for keypress data
         self.res = cs.common.get_configs('kp_resolution')
+        # number of stimuli
+        self.num_stimuli = cs.common.get_configs('num_stimuli')
 
     def corr_matrix(self, df, save_file=False):
         """
@@ -322,62 +324,63 @@ class Analysis:
         else:
             fig.show()
 
-    def barchart_question(self, df, x, color=None, save_file=False):
+    def bar_questions(self, df, x: list, color=None, pretty_ticks=False,
+                      orientation='v', save_file=False):
         """
-        Barplot of all communication data in pre and post-questionaire.
+        Barplot for questionnaire data. Passing a list with one variable will
+        output a simple barplot; passing a list of variables will output a
+        grouped barplot.
 
         Args:
             df (dataframe): dataframe with data from appen.
-            x: column name of dataframe to plot.
+            x (list): column name of dataframe to plot.
+            color (str, optional): dataframe column to assign color of bars.
+                                   Works only with passing a single variable to
+                                   plot.
+            pretty_ticks (bool, optional): prettify ticks by replacing _ with
+                                           spaces and capitilisng each value.
+            orientation (str, optional): orientation of bars. v=vertical, h=horizontal.
+            save_file (bool, optional): flag for saving an html file with plot.
         """
-        logger.info('Creating barchart for x={}', x)
+        logger.info('Creating bar chart for x={}', x)
         # handle nan values
         # todo: handle ints and strings for nans properly
         if color:
             df[color] = df[color].fillna(0)
-        # make barplot
-        fig = px.bar(df, x=x, color=color)
-        # update layout
-        fig.update_layout(template=self.template)
-        # save file
-        if save_file:
-            self.save_plotly(fig,
-                             'barplot_' + ','.join(str(val) for val in x),
-                             self.folder)
-        # open it in localhost instead
+        # prettify ticks
+        if pretty_ticks:
+            for variable in x:
+                # check if column contains strings
+                if isinstance(df.iloc[0][variable], str):
+                    # replace underscores with spaces
+                    df[variable] = df[variable].str.replace('_', ' ')
+                    # capitlise
+                    df[variable] = df[variable].str.capitalize()
+        # multiple variables given as a list, create grouped
+        if len(x) > 1:
+            fig = go.Figure()
+            for variable in x:
+                fig.add_trace(go.Bar(x=df[variable],
+                                     name=variable,
+                                     orientation=orientation))
+            fig.update_layout(barmode='group')
+        # single variable to plot
         else:
-            fig.show()
-
-    def grouped_barchart_questions(self, df, x, save_file=False):
-        """
-        Barplot of all communication data in pre and post-questionaire.
-
-        Args:
-            df (dataframe): dataframe with data from appen.
-            x: column name of dataframe to plot.
-            save_file (bool, optional): flag for saving an html file with plot.
-        """
-        logger.info('Creating grouped barchart for x={}', x)
-        fig = go.Figure()
-        # add bars for each variable
-        for i in range(len(x)):
-            fig.add_trace(go.Bar(x=df[x[i]].value_counts().index,
-                                 y=df[x[i]].value_counts().values,
-                                 name=x[i]))
+            fig = px.bar(df, x=x[0], color=color, orientation=orientation)
         # update layout
         fig.update_layout(template=self.template)
         # save file
         if save_file:
             self.save_plotly(fig,
-                             'barplot_' + ','.join(str(val) for val in x),
+                             'bar_' + ','.join(str(val) for val in x),
                              self.folder)
         # open it in localhost instead
         else:
             fig.show()
 
     def scatter_questions(self, df, x, y, color=None, size=None,
-                          marginal_x='violin', marginal_y='violin',
-                          save_file=True):
+                          pretty_ticks=False, marginal_x='violin',
+                          marginal_y='violin', save_file=True):
         """
         Output scatter plot of variables x and y with optinal assignment of
         colour and size.
@@ -388,6 +391,8 @@ class Analysis:
             y (str): dataframe column to plot on y axis.
             color (str, optional): dataframe column to assign color of circles.
             size (str, optional):  dataframe column to assign soze of circles.
+            pretty_ticks (bool, optional): prettify ticks by replacing _ with
+                                           spaces and capitilisng each value.
             marginal_x (str, optional): type of marginal on x axis. Can be
                                         'histogram', 'rug', 'box', or 'violin'.
             marginal_y (str, optional): type of marginal on y axis. Can be
@@ -403,6 +408,28 @@ class Analysis:
             df[color] = df[color].fillna(0)
         if size:
             df[size] = df[size].fillna(0)
+        # prettify ticks
+        if pretty_ticks:     
+            if isinstance(df.iloc[0][x], str):  # check if string
+                # replace underscores with spaces
+                df[x] = df[x].str.replace('_', ' ')
+                # capitlise
+                df[x] = df[x].str.capitalize()
+            if isinstance(df.iloc[0][y], str):  # check if string
+                # replace underscores with spaces
+                df[y] = df[y].str.replace('_', ' ')
+                # capitlise
+                df[y] = df[y].str.capitalize()
+            if color and isinstance(df.iloc[0][color], str):  # check if string
+                # replace underscores with spaces
+                df[color] = df[color].str.replace('_', ' ')
+                # capitlise
+                df[color] = df[color].str.capitalize()
+            if size and isinstance(df.iloc[0][size], str):  # check if string
+                # replace underscores with spaces
+                df[size] = df[size].str.replace('_', ' ')
+                # capitlise
+                df[size] = df[size].str.capitalize()
         # scatter plot with histograms
         fig = px.scatter(df,
                          x=x,
@@ -423,7 +450,7 @@ class Analysis:
         else:
             fig.show()
 
-    def heatmap_questions(self, df, x, y,
+    def heatmap_questions(self, df, x, y, pretty_ticks=False,
                           marginal_x='violin', marginal_y='violin',
                           save_file=True):
         """
@@ -433,17 +460,32 @@ class Analysis:
             df (dataframe): dataframe with data from heroku.
             x (str): dataframe column to plot on x axis.
             y (str): dataframe column to plot on y axis.
-            color (str, optional): dataframe column to assign color of circles.
-            size (str, optional):  dataframe column to assign soze of circles.
-            marginal_x (str, optional): Description
+            pretty_ticks (bool, optional): prettify ticks by replacing _ with
+                                           spaces and capitilisng each value.
+            marginal_x (str, optional): type of marginal on x axis. Can be
+                                        'histogram', 'rug', 'box', or 'violin'.
+            marginal_y (str, optional): type of marginal on y axis. Can be
+                                        'histogram', 'rug', 'box', or 'violin'.
             save_file (bool, optional): flag for saving an html file with plot.
         """
         logger.info('Creating heatmap for x={} and y={}.',
                     x, y)
+        # prettify ticks
+        if pretty_ticks:
+            if isinstance(df.iloc[0][x], str):  # check if string
+                # replace underscores with spaces
+                df[x] = df[x].str.replace('_', ' ')
+                # capitlise
+                df[x] = df[x].str.capitalize()
+            if isinstance(df.iloc[0][y], str):  # check if string
+                # replace underscores with spaces
+                df[y] = df[y].str.replace('_', ' ')
+                # capitlise
+                df[y] = df[y].str.capitalize()
         # density map with histograms
         fig = px.density_heatmap(df,
-                                 x='window_width',
-                                 y='window_height',
+                                 x=x,
+                                 y=y,
                                  marginal_x='violin',
                                  marginal_y='violin')
         # update layout
@@ -801,21 +843,17 @@ class Analysis:
         else:
             fig.show()
 
-    def post_trial_data(self, df, save_file=True):
-        """Plotting danger values of post-trial data
+    def danger_values(self, df, save_file=True):
+        """Plotting danger values of post-trial data.
 
         Args:
             df (dataframe): dataframe containing mappping data
         """
         # todo: add optional column with values, to filter specific data
-        # repetitions already included in data
-        num_stimuli = cs.common.get_configs('num_stimuli')
-
         # create array with names of the data
         name_array = []
-        for i in range(0, num_stimuli):
+        for i in range(0, self.num_stimuli):
             name_array.append('video_' + str(i))
-        
         # go through all data of a single video
         vid_data = []
         for index, row in df.iterrows():
@@ -823,28 +861,21 @@ class Analysis:
             avg_danger = 0
             for counter, data in enumerate(row['as']):
                 # add all danger values in one
-                print(data[0])
                 avg_danger = avg_danger + int(data[0])
             # calculate average danger value per vid and append to array
             # counter starts add 0, so add 1
-            avg_danger = avg_danger/(counter+1)
+            avg_danger = avg_danger / (counter + 1)
             vid_data.append(avg_danger)
-
-        fig = go.Figure(data=[
-                              go.Bar(name='Danger values',
+        fig = go.Figure(data=[go.Bar(name='Danger values',
                                      x=name_array,
-                                     y=vid_data)
-                             ])
-            
+                                     y=vid_data)])
         # update layout
         fig.update_layout(template=self.template,
                           yaxis_range=[0, 100],
-                          yaxis_title="Level of Danger")
+                          yaxis_title="Level of danger")
         # save file
         if save_file:
-            self.save_plotly(fig,
-                             'danger_values',
-                             self.folder)
+            self.save_plotly(fig, 'danger_values', self.folder)
         # open it in localhost instead
         else:
             fig.show()
