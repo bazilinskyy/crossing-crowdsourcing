@@ -155,8 +155,10 @@ class Analysis:
         else:
             fig.show()
 
-    def bar(self, df, x: list, pretty_ticks=False, orientation='v',
-            xaxis_title=None, yaxis_title=None, save_file=False):
+    def bar(self, df, y: list, x=None, stacked=False, pretty_ticks=False,
+            orientation='v', xaxis_title=None, yaxis_title=None,
+            show_all_xticks=False, show_all_yticks=False,
+            show_text_labels=False, save_file=False):
         """
         Barplot for questionnaire data. Passing a list with one variable will
         output a simple barplot; passing a list of variables will output a
@@ -164,44 +166,76 @@ class Analysis:
 
         Args:
             df (dataframe): dataframe with data from appen.
-            x (list): column names of dataframe to plot.
+            y (list): column names of dataframe to plot.
+            x (list): values in index of dataframe to plot for.
+            stacked (bool, optional): show as stacked chart.
             pretty_ticks (bool, optional): prettify ticks by replacing _ with
                                            spaces and capitilisng each value.
             orientation (str, optional): orientation of bars. v=vertical,
                                          h=horizontal.
             xaxis_title (str, optional): title for x axis.
             yaxis_title (str, optional): title for y axis.
+            show_all_xticks (bool, optional): show all ticks on x axis.
+            show_all_yticks (bool, optional): show all ticks on y axis.
+            show_text_labels (bool, optional): output automatically positionsed
+                                               text labels.
             save_file (bool, optional): flag for saving an html file with plot.
         """
-        logger.info('Creating bar chart for x={}', x)
+        logger.info('Creating bar chart for x={} and y={}', x, y)
         # prettify ticks
         if pretty_ticks:
-            for variable in x:
+            # if x is given
+            if x:
+                for variable in x:
+                    # check if column contains strings
+                    if isinstance(df.iloc[0][variable], str):
+                        # replace underscores with spaces
+                        df[variable] = df[variable].str.replace('_', ' ')
+                        # capitlise
+                        df[variable] = df[variable].str.capitalize()
+            for variable in y:
                 # check if column contains strings
                 if isinstance(df.iloc[0][variable], str):
                     # replace underscores with spaces
                     df[variable] = df[variable].str.replace('_', ' ')
                     # capitlise
                     df[variable] = df[variable].str.capitalize()
-        # multiple variables given as a list, create grouped
-        if len(x) > 1:
-            fig = go.Figure()
-            for variable in x:
-                fig.add_trace(go.Bar(x=df[variable].value_counts().index,
-                                     y=df[variable].value_counts().values,
+        # create figure
+        fig = go.Figure()
+        # go over variables to plot
+        for variable in y:
+            # showing text labels
+            if show_text_labels:
+                text = df[variable]
+            else:
+                text = None
+            # x values were given
+            if x:
+                fig.add_trace(go.Bar(x=df[x],
+                                     y=df[variable],
                                      name=variable,
                                      orientation=orientation,
+                                     text=text,
                                      textposition='auto'))
+            # x values were not given, plot against index
+            else:
+                fig.add_trace(go.Bar(y=df[variable],
+                                     name=variable,
+                                     orientation=orientation,
+                                     text=text,
+                                     textposition='auto'))
+        # add tabs if multiple variables are plotted
+        if len(y) > 1:
             fig.update_layout(barmode='group')
             buttons = list([dict(label='All',
                                  method='update',
-                                 args=[{'visible': [True] * df[x].shape[0]},
+                                 args=[{'visible': [True] * df[y].shape[0]},
                                        {'title': 'All',
                                        'showlegend': True}])])
             # counter for traversing through stimuli
             counter_rows = 0
-            for variable in x:
-                visibility = [[counter_rows == j] for j in range(len(x))]
+            for variable in y:
+                visibility = [[counter_rows == j] for j in range(len(y))]
                 visibility = [item for sublist in visibility for item in sublist]  # noqa: E501
                 button = dict(label=variable,
                               method='update',
@@ -211,23 +245,34 @@ class Analysis:
                 counter_rows = counter_rows + 1
             updatemenus = [dict(x=-0.15, buttons=buttons, showactive=True)]
             fig['layout']['updatemenus'] = updatemenus
-            # update layout
-            fig.update_layout(template=self.template,
-                              xaxis_title=xaxis_title,
-                              yaxis_title=yaxis_title)
-        # single variable to plot
-        else:
-            fig = px.bar(df,
-                         df[x[0]].value_counts().index,
-                         y=df[x[0]].value_counts().values,
-                         orientation=orientation)
+            fig['layout']['title'] = 'All'
         # update layout
-        fig['layout']['title'] = 'Keypresses for individual stimuli'
-        fig.update_layout(template=self.template)
+        fig.update_layout(template=self.template,
+                          xaxis_title=xaxis_title,
+                          yaxis_title=yaxis_title)
+        # format text labels
+        if show_text_labels:
+            fig.update_traces(texttemplate='%{text:.2s}')
+        # show all ticks on x axis
+        if show_all_xticks:
+            fig.update_layout(xaxis=dict(dtick=1))
+        # show all ticks on x axis
+        if show_all_yticks:
+            fig.update_layout(yaxis=dict(dtick=1))
+        # stacked bar chart
+        if stacked:
+            fig.update_layout(barmode='stack')
         # save file
         if save_file:
+            # x values were given
+            if x:
+                file_name = 'bar_' + ','.join(str(val) for val in x) + '_' + \
+                            ','.join(str(val) for val in y)
+            # x values were not given
+            else:
+                file_name = 'bar_' + ','.join(str(val) for val in y)
             self.save_plotly(fig,
-                             'bar_' + ','.join(str(val) for val in x),
+                             file_name,
                              self.folder)
         # open it in localhost instead
         else:
@@ -832,43 +877,6 @@ class Analysis:
         # save file
         if save_file:
             self.save_plotly(fig, 'kp_and' + variables_str, self.folder)
-        # open it in localhost instead
-        else:
-            fig.show()
-
-    def danger_values(self, df, save_file=True):
-        """Plotting danger values of post-trial data.
-
-        Args:
-            df (dataframe): dataframe containing mappping data
-        """
-        # todo: add optional column with values, to filter specific data
-        # create array with names of the data
-        name_array = []
-        for i in range(0, self.num_stimuli):
-            name_array.append('video_' + str(i))
-        # go through all data of a single video
-        vid_data = []
-        for index, row in df.iterrows():
-            # go through array to get data
-            avg_danger = 0
-            for counter, data in enumerate(row['as']):
-                # add all danger values in one
-                avg_danger = avg_danger + int(data[0])
-            # calculate average danger value per vid and append to array
-            # counter starts add 0, so add 1
-            avg_danger = avg_danger / (counter + 1)
-            vid_data.append(avg_danger)
-        fig = go.Figure(data=[go.Bar(name='Danger values',
-                                     x=name_array,
-                                     y=vid_data)])
-        # update layout
-        fig.update_layout(template=self.template,
-                          yaxis_range=[0, 100],
-                          yaxis_title="Level of danger")
-        # save file
-        if save_file:
-            self.save_plotly(fig, 'danger_values', self.folder)
         # open it in localhost instead
         else:
             fig.show()

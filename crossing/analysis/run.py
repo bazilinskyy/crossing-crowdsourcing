@@ -64,8 +64,17 @@ if __name__ == '__main__':
         stimuli_mapped = heroku.read_mapping()
         # process keypresses and update mapping
         stimuli_mapped = heroku.process_kp()
+        # post-trial questions to process
+        questions = [{'question': 'risky_slider',
+                      'type': 'num'},
+                     {'question': 'eye-contact',
+                      'type': 'str',
+                      'options': ['Yes',
+                                  'Yes but too late',
+                                  'No',
+                                  'I don\'t know']}]
         # process post-trial questions and update mapping
-        stimuli_mapping = heroku.process_post_stimulus_questions()
+        stimuli_mapping = heroku.process_post_stimulus_questions(questions)
         # export to pickle
         cs.common.save_to_p(file_mapping,
                             stimuli_mapped,
@@ -136,24 +145,12 @@ if __name__ == '__main__':
                            pre_q='communication_importance',
                            post_qs=post_qs,
                            save_file=True)
-    # barchart for driving frequency
-    analysis.bar(appen_data,
-                 x=['driving_freq'],
-                 pretty_ticks=True,
-                 save_file=True)
+    # histogram for driving frequency
+    analysis.hist(appen_data,
+                  x=['driving_freq'],
+                  pretty_ticks=True,
+                  save_file=True)
     # grouped barchart of DBQ data
-    analysis.bar(appen_data,
-                 x=['dbq1_anger',
-                    'dbq2_speed_motorway',
-                    'dbq3_speed_residential',
-                    'dbq4_headway',
-                    'dbq5_traffic_lights',
-                    'dbq6_horn',
-                    'dbq7_mobile'],
-                 pretty_ticks=True,
-                 xaxis_title='DBQ',
-                 yaxis_title='Counts',
-                 save_file=True,)
     analysis.hist(appen_data,
                   x=['dbq1_anger',
                      'dbq2_speed_motorway',
@@ -165,8 +162,24 @@ if __name__ == '__main__':
                   marginal='violin',
                   pretty_ticks=True,
                   save_file=True)
-    # danger levels based on post trial data
-    analysis.danger_values(stimuli_mapped, save_file=True)
+    # post-trial questions. level of danger
+    analysis.bar(stimuli_mapped,
+                 y=['risky_slider'],
+                 show_all_xticks=True,
+                 xaxis_title='Video ID',
+                 yaxis_title='Score',
+                 save_file=True)
+    # post-trial questions. eye contact
+    analysis.bar(stimuli_mapped,
+                 y=['eye-contact-yes',
+                    'eye-contact-yes_but_too_late',
+                    'eye-contact-no',
+                    'eye-contact-i_don\'t_know'],
+                 stacked=True,
+                 show_all_xticks=True,
+                 xaxis_title='Video ID',
+                 yaxis_title='Count',
+                 save_file=True)
     # check if any figures are to be rendered
     figures = [manager.canvas.figure
                for manager in
