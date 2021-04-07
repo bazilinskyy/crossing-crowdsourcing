@@ -62,9 +62,11 @@ if __name__ == '__main__':
     if UPDATE_MAPPING:
         # read in mapping of stimuli
         stimuli_mapped = heroku.read_mapping()
-        # read in mapping of stimuli
+        # process keypresses and update mapping
         stimuli_mapped = heroku.process_kp()
+        # process post-trial questions and update mapping
         stimuli_mapping = heroku.process_post_stimulus_questions()
+        # export to pickle
         cs.common.save_to_p(file_mapping,
                             stimuli_mapped,
                             'mapping with keypress data')
