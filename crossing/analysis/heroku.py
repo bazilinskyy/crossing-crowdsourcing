@@ -421,6 +421,7 @@ class Heroku:
         return self.mapping
 
     def process_post_stimulus_questions(self):
+        logger.info('Processing post-stimulus questions')
         # array in which arrays of video_as data is stored
         mapping_as = []
         # loop through all videos
