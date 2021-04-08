@@ -75,7 +75,7 @@ if __name__ == '__main__':
                                   'No',
                                   'I don\'t know']}]
         # process post-trial questions and update mapping
-        stimuli_mapping = heroku.process_post_stimulus_questions(questions)
+        stimuli_mapping = heroku.process_stimulus_questions(questions)
         # export to pickle
         cs.common.save_to_p(file_mapping,
                             mapping,

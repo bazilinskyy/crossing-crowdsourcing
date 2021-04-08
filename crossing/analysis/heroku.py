@@ -63,8 +63,7 @@ class Heroku:
         self.threshold_dur = cs.common.get_configs('allowed_stimuli_wrong_duration')  # noqa: E501
 
     def set_data(self, heroku_data):
-        """
-        Setter for the data object.
+        """Setter for the data object.
         """
         old_shape = self.heroku_data.shape  # store old shape for logging
         self.heroku_data = heroku_data
@@ -72,11 +71,15 @@ class Heroku:
                     old_shape,
                     self.heroku_data.shape)
 
-    def read_data(self):
+    def read_data(self, filter_data=True):
+        """Read data into an attribute.
+
+        Args:
+            filter_data (bool, optional): flag for filtering data.
+
+        Returns:
+            dataframe: udpated dataframe.
         """
-        Read data into an attribute.
-        """
-        # todo: read heroku data
         # load data
         if self.load_p:
             df = cs.common.load_from_p(self.file_p,
@@ -293,7 +296,8 @@ class Heroku:
             logger.info('People who attempted to participate: {}',
                         unique_worker_codes.shape[0])
             # filter data
-            df = self.filter_data(df)
+            if filter_data:
+                df = self.filter_data(df)
             # sort columns alphabetically
             df = df.reindex(sorted(df.columns), axis=1)
             # move worker_code to the front
@@ -435,7 +439,7 @@ class Heroku:
         # return new mapping
         return self.mapping
 
-    def process_post_stimulus_questions(self, questions):
+    def process_stimulus_questions(self, questions):
         """Process questions that follow each stimulus.
 
         Args:
@@ -449,7 +453,7 @@ class Heroku:
         # array in which arrays of video_as data is stored
         mapping_as = []
         # loop through all stimuli
-        for i in tqdm(range(self.num_stimuli)):
+        for num in tqdm(range(self.num_stimuli)):
             # calculate length of of array with answers
             length = 0
             for q in questions:
@@ -469,8 +473,8 @@ class Heroku:
             # for number of repetitions in survey, add extra number
             for rep in range(self.num_repeat):
                 # add suffix with repetition ID
-                video_as = 'video_' + str(i) + '-as-' + str(rep)
-                video_order = 'video_' + str(i) + '-qs-' + str(rep)
+                video_as = 'video_' + str(num) + '-as-' + str(rep)
+                video_order = 'video_' + str(num) + '-qs-' + str(rep)
                 # loop over columns
                 for col_name, col_data in self.heroku_data.iteritems():
                     # when col_name equals video, then check
@@ -494,7 +498,7 @@ class Heroku:
             # calculate mean answers from all repetitions for numeric questions
             for i, q in enumerate(questions):
                 if q['type'] == 'num' and answers[i]:
-                    answers[i] = np.mean([float(i) for i in answers[i]])
+                    answers[i] = np.mean([float(j) for j in answers[i]])
             # save video data in array
             mapping_as.append(answers)
         # add column with data to current mapping file
