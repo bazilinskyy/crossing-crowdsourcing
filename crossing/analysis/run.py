@@ -61,9 +61,9 @@ if __name__ == '__main__':
     # update mapping with keypress data
     if UPDATE_MAPPING:
         # read in mapping of stimuli
-        stimuli_mapped = heroku.read_mapping()
+        mapping = heroku.read_mapping()
         # process keypresses and update mapping
-        stimuli_mapped = heroku.process_kp()
+        mapping = heroku.process_kp()
         # post-trial questions to process
         questions = [{'question': 'risky_slider',
                       'type': 'num'},
@@ -77,63 +77,63 @@ if __name__ == '__main__':
         stimuli_mapping = heroku.process_post_stimulus_questions(questions)
         # export to pickle
         cs.common.save_to_p(file_mapping,
-                            stimuli_mapped,
+                            mapping,
                             'mapping with keypress data')
     else:
-        stimuli_mapped = cs.common.load_from_p(file_mapping,
-                                               'mapping of stimuli')
+        mapping = cs.common.load_from_p(file_mapping,
+                                        'mapping of stimuli')
     # Output
     analysis = cs.analysis.Analysis()
     logger.info('Creating figures.')
     # all keypresses
-    analysis.plot_kp(stimuli_mapped)
+    analysis.plot_kp(mapping)
     # keypresses of an individual stimulus
-    analysis.plot_kp_video(stimuli_mapped, 'video_0')
+    analysis.plot_kp_video(mapping, 'video_0')
     # keypresses of all videos individually
-    analysis.plot_kp_videos(stimuli_mapped)
+    analysis.plot_kp_videos(mapping)
     # 1 var, all values
-    analysis.plot_kp_variable(stimuli_mapped, 'cross_look')
+    analysis.plot_kp_variable(mapping, 'cross_look')
     # 1 var, certain values
-    analysis.plot_kp_variable(stimuli_mapped, 'cross_look', ['C_L', 'nC_L'])
+    analysis.plot_kp_variable(mapping, 'cross_look', ['C_L', 'nC_L'])
     # separate plots for multiple variables
-    analysis.plot_kp_variables_or(stimuli_mapped, [{'variable': 'cross_look', 'value': 'C_L'},  # noqa: E501
+    analysis.plot_kp_variables_or(mapping, [{'variable': 'cross_look', 'value': 'C_L'},  # noqa: E501
                                                    {'variable': 'traffic_rules', 'value': 'traffic_lights'},  # noqa: E501
                                                    {'variable': 'traffic_rules', 'value': 'ped_crossing'}])  # noqa: E501
     # multiple variables as a single filter
-    analysis.plot_kp_variables_and(stimuli_mapped, [{'variable': 'cross_look', 'value': 'C_L'},  # noqa: E501
+    analysis.plot_kp_variables_and(mapping, [{'variable': 'cross_look', 'value': 'C_L'},  # noqa: E501
                                                     {'variable': 'traffic_rules', 'value': 'traffic_lights'}])  # noqa: E501
     # create correlation matrix
-    analysis.corr_matrix(stimuli_mapped, save_file=True)
+    analysis.corr_matrix(mapping, save_file=True)
     # stimulus duration
     analysis.hist(heroku_data,
               x=heroku_data.columns[heroku_data.columns.to_series().str.contains('-dur')],  # noqa: E501
               nbins=100,
-              pretty_ticks=True,
+              pretty_text=True,
               save_file=True)
     # browser window dimensions
     analysis.scatter(heroku_data,
                      x='window_width',
                      y='window_height',
                      color='browser_name',
-                     pretty_ticks=True,
+                     pretty_text=True,
                      save_file=True)
     analysis.heatmap(heroku_data,
                      x='window_width',
                      y='window_height',
-                     pretty_ticks=True,
+                     pretty_text=True,
                      save_file=True)
     # time of participation
     analysis.hist(appen_data,
                   x=['time'],
                   color='country',
-                  pretty_ticks=True,
+                  pretty_text=True,
                   save_file=True)
     # eye contact of driver and pedestrian
     analysis.scatter(appen_data,
                      x='ec_driver',
                      y='ec_pedestrian',
                      color='year_license',
-                     pretty_ticks=True,
+                     pretty_text=True,
                      save_file=True)
     # barchart of communication data
     post_qs = ['Importance of eye contact to pedestrian',
@@ -148,7 +148,7 @@ if __name__ == '__main__':
     # histogram for driving frequency
     analysis.hist(appen_data,
                   x=['driving_freq'],
-                  pretty_ticks=True,
+                  pretty_text=True,
                   save_file=True)
     # grouped barchart of DBQ data
     analysis.hist(appen_data,
@@ -160,19 +160,19 @@ if __name__ == '__main__':
                      'dbq6_horn',
                      'dbq7_mobile'],
                   marginal='violin',
-                  pretty_ticks=True,
+                  pretty_text=True,
                   save_file=True)
     # post-trial questions. level of danger
-    analysis.bar(stimuli_mapped,
-                 x=stimuli_mapped.index,
+    analysis.bar(mapping,
+                 x=mapping.index,
                  y=['risky_slider'],
                  show_all_xticks=True,
                  xaxis_title='Video ID',
                  yaxis_title='Score',
                  save_file=True)
-    # post-trial questions. eye contact
-    analysis.bar(stimuli_mapped,
-                 x=stimuli_mapped.index,
+    # post-trial questions. bar chart for eye contact
+    analysis.bar(mapping,
+                 x=mapping.index,
                  y=['eye-contact-yes',
                     'eye-contact-yes_but_too_late',
                     'eye-contact-no',
@@ -181,8 +181,43 @@ if __name__ == '__main__':
                  show_all_xticks=True,
                  xaxis_title='Video ID',
                  yaxis_title='Count',
-                 pretty_ticks=True,
+                 pretty_text=True,
                  save_file=True)
+    # calculate mean of eye contact
+    df = mapping
+    df['eye-contact-no'] = df['eye-contact-no'] * 1
+    df['eye-contact-yes_but_too_late'] = df['eye-contact-yes_but_too_late'] * 2
+    df['eye-contact-i_don\'t_know'] = df['eye-contact-i_don\'t_know'] * 3
+    df['eye-contact_mean'] = df[['eye-contact-yes',
+                                 'eye-contact-yes_but_too_late',
+                                 'eye-contact-no']].sum(axis=1)
+    # post-trial questions. hist for eye contact
+    analysis.hist(mapping,
+                  x=['eye-contact_mean'],
+                  pretty_text=True,
+                  xaxis_title='Whether pedestiran made eye contact',
+                  yaxis_title='Count',
+                  save_file=True)
+    # scatter plot of risk score / eye contact
+    analysis.scatter(df,
+                     x='risky_slider',
+                     y='eye-contact-yes',
+                     color='cross_look',
+                     hover_data=['risky_slider',
+                                 'eye-contact-yes',
+                                 'eye-contact-yes_but_too_late',
+                                 'eye-contact-no',
+                                 'eye-contact-i_don\'t_know',
+                                 'cross_look',
+                                 'traffic_rules'],
+                     # pretty_text=True,
+                     xaxis_title='The riskiness of behaviour in video '
+                                 + '(0-100)',
+                     yaxis_title='Whether pedestiran made eye contact '
+                                 + '(No=1, Yes but too late=2, Yes=3)',
+                     xaxis_range=[-10, 100],
+                     yaxis_range=[-1, 5],
+                     save_file=True)
     # check if any figures are to be rendered
     figures = [manager.canvas.figure
                for manager in
