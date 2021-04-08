@@ -183,7 +183,8 @@ if __name__ == '__main__':
                  yaxis_title='Count',
                  pretty_text=True,
                  save_file=True)
-    calculate mean of eye contact
+
+    # calculate mean of eye contact
     df = mapping
     df['eye-contact-no'] = df['eye-contact-no'] * 1
     df['eye-contact-yes_but_too_late'] = df['eye-contact-yes_but_too_late'] * 2
