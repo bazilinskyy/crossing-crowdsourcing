@@ -5,7 +5,7 @@ import matplotlib._pylab_helpers
 
 import crossing as cs
 
-cs.logs(show_level='debug', show_color=True)
+cs.logs(show_level='info', show_color=True)
 logger = cs.CustomLogger(__name__)  # use custom logger
 
 # Const

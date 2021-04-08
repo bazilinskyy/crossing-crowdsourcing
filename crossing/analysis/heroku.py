@@ -276,16 +276,12 @@ class Heroku:
                             data_dict[dict_row['worker_code']][key + '-0'] = value  # noqa: E501
                         # update old value
                         else:
-                            # udpate only if the ites from the first repetition
-                            # is a list
-                            if isinstance(data_dict[dict_row['worker_code']][key + '-0'], list):  # noqa: E501
-                                # traverse repetition ids untill get new
-                                # repetition
-                                for rep in range(0, self.num_repeat):
-                                    # build new key with id of repetition
-                                    new_key = key + '-' + str(rep)
-                                    if new_key not in data_dict[dict_row['worker_code']].keys():  # noqa: E501
-                                        data_dict[dict_row['worker_code']][new_key] = value  # noqa: E501
+                            # traverse repetition ids untill get new repetition
+                            for rep in range(0, self.num_repeat):
+                                # build new key with id of repetition
+                                new_key = key + '-' + str(rep)
+                                if new_key not in data_dict[dict_row['worker_code']].keys():  # noqa: E501
+                                    data_dict[dict_row['worker_code']][new_key] = value  # noqa: E501
                 # worker_code is ecnountered for the first time
                 else:
                     data_dict[dict_row['worker_code']] = dict_row
@@ -374,7 +370,7 @@ class Heroku:
                                 if (dur < self.mapping['min_dur'][video_id]
                                    or dur > self.mapping['max_dur'][video_id]):
                                     # increase counter of filtered videos
-                                    logger.debug('Filtered reaction time from '
+                                    logger.debug('Filtered keypress data from '
                                                  + 'video {} of detected '
                                                  + 'duration of {} for '
                                                  + 'worker {}.',
@@ -541,7 +537,7 @@ class Heroku:
                questions of traffic sign.
 
         Args:
-            df (TYPE): dataframe with data.
+            df (dataframe): dataframe with data.
 
         Returns:
             dataframe: updated dataframe.
@@ -567,17 +563,25 @@ class Heroku:
         for index, row in tqdm(df.iterrows(), total=df.shape[0]):
             data_count = 0
             counter_filtered = 0
-            for count, vid in enumerate(video_dur):
-                # check for nan values
-                if pd.isna(row[vid]):
-                    continue
-                else:
-                    # up data count when data is found
-                    data_count = data_count + 1
-                    if (row[vid] < (self.mapping['min_dur'].iloc[count])
-                       or row[vid] > (self.mapping['max_dur'].iloc[count])):
-                        # up counter if data with wrong length is found
-                        counter_filtered = counter_filtered + 1
+            for i in range(self.num_stimuli):
+                # video ID
+                video_id = 'video_' + str(i)
+                for rep in range(self.num_repeat):
+                    # add suffix with repetition ID
+                    video_dur = 'video_' + str(i) + '-dur-' + str(rep)
+                    # check id value is present
+                    if video_dur not in row.keys():
+                        continue
+                    # check for nan values
+                    if pd.isna(row[video_dur]):
+                        continue
+                    else:
+                        # up data count when data is found
+                        data_count = data_count + 1
+                        if (row[video_dur] < (self.mapping['min_dur'].iloc[i])  # noqa: E501
+                           or row[video_dur] > (self.mapping['max_dur'].iloc[i])):  # noqa: E501
+                            # up counter if data with wrong length is found
+                            counter_filtered = counter_filtered + 1
             # Only check for participants that watched all videos
             if data_count >= self.num_stimuli_participant * self.num_repeat:
                 # check threshold ratio
