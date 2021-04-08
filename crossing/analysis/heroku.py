@@ -348,16 +348,16 @@ class Heroku:
         # counter of videos filtered because of length
         counter_filtered = 0
         # loop through all stimuli
-        for i in tqdm(range(self.num_stimuli)):
+        for num in tqdm(range(self.num_stimuli)):
             video_kp = []
             # video ID
-            video_id = 'video_' + str(i)
+            video_id = 'video_' + str(num)
             for rep in range(self.num_repeat):
                 # add suffix with repetition ID
-                video_rt = 'video_' + str(i) + '-rt-' + str(rep)
-                video_dur = 'video_' + str(i) + '-dur-' + str(rep)
+                video_rt = 'video_' + str(num) + '-rt-' + str(rep)
+                video_dur = 'video_' + str(num) + '-dur-' + str(rep)
                 # extract video length
-                video_len = self.mapping.loc['video_' + str(i)]['video_length']
+                video_len = self.mapping.loc[video_id]['video_length']
                 rt_data = []
                 counter_data = 0
                 for (col_name, col_data) in self.heroku_data.iteritems():
