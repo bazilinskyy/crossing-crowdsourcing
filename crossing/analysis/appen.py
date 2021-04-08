@@ -159,11 +159,13 @@ class Appen:
         # concatanate dfs with filtered data
         old_size = df.shape[0]
         df_filtered = pd.concat([df_1, df_2, df_3, df_4, df_5])
-        # drop rows with filtered data
-        unique_worker_codes = df_filtered['worker_code'].drop_duplicates()
-        df = df[~df['worker_code'].isin(unique_worker_codes)]
-        # reset index in dataframe
-        df = df.reset_index()
+        # check if there are people to filter
+        if not df_filtered.empty:
+            # drop rows with filtered data
+            unique_worker_codes = df_filtered['worker_code'].drop_duplicates()
+            df = df[~df['worker_code'].isin(unique_worker_codes)]
+            # reset index in dataframe
+            df = df.reset_index()
         logger.info('Filtered in total in appen data: {}',
                     old_size - df.shape[0])
         return df

@@ -301,19 +301,6 @@ class Analysis:
             logger.error('Argument marker_size cannot be used together with'
                          + ' histogram marginal(s).')
             return -1
-        # handle nan values
-        # strings detected
-        if color and isinstance(df.iloc[0][color], str):
-            df[color] = df[color].fillna('NaN')
-        # not strings detected, assuming numeric data
-        elif color and not isinstance(df.iloc[0][color], str):
-            df[color] = df[color].fillna(0)
-        # strings detected
-        if size and isinstance(df.iloc[0][size], str):
-            df[size] = df[size].fillna('NaN')
-        # not strings detected, assuming numeric data
-        elif size and not isinstance(df.iloc[0][size], str):
-            df[size] = df[size].fillna(0)
         # prettify text
         if pretty_text:
             if isinstance(df.iloc[0][x], str):  # check if string
@@ -451,19 +438,6 @@ class Analysis:
             logger.error('Color property can be used only with a single' +
                          ' variable to plot.')
             return -1
-        # handle nans
-        # strings detected
-        if isinstance(df.iloc[0][x[0]], str):
-            df[x] = df[x].fillna('NaN')
-        # not strings detected, assuming numeric data
-        elif not isinstance(df.iloc[0][x[0]], str):
-            df[x] = df[x].fillna(0)
-        # strings detected
-        if color and isinstance(df.iloc[0][color], str):
-            df[color] = df[color].fillna('NaN')
-        # not strings detected, assuming numeric data
-        elif color and not isinstance(df.iloc[0][color], str):
-            df[color] = df[color].fillna(0)
         # prettify ticks
         if pretty_text:
             for variable in x:
