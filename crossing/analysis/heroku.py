@@ -60,6 +60,7 @@ class Heroku:
         self.res = cs.common.get_configs('kp_resolution')
         self.min_dur = cs.common.get_configs('min_stimulus_duration')
         self.max_dur = cs.common.get_configs('max_stimulus_duration')
+        self.threshold_dur = cs.common.get_configs('allowed_stimuli_wrong_duration')
 
     def set_data(self, heroku_data):
         """
@@ -358,13 +359,6 @@ class Heroku:
                     if video_rt == col_name:
                         # loop through rows in column
                         for row_index, row in enumerate(col_data):
-                            # todo: filter based on percentages by cross-checking the duration of teh stimulus in mapping file.
-                            # consider only videos of allowed length
-                            if self.min_dur >= 0 and self.max_dur >= 0 \
-                              and video_dur in self.heroku_data.keys():
-                                dur = self.heroku_data.iloc[row_index][video_dur]  # noqa: E501
-                                if dur < self.min_dur or dur > self.max_dur:
-                                    continue
                             # check if data is string to filter out nan data
                             if type(row) == list:
                                 # saving amount of times the video has been
@@ -522,18 +516,42 @@ class Heroku:
         # load mapping of codes and coordinates
         logger.info('Filtering heroku data.')
         # fetch variables from config file
+        mapping = pd.read_csv(cs.common.get_configs('mapping_stimuli'))
         allowed_stimuli = cs.common.get_configs('allowed_stimuli_wrong_duration')  # noqa: E501
         # 1. People who made mistakes in injected questions
         logger.info('Filter-h1. People who had too many stimuli of unexpected'
                     + ' length.')
         # df to store data to filter out
         df_1 = pd.DataFrame()
-        # loop over rows in data
+        # array to store in video names
+        video_dur = []
+        for i in range(0, self.num_stimuli):
+            for rep in range(0, self.num_repeat):
+                video_dur.append('video_' + str(i) + '-dur-' + str(rep))
+
         # tqdm adds progress bar
+        # loop over participants in data
         for index, row in tqdm(df.iterrows(), total=df.shape[0]):
-            # todo: add filter to: if time_elapsed>video_length*1.2 for 75% of trials, participant is ignored.
-            # example of filter in https://github.com/bazilinskyy/eye-contact-crowdsourcing/blob/207dc1a4acf95e4bd79ea5bccb370a77a5d9b94b/eyecontact/analysis/heroku.py#L469
-            pass
+            data_count = 0
+            corrupted_count = 0
+            for count, vid in enumerate(video_dur):
+                #check for nan values
+                if pd.isna(row[vid]):
+                    continue
+                else:
+                    # up data count when data is found
+                    data_count = data_count + 1 
+                    if row[vid] < (mapping['min_dur'].iloc[count]) or row[vid] > (mapping['max_dur'].iloc[count]):
+                        # up counter if data with wrong length is found
+                        corrupted_count = corrupted_count + 1  
+
+            # Only check for participants that watched all videos. (change 30 to var)
+            if (data_count != 0) and (data_count > 30):
+                # check threshold ratio
+                if ((corrupted_count/data_count) > self.threshold_dur):
+                    #if threshold reached, append data of this participant to df_1
+                    df_1 = df_1.append(row)
+
         logger.info('Filter-h1. People who had more than {} share of videos of'
                     + 'min duration of {} or max duration of {}: {}.',
                     allowed_stimuli,
@@ -550,6 +568,7 @@ class Heroku:
             df = df[~df['worker_code'].isin(unique_worker_codes)]
         logger.info('Filtered in total in heroku data: {}',
                     old_size - df.shape[0])
+
         return df
 
     def show_info(self):
