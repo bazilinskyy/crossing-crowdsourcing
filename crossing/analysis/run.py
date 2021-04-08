@@ -187,13 +187,13 @@ if __name__ == '__main__':
     df = mapping
     df['eye-contact-no'] = df['eye-contact-no'] * 1
     df['eye-contact-yes_but_too_late'] = df['eye-contact-yes_but_too_late'] * 2
-    df['eye-contact-i_don\'t_know'] = df['eye-contact-i_don\'t_know'] * 3
-    df['eye-contact_mean'] = df[['eye-contact-yes',
-                                 'eye-contact-yes_but_too_late',
-                                 'eye-contact-no']].sum(axis=1)
-    # post-trial questions. hist for eye contact
-    analysis.hist(mapping,
-                  x=['eye-contact_mean'],
+    df['eye-contact-yes'] = df['eye-contact-yes'] * 3
+    df['eye-contact_score'] = df[['eye-contact-yes',
+                                  'eye-contact-yes_but_too_late',
+                                  'eye-contact-no']].sum(axis=1)
+    # # post-trial questions. hist for eye contact
+    analysis.hist(df,
+                  x=['eye-contact_score'],
                   pretty_text=True,
                   xaxis_title='Whether pedestiran made eye contact',
                   yaxis_title='Count',
@@ -201,7 +201,7 @@ if __name__ == '__main__':
     # scatter plot of risk score / eye contact
     analysis.scatter(df,
                      x='risky_slider',
-                     y='eye-contact-yes',
+                     y='eye-contact_score',
                      color='cross_look',
                      hover_data=['risky_slider',
                                  'eye-contact-yes',
@@ -215,8 +215,8 @@ if __name__ == '__main__':
                                  + '(0-100)',
                      yaxis_title='Whether pedestiran made eye contact '
                                  + '(No=1, Yes but too late=2, Yes=3)',
-                     xaxis_range=[-10, 100],
-                     yaxis_range=[-1, 5],
+                     # xaxis_range=[-10, 100],
+                     # yaxis_range=[-1, 20],
                      save_file=True)
     # check if any figures are to be rendered
     figures = [manager.canvas.figure
