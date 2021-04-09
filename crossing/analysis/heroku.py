@@ -163,9 +163,6 @@ class Heroku:
                                     if stim_name + '-dur' not in dict_row.keys():  # noqa: E501
                                         # first value
                                         dict_row[stim_name + '-dur'] = dur
-                                    else:
-                                        # previous values found
-                                        dict_row[stim_name + '-dur'].extend(dur)  # noqa: E501
                     # keypresses
                     if 'rts' in data_cell.keys() and stim_name != '':
                         # record given keypresses

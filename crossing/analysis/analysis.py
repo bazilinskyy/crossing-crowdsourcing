@@ -916,6 +916,32 @@ class Analysis:
         else:
             fig.show()
 
+    def heatmap_participants(self, df, save_file=True):
+        """Heatmap of countries based on counts of participants.
+
+        Args:
+            df (dataframe): dataframe with keypress data.
+            save_file (bool, optional): flag for saving an html file with plot.
+        """
+        # crate dataframe with counts per country
+        df_country = pd.DataFrame()
+        df_country['counts'] = df['country'].value_counts()
+        df_country['country'] = df_country.index
+        df_country.reset_index(level=0, inplace=False)
+        # create map
+        fig = px.choropleth(df_country, locations='country',
+                            color='counts',
+                            hover_name='country',
+                            color_continuous_scale=px.colors.sequential.Plasma)
+        # update layout
+        fig.update_layout(template=self.template)
+        # save file
+        if save_file:
+            self.save_plotly(fig, 'map', self.folder)
+        # open it in localhost instead
+        else:
+            fig.show()
+
     def save_plotly(self, fig, name, output_subdir):
         """
         Helper function to save figure as html file.

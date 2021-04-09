@@ -97,7 +97,7 @@ if __name__ == '__main__':
         mapping = cs.common.load_from_p(file_mapping,
                                         'mapping of stimuli')
     if SHOW_OUTPUT:
-      # Output
+        # Output
         analysis = cs.analysis.Analysis()
         logger.info('Creating figures.')
         # all keypresses
@@ -246,6 +246,8 @@ if __name__ == '__main__':
                          # xaxis_range=[-10, 100],
                          # yaxis_range=[-1, 20],
                          save_file=True)
+        # map of participants
+        analysis.heatmap_participants(appen_data, save_file=True)
         # check if any figures are to be rendered
         figures = [manager.canvas.figure
                    for manager in
