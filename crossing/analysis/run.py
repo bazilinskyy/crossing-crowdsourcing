@@ -163,7 +163,10 @@ if __name__ == '__main__':
                          pretty_text=True,
                          save_file=True)
         # time of participation
-        analysis.hist(appen_data,
+        df = appen_data
+        df['country'] = df['country'].fillna('NaN')
+        df['time'] = df['time'] / 60.0  # convert to min
+        analysis.hist(df,
                       x=['time'],
                       color='country',
                       pretty_text=True,
@@ -222,14 +225,14 @@ if __name__ == '__main__':
                      pretty_text=True,
                      save_file=True)
         # post-trial questions. hist for eye contact
-        analysis.hist(df,
+        analysis.hist(mapping,
                       x=['eye-contact_score'],
                       pretty_text=True,
                       xaxis_title='Whether pedestiran made eye contact',
                       yaxis_title='Count',
                       save_file=True)
         # scatter plot of risk score / eye contact
-        analysis.scatter(df,
+        analysis.scatter(mapping,
                          x='risky_slider',
                          y='eye-contact_score',
                          color='cross_look',
