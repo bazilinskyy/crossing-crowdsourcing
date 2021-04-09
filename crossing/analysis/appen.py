@@ -2,6 +2,7 @@
 import json
 import os
 import pandas as pd
+import numpy as np
 from collections import Counter
 from tqdm import tqdm
 
@@ -13,11 +14,13 @@ logger = cs.CustomLogger(__name__)  # use custom logger
 class Appen:
     file_data = []  # list of files with appen data
     appen_data = pd.DataFrame()  # pandas dataframe with extracted data
+    countries_data = pd.DataFrame()  # pandas dataframe with data per country
     save_p = False  # save data as pickle file
     load_p = False  # load data as pickle file
     save_csv = False  # save data as csv file
     file_p = 'appen_data.p'  # pickle file for saving data
     file_csv = 'appen_data.csv'  # csv file for saving data
+    file_country_csv = 'country_data.csv'  # csv file for saving country data
     file_cheaters_csv = 'cheaters.csv'  # csv file for saving list of cheaters
     # mapping between appen column names and readable names
     columns_mapping = {'_started_at': 'start',
@@ -112,7 +115,7 @@ class Appen:
             df.insert(0, 'worker_code', worker_code_col)
         # save to pickle
         if self.save_p:
-            cs.common.save_to_p(self.file_p,  df, 'appen data')
+            cs.common.save_to_p(self.file_p, df, 'appen data')
         # save to csv
         if self.save_csv:
             df.to_csv(cs.settings.output_dir + '/' + self.file_csv)
@@ -221,7 +224,7 @@ class Appen:
                 if not any(d['o'] == df['worker_id'][i] for d in proc_ids):
                     # mask in format random_int - worker_id
                     masked_id = (str(cs.common.get_configs('mask_id') -
-                                 df['worker_id'][i]))
+                                     df['worker_id'][i]))
                     # record IP as already replaced
                     proc_ids.append({'o': df['worker_id'][i],
                                      'm': masked_id})
@@ -251,6 +254,41 @@ class Appen:
         # return dataframe with replaced values
         return df
 
+    def process_countries(self):
+        # todo: map textual questions to int
+        # df for reassignment of textual values
+        df = self.appen_data
+        # set i_prefer_not_to_respond as nan
+        df[df == 'i_prefer_not_to_respond'] = np.nan
+        # map gender
+        di = {'female': 0, 'male': 1}
+        df = df.replace({'gender': di})
+        # replace all non-numeric values to nan
+        df['year_ad'] = df['year_ad'].apply(
+            lambda x: pd.to_numeric(x, errors='coerce'))
+        df['year_license'] = df['year_license'].apply(
+            lambda x: pd.to_numeric(x, errors='coerce'))
+        # get mean values for countries
+        df_country = df.groupby('country').mean(
+            numeric_only=True).reset_index()
+        # use median for year
+        df_country['year_ad'] = df.groupby('country').median(
+            numeric_only=True).reset_index()['year_ad']
+        df_country['year_license'] = df.groupby('country').median(
+            numeric_only=True).reset_index()['year_license']
+        # get countries and counts of participants
+        df_country['counts'] = self.appen_data['country'].value_counts()
+        df_country.drop(['unit_id', 'id', 'tainted', 'worker_id'], 1)
+        # assign to attribute
+        self.countries_data = df_country
+        # save to csv
+        if self.save_csv:
+            df_country.to_csv(cs.settings.output_dir + '/'
+                              + self.file_country_csv)
+            logger.info('Saved country data to csv file {}', self.file_csv)
+        # return df with data
+        return df_country
+
     def show_info(self):
         """Output info for data in object.
         """
@@ -267,9 +305,9 @@ class Appen:
         # info on duration in minutes
         logger.info('Time of participation: mean={:,.2f} min, '
                     + 'median={:,.2f} min, std={:,.2f} min.',
-                    self.appen_data['time'].mean()/60,
-                    self.appen_data['time'].median()/60,
-                    self.appen_data['time'].std()/60)
+                    self.appen_data['time'].mean() / 60,
+                    self.appen_data['time'].median() / 60,
+                    self.appen_data['time'].std() / 60)
         logger.info('oldest timestamp={}, newest timestamp={}.',
                     self.appen_data['start'].min(),
                     self.appen_data['start'].max())

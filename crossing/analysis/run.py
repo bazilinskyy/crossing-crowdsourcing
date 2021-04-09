@@ -62,6 +62,8 @@ if __name__ == '__main__':
     appen_data = appen_data.set_index('worker_code')
     appen.set_data(appen_data)  # update object with filtered data
     appen.show_info()  # show info for filtered data
+    # generate country-specific data
+    countries_data = appen.process_countries()
     # update mapping with keypress data
     if UPDATE_MAPPING:
         # read in mapping of stimuli
@@ -247,7 +249,15 @@ if __name__ == '__main__':
                          # yaxis_range=[-1, 20],
                          save_file=True)
         # map of participants
-        analysis.heatmap_participants(appen_data, save_file=True)
+        analysis.heatmap_participants(countries_data, save_file=True)
+        # map of mean age per country
+        analysis.map(countries_data, color='age', save_file=True)
+        # map of gender per country
+        analysis.map(countries_data, color='gender', save_file=True)
+        # map of year of obtaining license per country
+        analysis.map(countries_data, color='year_license', save_file=True)
+        # map of year of automated driving per country
+        analysis.map(countries_data, color='year_ad', save_file=True)
         # check if any figures are to be rendered
         figures = [manager.canvas.figure
                    for manager in

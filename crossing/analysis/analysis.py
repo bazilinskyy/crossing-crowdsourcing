@@ -923,13 +923,8 @@ class Analysis:
             df (dataframe): dataframe with keypress data.
             save_file (bool, optional): flag for saving an html file with plot.
         """
-        # crate dataframe with counts per country
-        df_country = pd.DataFrame()
-        df_country['counts'] = df['country'].value_counts()
-        df_country['country'] = df_country.index
-        df_country.reset_index(level=0, inplace=False)
         # create map
-        fig = px.choropleth(df_country, locations='country',
+        fig = px.choropleth(df, locations='country',
                             color='counts',
                             hover_name='country',
                             color_continuous_scale=px.colors.sequential.Plasma)
@@ -938,6 +933,29 @@ class Analysis:
         # save file
         if save_file:
             self.save_plotly(fig, 'map', self.folder)
+        # open it in localhost instead
+        else:
+            fig.show()
+
+    def map(self, df, color, save_file=True):
+        """Map of countries of participation with color based on column in
+           dataframe.
+
+        Args:
+            df (dataframe): dataframe with keypress data.
+            save_file (bool, optional): flag for saving an html file with plot.
+        """
+        # create map
+        fig = px.choropleth(df,
+                            locations='country',
+                            color=color,
+                            hover_name='country',
+                            color_continuous_scale=px.colors.sequential.Plasma)
+        # update layout
+        fig.update_layout(template=self.template)
+        # save file
+        if save_file:
+            self.save_plotly(fig, 'map_' + color, self.folder)
         # open it in localhost instead
         else:
             fig.show()
