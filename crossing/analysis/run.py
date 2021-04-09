@@ -120,7 +120,9 @@ if __name__ == '__main__':
                         'video_length', 'min_dur', 'max_dur',
                         'eye-contact-yes', 'eye-contact-yes_but_too_late',
                         'eye-contact-no', 'eye-contact-i_don\'t_know',
-                        'eye-contact_mean']
+                        'eye-contact_mean', 'time_before_interaction',
+                        'look_frame_ms', 'cross_frame_ms', 'interaction',
+                        'start']
         # set nan to -1
         df = mapping
         df = df.fillna(-1)
@@ -133,7 +135,7 @@ if __name__ == '__main__':
                                 columns_drop=columns_drop,
                                 color='cross_look',
                                 symbol='cross_look',
-                                diagonal_visible=True,
+                                diagonal_visible=False,
                                 save_file=True)
         # stimulus duration
         analysis.hist(heroku_data,
