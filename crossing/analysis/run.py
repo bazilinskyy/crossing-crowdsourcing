@@ -2,6 +2,7 @@
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 import matplotlib._pylab_helpers
+import sys
 
 import crossing as cs
 
@@ -19,7 +20,9 @@ SHOW_OUTPUT = True  # shoud figures
 file_mapping = 'mapping.p'  # file to save lists with coordinates
 
 if __name__ == '__main__':
-    # todo: add descriptions for methods automatically with a sublime plugin
+    # check if config file is updated
+    if not cs.common.check_config():
+        sys.exit()
     # create object for working with heroku data
     files_heroku = cs.common.get_configs('files_heroku')
     heroku = cs.analysis.Heroku(files_data=files_heroku,

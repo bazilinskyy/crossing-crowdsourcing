@@ -33,6 +33,37 @@ def get_configs(entry_name: str, config_file_name: str = 'config',
     return content[entry_name]
 
 
+def check_config(config_file_name: str = 'config',
+                 config_default_file_name: str = 'default.config'):
+    """
+    Check if config file has at least as many rows as deault.config.
+    """
+    # load config file
+    try:
+        with open(os.path.join(cs.settings.root_dir, config_file_name)) as f:
+            config = json.load(f)
+    except FileNotFoundError:
+        logger.error('Config file {} not found.', config_file_name)
+        return False
+    # load default.config file
+    try:
+        with open(os.path.join(cs.settings.root_dir,
+                               config_default_file_name)) as f:
+            default = json.load(f)
+    except FileNotFoundError:
+        logger.error('Default config file {} not found.', config_file_name)
+        return False
+    # check length of each file
+    if len(config) < len(default):
+        logger.error('Config file has {} variables, which is fewer than {}'
+                     + ' variables in default.config. Please update.',
+                     len(config),
+                     len(default))
+        return False
+    else:
+        return True
+
+
 def search_dict(dictionary, search_for, nested=False):
     """
     Search if dictionary value contains certain string search_for. If
