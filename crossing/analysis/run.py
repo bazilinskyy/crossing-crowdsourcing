@@ -104,6 +104,8 @@ if __name__ == '__main__':
         logger.info('Creating figures.')
         # all keypresses
         analysis.plot_kp(mapping)
+        # all keypresses with coonfidence interval, not finished
+        analysis.plot_kp_conf_int(mapping)
         # keypresses of an individual stimulus
         analysis.plot_kp_video(mapping, 'video_0')
         # keypresses of all videos individually
@@ -231,6 +233,7 @@ if __name__ == '__main__':
                          x='risky_slider',
                          y='eye-contact_score',
                          color='cross_look',
+                         trendline='ols',
                          hover_data=['risky_slider',
                                      'eye-contact_score',
                                      'eye-contact_mean',

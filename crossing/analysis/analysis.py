@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import matplotlib.animation as animation
 import numpy as np
+import scipy.stats as st
 import seaborn as sns
 import pandas as pd
 import plotly as py
@@ -303,10 +304,10 @@ class Analysis:
             fig.show()
 
     def scatter(self, df, x, y, color=None, symbol=None, size=None, text=None,
-                hover_data=None, marker_size=None, pretty_text=False,
-                marginal_x='violin', marginal_y='violin', xaxis_title=None,
-                yaxis_title=None, xaxis_range=None, yaxis_range=None,
-                save_file=True):
+                trendline=None, hover_data=None, marker_size=None,
+                pretty_text=False, marginal_x='violin', marginal_y='violin',
+                xaxis_title=None, yaxis_title=None, xaxis_range=None,
+                yaxis_range=None, save_file=True):
         """
         Output scatter plot of variables x and y with optinal assignment of
         colour and size.
@@ -320,6 +321,7 @@ class Analysis:
                                     points.
             size (str, optional): dataframe column to assign soze of points.
             text (str, optional): dataframe column to assign text labels.
+            trendline (str, optional): trendline. Can be 'ols', 'lowess'
             hover_data (list, optional): dataframe columns to show on hover.
             marker_size (int, optional): size of marker. Should not be used
                                          together with size argument.
@@ -335,7 +337,6 @@ class Analysis:
             yaxis_range (list, optional): range of y axis in format [min, max].
             save_file (bool, optional): flag for saving an html file with plot.
         """
-        # todo: add trendline
         logger.info('Creating scatter plot for x={} and y={}.',
                     x, y)
         # using size and marker_size is not supported
@@ -388,6 +389,7 @@ class Analysis:
                          symbol=symbol,
                          size=size,
                          text=text,
+                         trendline=trendline,
                          hover_data=hover_data,
                          marginal_x=marginal_x,
                          marginal_y=marginal_y)
@@ -575,7 +577,7 @@ class Analysis:
     def plot_kp(self, df, save_file=True,
                 xaxis_title='Time (ms)',
                 yaxis_title='Percentage of trials with response key pressed'):
-        """Take in a variable with values which are optional
+        """Plot keypress data.
 
         Args:
             df (dataframe): dataframe with keypress data.
@@ -605,6 +607,63 @@ class Analysis:
         # save file
         if save_file:
             self.save_plotly(fig, 'kp', self.folder)
+        # open it in localhost instead
+        else:
+            fig.show()
+
+    def plot_kp_conf_int(self, df, save_file=True,
+                         xaxis_title='Time (ms)',
+                         yaxis_title='Percentage of trials with response key'
+                                     + ' pressed'):
+        """Plot keypress data with confidence interval.
+
+        Args:
+            df (dataframe): dataframe with keypress data.
+            xaxis_title (str, optional): title for x axis.
+            yaxis_title (str, optional): title for y axis.
+            save_file (bool, optional): flag for saving an html file with plot.
+        """
+        # todo: finish plot with confidence interval. based on https://plotly.com/python/continuous-error-bars/
+        logger.info('Creating visualisations of keypresses for all data with'
+                    + ' confidence interval.')
+        # calculate times
+        times = np.array(range(self.res, df['video_length'].max() + self.res, self.res)) / 1000  # noqa: E501
+        # add all data together. Must be converted to np array to add together
+        kp_data = np.array([0.0] * len(times))
+        for i, data in enumerate(df['kp']):
+            # append zeros to match longest duration
+            data = np.pad(data, (0, len(times) - len(data)), 'constant')
+            # add data
+            kp_data += np.array(data)
+        kp_data = (kp_data / i)
+        # calculate condidence interval
+        conf_interval = st.t.interval(0.95,
+                                      len(kp_data)-1,
+                                      loc=np.mean(kp_data),
+                                      scale=st.sem(kp_data))
+        y_lower = kp_data - conf_interval[0]
+        y_upper = kp_data + conf_interval[0]
+        # create figure
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(x=times,
+                                 y=kp_data,
+                                 mode='lines',
+                                 showlegend=False))
+        fig.add_trace(go.Scatter(x=times+times[::-1],  # x, then x reversed
+                                 y=y_upper+y_lower[::-1],  # upper, then lower reversed
+                                 fill='toself',
+                                 fillcolor='rgba(0,100,80,0.2)',
+                                 line=dict(color='rgba(255,255,255,0)'),
+                                 hoverinfo="skip",
+                                 showlegend=False))
+
+        # update layout
+        fig.update_layout(template=self.template,
+                          xaxis_title=xaxis_title,
+                          yaxis_title=yaxis_title)
+        # save file
+        if save_file:
+            self.save_plotly(fig, 'kp_conf_int', self.folder)
         # open it in localhost instead
         else:
             fig.show()
