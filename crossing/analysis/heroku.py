@@ -7,6 +7,7 @@ from tqdm import tqdm
 import re
 import ast
 from statistics import mean
+import warnings
 
 import crossing as cs
 
@@ -137,8 +138,8 @@ class Heroku:
                         stim_no_path = os.path.splitext(stim_no_path)[0]
                         # Check if it is a block with stimulus and not an
                         # instructions block
-                        if (cs.common.search_dict(self.prefixes, stim_no_path)  # noqa: E501
-                           is not None):
+                        if (cs.common.search_dict(self.prefixes, stim_no_path)
+                                is not None):
                             # stimulus is found
                             logger.debug('Found stimulus {}.', stim_no_path)
                             if self.prefixes['stimulus'] in stim_no_path:
@@ -160,7 +161,7 @@ class Heroku:
                                     dur = float(data_cell['time_elapsed']) - time  # noqa: E501
                                     if stim_name + '-dur' not in dict_row.keys():  # noqa: E501
                                         # first value
-                                        dict_row[stim_name + '-dur'] = dur  # noqa: E501
+                                        dict_row[stim_name + '-dur'] = dur
                                     else:
                                         # previous values found
                                         dict_row[stim_name + '-dur'].extend(dur)  # noqa: E501
@@ -390,12 +391,12 @@ class Heroku:
                         for row_index, row in enumerate(col_data):
                             # consider only videos of allowed length
                             if (video_dur in self.heroku_data.keys()
-                               and filter_length):
+                                    and filter_length):
                                 # extract recorded duration
                                 dur = self.heroku_data.iloc[row_index][video_dur]  # noqa: E501
                                 # check if duration is within limits
                                 if (dur < self.mapping['min_dur'][video_id]
-                                   or dur > self.mapping['max_dur'][video_id]):
+                                        or dur > self.mapping['max_dur'][video_id]):  # noqa: E501
                                     # increase counter of filtered videos
                                     logger.debug('Filtered keypress data from '
                                                  + 'video {} of detected '
@@ -492,7 +493,8 @@ class Heroku:
                                  'provided.', q['type'], q['question'])
                     return -1
             # array in which data of a single stimulus is stored
-            answers = [[] for i in range(len(questions))]
+            answers = [[[] for i in range(self.heroku_data.shape[0])]
+                       for i in range(len(questions))]
             # for number of repetitions in survey, add extra number
             for rep in range(self.num_repeat):
                 # add suffix with repetition ID
@@ -503,10 +505,10 @@ class Heroku:
                     # when col_name equals video, then check
                     if col_name == video_as:
                         # loop over rows in column
-                        for row_index, row in enumerate(col_data):
+                        for pp, row in enumerate(col_data):
                             # filter out empty values
                             if type(row) == list:
-                                order = self.heroku_data.iloc[row_index][video_order]  # noqa: E501
+                                order = self.heroku_data.iloc[pp][video_order]  # noqa: E501
                                 # check if injection question is present
                                 if 'injection' in order:
                                     # delete injection
@@ -517,12 +519,20 @@ class Heroku:
                                     # extract answer
                                     ans = row[order.index(q['question'])]
                                     # store answer from repetition
-                                    answers[i].append(ans)
+                                    answers[i][pp].append(ans)
             # calculate mean answers from all repetitions for numeric questions
             for i, q in enumerate(questions):
                 if q['type'] == 'num' and answers[i]:
-                    answers[i] = np.mean([float(j) for j in answers[i]])
-            # save video data in array
+                    # convert to float
+                    answers[i] = [list(map(float, sublist))
+                                  for sublist in answers[i]]
+                    # calculate mean of mean of responses of each participant
+                    with warnings.catch_warnings():
+                        warnings.simplefilter('ignore',
+                                              category=RuntimeWarning)
+                        answers[i] = np.nanmean([np.nanmean(j)
+                                                 for j in answers[i]])
+            # save question data in array
             mapping_as.append(answers)
         # add column with data to current mapping file
         for i, q in enumerate(questions):
@@ -540,6 +550,8 @@ class Heroku:
                     count_option = []
                     # go over each answer
                     for ans in q_ans:
+                        # flatten list of answers
+                        ans = [item for sublist in ans for item in sublist]
                         # add count for answers for the given option
                         count_option.append(ans.count(option))
                     # build name of column
