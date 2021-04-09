@@ -12,10 +12,10 @@ logger = cs.CustomLogger(__name__)  # use custom logger
 SAVE_P = True  # save pickle files with data
 LOAD_P = False  # load pickle files with data
 SAVE_CSV = True  # load csv files with data
+FILTER_DATA = True  # filter Appen and heroku data
 REJECT_CHEATERS = False  # reject cheaters on Appen
 UPDATE_MAPPING = True  # update mapping with keypress data
 SHOW_OUTPUT = True  # shoud figures
-file_coords = 'coords.p'  # file to save lists with coordinates
 file_mapping = 'mapping.p'  # file to save lists with coordinates
 
 if __name__ == '__main__':
@@ -27,7 +27,7 @@ if __name__ == '__main__':
                                 load_p=LOAD_P,
                                 save_csv=SAVE_CSV)
     # read heroku data
-    heroku_data = heroku.read_data()
+    heroku_data = heroku.read_data(filter_data=FILTER_DATA)
     # create object for working with appen data
     file_appen = cs.common.get_configs('file_appen')
     appen = cs.analysis.Appen(file_data=file_appen,
@@ -35,7 +35,7 @@ if __name__ == '__main__':
                               load_p=LOAD_P,
                               save_csv=SAVE_CSV)
     # read appen data
-    appen_data = appen.read_data()
+    appen_data = appen.read_data(filter_data=FILTER_DATA)
     # get keys in data files
     heroku_data_keys = heroku_data.keys()
     appen_data_keys = appen_data.keys()
@@ -75,7 +75,17 @@ if __name__ == '__main__':
                                   'No',
                                   'I don\'t know']}]
         # process post-trial questions and update mapping
-        stimuli_mapping = heroku.process_stimulus_questions(questions)
+        mapping = heroku.process_stimulus_questions(questions)
+        # calculate mean of eye contact
+        mapping['eye-contact-no'] = mapping['eye-contact-no'] * 1
+        mapping['eye-contact-yes_but_too_late'] = mapping['eye-contact-yes_but_too_late'] * 2  # noqa: E501
+        mapping['eye-contact-yes'] = mapping['eye-contact-yes'] * 3
+        mapping['eye-contact_score'] = mapping[['eye-contact-yes',
+                                                'eye-contact-yes_but_too_late',
+                                                'eye-contact-no']].sum(axis=1)
+        mapping['eye-contact_mean'] = mapping[['eye-contact-yes',
+                                               'eye-contact-yes_but_too_late',
+                                               'eye-contact-no']].mean(axis=1)
         # export to pickle
         cs.common.save_to_p(file_mapping,
                             mapping,
@@ -99,13 +109,32 @@ if __name__ == '__main__':
         analysis.plot_kp_variable(mapping, 'cross_look', ['C_L', 'nC_L'])
         # separate plots for multiple variables
         analysis.plot_kp_variables_or(mapping, [{'variable': 'cross_look', 'value': 'C_L'},  # noqa: E501
-                                                       {'variable': 'traffic_rules', 'value': 'traffic_lights'},  # noqa: E501
-                                                       {'variable': 'traffic_rules', 'value': 'ped_crossing'}])  # noqa: E501
+                                                {'variable': 'traffic_rules', 'value': 'traffic_lights'},  # noqa: E501
+                                                {'variable': 'traffic_rules', 'value': 'ped_crossing'}])  # noqa: E501
         # multiple variables as a single filter
         analysis.plot_kp_variables_and(mapping, [{'variable': 'cross_look', 'value': 'C_L'},  # noqa: E501
                                                         {'variable': 'traffic_rules', 'value': 'traffic_lights'}])  # noqa: E501
+        # columns to drop in correlation matrix and scatter matrix
+        columns_drop = ['id_segment', 'set', 'video', 'extra',
+                        'alternative_frame', 'alternative_frame.1', 'kp',
+                        'video_length', 'min_dur', 'max_dur',
+                        'eye-contact-yes', 'eye-contact-yes_but_too_late',
+                        'eye-contact-no', 'eye-contact-i_don\'t_know',
+                        'eye-contact_mean']
+        # set nan to -1
+        df = mapping
+        df = df.fillna(-1)
         # create correlation matrix
-        analysis.corr_matrix(mapping, save_file=True)
+        analysis.corr_matrix(df,
+                             columns_drop=columns_drop,
+                             save_file=True)
+        # create correlation matrix
+        analysis.scatter_matrix(df,
+                                columns_drop=columns_drop,
+                                color='cross_look',
+                                symbol='cross_look',
+                                diagonal_visible=True,
+                                save_file=True)
         # stimulus duration
         analysis.hist(heroku_data,
                   x=heroku_data.columns[heroku_data.columns.to_series().str.contains('-dur')],  # noqa: E501
@@ -185,18 +214,6 @@ if __name__ == '__main__':
                      yaxis_title='Count',
                      pretty_text=True,
                      save_file=True)
-
-        # calculate mean of eye contact
-        df = mapping
-        df['eye-contact-no'] = df['eye-contact-no'] * 1
-        df['eye-contact-yes_but_too_late'] = df['eye-contact-yes_but_too_late'] * 2  # noqa: E501
-        df['eye-contact-yes'] = df['eye-contact-yes'] * 3
-        df['eye-contact_score'] = df[['eye-contact-yes',
-                                      'eye-contact-yes_but_too_late',
-                                      'eye-contact-no']].sum(axis=1)
-        df['eye-contact_mean'] = df[['eye-contact-yes',
-                                     'eye-contact-yes_but_too_late',
-                                     'eye-contact-no']].mean(axis=1)
         # post-trial questions. hist for eye contact
         analysis.hist(df,
                       x=['eye-contact_score'],

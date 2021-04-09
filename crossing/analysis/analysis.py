@@ -41,20 +41,18 @@ class Analysis:
         # number of stimuli
         self.num_stimuli = cs.common.get_configs('num_stimuli')
 
-    def corr_matrix(self, df, save_file=False):
+    def corr_matrix(self, df, columns_drop, save_file=False):
         """
         Output correlation matrix.
 
         Args:
             df (dataframe): mapping dataframe.
+            columns_drop (list): columns dataframes in to ignore.
             save_file (bool, optional): flag for saving an html file with plot.
         """
         logger.info('Creating correlation matrix.')
-        # drop not needed columns
-        columns_drop = ['id_segment', 'set', 'video', 'extra',
-                        'alternative_frame', 'alternative_frame']
+        # drop columns
         df = df.drop(columns_drop, 1)
-        # df.fillna(0, inplace=True)
         # create correlation matrix
         corr = df.corr()
         # create mask
@@ -92,6 +90,48 @@ class Analysis:
         # revert font
         self.reset_font()
 
+    def scatter_matrix(self, df, columns_drop, color=None, symbol=None,
+                       diagonal_visible=False, xaxis_title=None,
+                       yaxis_title=None, save_file=False):
+        """
+        Output scatter matrix.
+
+        Args:
+            df (dataframe): mapping dataframe.
+            columns_drop (list): columns dataframes in to ignore.
+            color (str, optional): dataframe column to assign color of points.
+            symbol (str, optional): dataframe column to assign symbol of
+                                    points.
+            diagonal_visible (bool, optional): show/hide diagonal with
+                                               correlation==1.0.
+            xaxis_title (str, optional): title for x axis.
+            yaxis_title (str, optional): title for y axis.
+            save_file (bool, optional): flag for saving an html file with plot.
+        """
+        logger.info('Creating scatter matrix.')
+        # drop columns
+        df = df.drop(columns_drop, 1)
+        # create dimensions list after dropping columns
+        dimensions = df.keys()
+        # plot matrix
+        fig = px.scatter_matrix(df,
+                                dimensions=dimensions,
+                                color=color,
+                                symbol=symbol)
+        # update layout
+        fig.update_layout(template=self.template,
+                          xaxis_title=xaxis_title,
+                          yaxis_title=yaxis_title)
+        # hide diagonal
+        if not diagonal_visible:
+            fig.update_traces(diagonal_visible=False)
+        # save file
+        if save_file:
+            self.save_plotly(fig, 'scatter_matrix', self.folder)
+        # open it in localhost instead
+        else:
+            fig.show()
+
     def communication(self, df, pre_q, post_qs, save_file=False):
         """
         Barplot of all communication data in pre and post-questionaire
@@ -128,10 +168,12 @@ class Analysis:
         # name to plot with. Could be taken as an argument in function
         importance_name = 'Communication between driver and pedestrian is' + \
                           ' important for road safety'
-        pe_data = np.array([0.0] * len(df['end-as-0'][0]))
-        for i, data in enumerate(df['end-as-0'][df['end-as-0'].notnull()]):
-            # create numpy array for adding vectors
-            data = np.asfarray(data, float)
+        pe_data = np.array([0.0] * len(df['end-as-0'][0][0:4]))
+        datapoints = df['end-as-0'][df['end-as-0'].notnull()]
+        for i, data in enumerate(datapoints):
+            # create numpy array for adding vectors.
+            # only consider 1st 4 responses
+            data = np.asfarray(data[0:4], float)
             pe_data = pe_data + data
         # calculate average value of post-experiment questionairre data
         pe_data = (pe_data / (i + 1))
@@ -256,7 +298,7 @@ class Analysis:
         else:
             fig.show()
 
-    def scatter(self, df, x, y, color=None, size=None, text=None,
+    def scatter(self, df, x, y, color=None, symbol=None, size=None, text=None,
                 hover_data=None, marker_size=None, pretty_text=False,
                 marginal_x='violin', marginal_y='violin', xaxis_title=None,
                 yaxis_title=None, xaxis_range=None, yaxis_range=None,
@@ -269,8 +311,10 @@ class Analysis:
             df (dataframe): dataframe with data from heroku.
             x (str): dataframe column to plot on x axis.
             y (str): dataframe column to plot on y axis.
-            color (str, optional): dataframe column to assign color of circles.
-            size (str, optional): dataframe column to assign soze of circles.
+            color (str, optional): dataframe column to assign color of points.
+            symbol (str, optional): dataframe column to assign symbol of
+                                    points.
+            size (str, optional): dataframe column to assign soze of points.
             text (str, optional): dataframe column to assign text labels.
             hover_data (list, optional): dataframe columns to show on hover.
             marker_size (int, optional): size of marker. Should not be used
@@ -337,6 +381,7 @@ class Analysis:
                          x=x,
                          y=y,
                          color=color,
+                         symbol=symbol,
                          size=size,
                          text=text,
                          hover_data=hover_data,

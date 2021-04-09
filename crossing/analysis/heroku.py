@@ -163,7 +163,7 @@ class Heroku:
                                         dict_row[stim_name + '-dur'] = dur  # noqa: E501
                                     else:
                                         # previous values found
-                                        dict_row[stim_name + '-dur'].append(dur)  # noqa: E501
+                                        dict_row[stim_name + '-dur'].extend(dur)  # noqa: E501
                     # keypresses
                     if 'rts' in data_cell.keys() and stim_name != '':
                         # record given keypresses
@@ -179,14 +179,14 @@ class Heroku:
                             dict_row[stim_name + '-key'] = key
                         else:
                             # previous values found
-                            dict_row[stim_name + '-key'].append(key)
+                            dict_row[stim_name + '-key'].extend(key)
                         # check if values were recorded previously
                         if stim_name + '-rt' not in dict_row.keys():
                             # first value
                             dict_row[stim_name + '-rt'] = rt
                         else:
                             # previous values found
-                            dict_row[stim_name + '-rt'].append(rt)
+                            dict_row[stim_name + '-rt'].extend(rt)
                     # questions after stimulus
                     if 'responses' in data_cell.keys() and stim_name != '':
                         # record given keypresses
@@ -208,7 +208,7 @@ class Heroku:
                             dict_row[stim_name + '-qs'] = questions
                         else:
                             # previous values found
-                            dict_row[stim_name + '-qs'].append(questions)
+                            dict_row[stim_name + '-qs'].extend(questions)
                         # Check if time spent values were recorded
                         # previously
                         if stim_name + '-as' not in dict_row.keys():
@@ -216,7 +216,7 @@ class Heroku:
                             dict_row[stim_name + '-as'] = answers
                         else:
                             # previous values found
-                            dict_row[stim_name + '-as'].append(answers)
+                            dict_row[stim_name + '-as'].extend(answers)
                     # browser interaction events
                     if 'interactions' in data_cell.keys() and stim_name != '':
                         interactions = data_cell['interactions']
@@ -235,14 +235,14 @@ class Heroku:
                             dict_row[stim_name + '-event'] = event
                         else:
                             # previous values found
-                            dict_row[stim_name + '-event'].append(event)
+                            dict_row[stim_name + '-event'].extend(event)
                         # check if values were recorded previously
                         if stim_name + '-time' not in dict_row.keys():
                             # first value
                             dict_row[stim_name + '-time'] = time
                         else:
                             # previous values found
-                            dict_row[stim_name + '-time'].append(time)
+                            dict_row[stim_name + '-time'].extend(time)
                     # questions in the end
                     if 'responses' in data_cell.keys() and stim_name == '':
                         # record given keypresses
@@ -262,6 +262,29 @@ class Heroku:
                         if 'end-qs' not in dict_row.keys():
                             dict_row['end-qs'] = questions
                             dict_row['end-as'] = answers
+                        else:
+                            # previous values found
+                            dict_row['end-qs'].extend(questions)
+                            dict_row['end-as'].extend(answers)
+                    # question order
+                    if 'question_order' in data_cell.keys() \
+                       and stim_name == '':
+                        # unpack question order
+                        qo_str = data_cell['question_order']
+                        # remove brackets []
+                        qo_str = qo_str[1:]
+                        qo_str = qo_str[:-1]
+                        # unpack to int
+                        question_order = [int(x) for x in qo_str.split(',')]
+                        logger.debug('Found question order for final ' +
+                                     'questions {}.',
+                                     question_order)
+                        # Check if inputted values were recorded previously
+                        if 'end-qo' not in dict_row.keys():
+                            dict_row['end-qo'] = question_order
+                        else:
+                            # previous values found
+                            dict_row['end-qo'].extend(question_order)
                     # record last time_elapsed
                     if 'time_elapsed' in data_cell.keys():
                         elapsed_l = float(data_cell['time_elapsed'])
