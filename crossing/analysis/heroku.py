@@ -61,8 +61,8 @@ class Heroku:
         self.num_stimuli_participant = cs.common.get_configs('num_stimuli_participant')  # noqa: E501
         self.num_repeat = cs.common.get_configs('num_repeat')
         self.res = cs.common.get_configs('kp_resolution')
-        self.threshold_dur = cs.common.get_configs('allowed_stimuli_wrong_duration')  # noqa: E501
-        self.sign_mistakes = cs.common.get_configs('allowed_mistakes_signs')
+        self.allowed_length = cs.common.get_configs('allowed_stimuli_wrong_duration')  # noqa: E501
+        self.allowed_signs = cs.common.get_configs('allowed_mistakes_signs')
 
     def set_data(self, heroku_data):
         """Setter for the data object.
@@ -585,9 +585,6 @@ class Heroku:
         # more than allowed number of mistake with codes for sentinel images
         # load mapping of codes and coordinates
         logger.info('Filtering heroku data.')
-        # fetch variables from config file
-        allowed_stimuli = cs.common.get_configs('allowed_stimuli_wrong_duration')  # noqa: E501
-        allowed_mistakes_signs = cs.common.get_configs('allowed_mistakes_signs')  # noqa: E501
         # 1. People who made mistakes in injected questions
         logger.info('Filter-h1. People who had too many stimuli of unexpected'
                     + ' length.')
@@ -625,13 +622,13 @@ class Heroku:
             # Only check for participants that watched all videos
             if data_count >= self.num_stimuli_participant * self.num_repeat:
                 # check threshold ratio
-                if counter_filtered / data_count > self.threshold_dur:
+                if counter_filtered / data_count > self.allowed_length:
                     # if threshold reached, append data of this participant to
                     # df_1
                     df_1 = df_1.append(row)
         logger.info('Filter-h1. People who had more than {} share of stimuli'
                     + ' of unexpected length: {}.',
-                    allowed_stimuli,
+                    self.allowed_length,
                     df_1.shape[0])
         # 2. People that made too many mistakes with questions with traffic
         # signs
@@ -639,12 +636,8 @@ class Heroku:
                     + 'questions of traffic signs.')
         # df to store data to filter out
         df_2 = pd.DataFrame()
-
-        answers = [ 'The maximum allowed speed is 100 miles/hour', 
-                    'Traffic only goes in one direction', 
-                    'Pedestrian crossing area', 
-                    'You have to stop and give way to all traffic']
-        
+        # answers to injected questions
+        signs_answers = cs.common.get_configs('signs_answers')
         for index, row in tqdm(df.iterrows(), total=df.shape[0]):
             counter_filtered = 0
             # get array of data about traffic signs for each pedestrian
@@ -652,18 +645,17 @@ class Heroku:
             if type(row['end-as-0']) == list:
                 for count, data in enumerate(row['end-as-0']):
                     # answer-data starts at 5th element
-                        if count > 4:
-                            if data != answers[count-5]:
-                                # if wrong answer, up counter
-                                counter_filtered = counter_filtered + 1
-            if counter_filtered > self.sign_mistakes:
-                # append participant if too much mistakes in answers
+                    if count > 4:
+                        if data != signs_answers[count-5]:
+                            # if wrong answer, up counter
+                            counter_filtered = counter_filtered + 1
+            if counter_filtered > self.allowed_signs:
+                # append participant if too much mistakes in signs_answers
                 df_2 = df_2.append(row)
-                
         # people that made too many mistakes with questions with traffic signs
         logger.info('Filter-h2. People who made more than {} mistakes with '
                     + 'questions of traffic signs: {}',
-                    allowed_mistakes_signs,
+                    self.allowed_signs,
                     df_2.shape[0])
         # concatanate dfs with filtered data
         old_size = df.shape[0]
