@@ -94,7 +94,7 @@ if __name__ == '__main__':
         mapping = cs.common.load_from_p(file_mapping,
                                         'mapping of stimuli')
     if SHOW_OUTPUT:
-        # Output
+      # Output
         analysis = cs.analysis.Analysis()
         logger.info('Creating figures.')
         # all keypresses

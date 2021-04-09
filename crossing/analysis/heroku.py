@@ -62,6 +62,7 @@ class Heroku:
         self.num_repeat = cs.common.get_configs('num_repeat')
         self.res = cs.common.get_configs('kp_resolution')
         self.threshold_dur = cs.common.get_configs('allowed_stimuli_wrong_duration')  # noqa: E501
+        self.sign_mistakes = cs.common.get_configs('allowed_mistakes_signs')
 
     def set_data(self, heroku_data):
         """Setter for the data object.
@@ -638,7 +639,27 @@ class Heroku:
                     + 'questions of traffic signs.')
         # df to store data to filter out
         df_2 = pd.DataFrame()
-        # todo: filter for signs
+
+        answers = [ 'The maximum allowed speed is 100 miles/hour', 
+                    'Traffic only goes in one direction', 
+                    'Pedestrian crossing area', 
+                    'You have to stop and give way to all traffic']
+        
+        for index, row in tqdm(df.iterrows(), total=df.shape[0]):
+            counter_filtered = 0
+            # get array of data about traffic signs for each pedestrian
+            # check if value is list, so no nan
+            if type(row['end-as-0']) == list:
+                for count, data in enumerate(row['end-as-0']):
+                    # answer-data starts at 5th element
+                        if count > 4:
+                            if data != answers[count-5]:
+                                # if wrong answer, up counter
+                                counter_filtered = counter_filtered + 1
+            if counter_filtered > self.sign_mistakes:
+                # append participant if too much mistakes in answers
+                df_2 = df_2.append(row)
+                
         # people that made too many mistakes with questions with traffic signs
         logger.info('Filter-h2. People who made more than {} mistakes with '
                     + 'questions of traffic signs: {}',
