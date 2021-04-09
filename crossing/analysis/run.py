@@ -195,7 +195,6 @@ if __name__ == '__main__':
                       save_file=True)
         # post-trial questions. level of danger
         analysis.bar(mapping,
-                     x=mapping.index,
                      y=['risky_slider'],
                      show_all_xticks=True,
                      xaxis_title='Video ID',
@@ -203,7 +202,6 @@ if __name__ == '__main__':
                      save_file=True)
         # post-trial questions. bar chart for eye contact
         analysis.bar(mapping,
-                     x=mapping.index,
                      y=['eye-contact-yes',
                         'eye-contact-yes_but_too_late',
                         'eye-contact-no',
