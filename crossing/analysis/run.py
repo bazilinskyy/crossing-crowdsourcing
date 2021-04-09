@@ -146,10 +146,10 @@ if __name__ == '__main__':
                                 save_file=True)
         # stimulus duration
         analysis.hist(heroku_data,
-                  x=heroku_data.columns[heroku_data.columns.to_series().str.contains('-dur')],  # noqa: E501
-                  nbins=100,
-                  pretty_text=True,
-                  save_file=True)
+                      x=heroku_data.columns[heroku_data.columns.to_series().str.contains('-dur')],  # noqa: E501
+                      nbins=100,
+                      pretty_text=True,
+                      save_file=True)
         # browser window dimensions
         analysis.scatter(heroku_data,
                          x='window_width',
