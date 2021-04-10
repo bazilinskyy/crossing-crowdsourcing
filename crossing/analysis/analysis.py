@@ -561,6 +561,8 @@ class Analysis:
                     start_str = t['start'].strftime('%m.%d.%Y, %H:%M:%S')
                     end_str = t['end'].strftime('%m.%d.%Y, %H:%M:%S')
                     df.loc[index, 'range'] = start_str + ' - ' + end_str
+        # drop nan
+        df = df.dropna()
         # create figure
         if nbins:
             fig = px.histogram(df[col_dur], nbins=nbins, marginal='rug',
