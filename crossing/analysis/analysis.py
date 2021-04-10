@@ -1052,10 +1052,9 @@ class Analysis:
             df (dataframe): dataframe with keypress data.
             save_file (bool, optional): flag for saving an html file with plot.
         """
-        # create map
         logger.info('Creating visualisation of heatmap of participants by'
                     + ' country.')
-        print(df['counts'])
+        # create map
         fig = px.choropleth(df, locations='country',
                             color='counts',
                             hover_name='country',
@@ -1077,9 +1076,9 @@ class Analysis:
             df (dataframe): dataframe with keypress data.
             save_file (bool, optional): flag for saving an html file with plot.
         """
-        # create map
         logger.info('Creating visualisation of heatmap of participants by'
                     + ' country with colour defined by {}.', color)
+        # create map
         fig = px.choropleth(df,
                             locations='country',
                             color=color,
