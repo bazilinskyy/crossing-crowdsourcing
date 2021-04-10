@@ -144,6 +144,7 @@ class Analysis:
             save_file (bool, optional): flag for saving an html file with plot.
         """
         logger.info('Creating visualisation of communication questions')
+        # likert scale options
         options = ['completely_disagree',
                    'disagree',
                    'neither_disagree_nor_agree',
@@ -171,21 +172,31 @@ class Analysis:
                           ' important for road safety'
         pe_data = np.array([0.0] * len(df['end-as-0'][0][0:4]))
         datapoints = df['end-as-0'][df['end-as-0'].notnull()]
+        # counter of processed datapoints
+        counter_processed = 0
+        # go through data
         for i, data in enumerate(datapoints):
-            # create numpy array for adding vectors.
-            # only consider 1st 4 responses
-            data = np.asfarray(data[0:4], float)
+            # create numpy array for adding vectors. only consider 1st 4
+            # responses
+            try:
+                data = np.asfarray(data[0:4], float)
+            except ValueError as e:
+                logger.debug('Could not process answers {} for row {}',
+                             data[0:4],
+                             i)
+                continue
             pe_data = pe_data + data
+            counter_processed = counter_processed + 1
         # calculate average value of post-experiment questionairre data
-        pe_data = (pe_data / (i + 1))
-        fig = go.Figure(data=[
-            go.Bar(name=importance_name,
-                   x=[importance_name],
-                   y=importance),
-            go.Bar(name='Which behaviour increases feeling of safety?',
-                   x=post_qs,
-                   y=pe_data)
-        ])
+        pe_data = pe_data / counter_processed
+        # create figure
+        fig = go.Figure(data=[go.Bar(name=importance_name,
+                                     x=[importance_name],
+                                     y=importance),
+                              go.Bar(name='Which behaviour increases feeling'
+                                          + ' of safety?',
+                                     x=post_qs,
+                                     y=pe_data)])
         # update layout
         fig.update_layout(template=self.template,
                           yaxis_range=[0, 100])
@@ -261,7 +272,7 @@ class Analysis:
                                  method='update',
                                  args=[{'visible': [True] * df[y].shape[0]},
                                        {'title': 'All',
-                                       'showlegend': True}])])
+                                        'showlegend': True}])])
             # counter for traversing through stimuli
             counter_rows = 0
             for variable in y:
@@ -346,7 +357,7 @@ class Analysis:
             return -1
         # using marker_size with histogram marginal(s) is not supported
         if (marker_size and
-           (marginal_x == 'histogram' or marginal_y == 'histogram')):
+                (marginal_x == 'histogram' or marginal_y == 'histogram')):
             logger.error('Argument marker_size cannot be used together with'
                          + ' histogram marginal(s).')
             return -1
@@ -574,20 +585,26 @@ class Analysis:
         else:
             fig.show()
 
-    def plot_kp(self, df, save_file=True,
-                xaxis_title='Time (s)',
-                yaxis_title='Percentage of trials with response key pressed'):
+    def plot_kp(self, df, conf_interval=None, xaxis_title='Time (s)',
+                yaxis_title='Percentage of trials with response key pressed',
+                xaxis_range=None, yaxis_range=None, save_file=True):
         """Plot keypress data.
 
         Args:
             df (dataframe): dataframe with keypress data.
+            conf_interval (float, optional): show confidence interval defined
+                                             by argument.
             xaxis_title (str, optional): title for x axis.
             yaxis_title (str, optional): title for y axis.
+            xaxis_range (list, optional): range of x axis in format [min, max].
+            yaxis_range (list, optional): range of y axis in format [min, max].
             save_file (bool, optional): flag for saving an html file with plot.
         """
         logger.info('Creating visualisations of keypresses for all data.')
         # calculate times
-        times = np.array(range(self.res, df['video_length'].max() + self.res, self.res)) / 1000  # noqa: E501
+        times = np.array(range(self.res,
+                               df['video_length'].max() + self.res,
+                               self.res)) / 1000
         # add all data together. Must be converted to np array to add together
         kp_data = np.array([0.0] * len(times))
         for i, data in enumerate(df['kp']):
@@ -596,14 +613,43 @@ class Analysis:
             # add data
             kp_data += np.array(data)
         kp_data = (kp_data / i)
+        # create figure
+        fig = go.Figure()
         # plot keypresses
         fig = px.line(y=kp_data,
                       x=times,
                       title='Keypresses for all stimuli')
+        # show confidence interval
+        if conf_interval:
+            # calculate condidence interval
+            (y_lower, y_upper) = self.get_conf_interval_bounds(kp_data,
+                                                               conf_interval)
+            # plot interval
+            fig.add_trace(go.Scatter(name='Upper Bound',
+                                     x=times,
+                                     y=y_upper,
+                                     mode='lines',
+                                     fillcolor='rgba(0,100,80,0.2)',
+                                     line=dict(color='rgba(255,255,255,0)'),
+                                     hoverinfo="skip",
+                                     showlegend=False))
+            fig.add_trace(go.Scatter(name='Lower Bound',
+                                     x=times,
+                                     y=y_lower,
+                                     fill='tonexty',
+                                     fillcolor='rgba(0,100,80,0.2)',
+                                     line=dict(color='rgba(255,255,255,0)'),
+                                     hoverinfo="skip",
+                                     showlegend=False))
+        # define range of y axis
+        if not yaxis_range:
+            yaxis_range = [0, max(y_upper) if conf_interval else max(kp_data)]
         # update layout
         fig.update_layout(template=self.template,
                           xaxis_title=xaxis_title,
-                          yaxis_title=yaxis_title)
+                          yaxis_title=yaxis_title,
+                          xaxis_range=xaxis_range,
+                          yaxis_range=yaxis_range)
         # save file
         if save_file:
             self.save_plotly(fig, 'kp', self.folder)
@@ -611,105 +657,66 @@ class Analysis:
         else:
             fig.show()
 
-    def plot_kp_conf_int(self, df, save_file=True,
-                         xaxis_title='Time',
-                         yaxis_title='Percentage of trials with response key'
-                                     + ' pressed'):
-        """Plot keypress data with confidence interval.
-
-        Args:
-            df (dataframe): dataframe with keypress data.
-            xaxis_title (str, optional): title for x axis.
-            yaxis_title (str, optional): title for y axis.
-            save_file (bool, optional): flag for saving an html file with plot.
-        """
-        # todo: finish plot with confidence interval. based on https://plotly.com/python/continuous-error-bars/
-        logger.info('Creating visualisations of keypresses for all data with'
-                    + ' confidence interval.')
-        # calculate times
-        times = np.array(range(self.res, df['video_length'].max() + self.res, self.res)) / 1000  # noqa: E501
-        # add all data together. Must be converted to np array to add together
-        kp_data = np.array([0.0] * len(times))
-        for i, data in enumerate(df['kp']):
-            # append zeros to match longest duration
-            data = np.pad(data, (0, len(times) - len(data)), 'constant')
-            # add data
-            kp_data += np.array(data)
-        kp_data = (kp_data / i)
-        # calculate condidence interval
-        conf_interval = st.t.interval(0.95,
-                                      len(kp_data)-1,
-                                      loc=np.mean(kp_data),
-                                      scale=st.sem(kp_data))
-
-        y_lower = kp_data - conf_interval[0]
-        y_upper = kp_data + conf_interval[0]
-
-
-        print(kp_data)
-        # create figure
-        fig = go.Figure()
-        fig.add_trace(go.Scatter(x=times,
-                                 y=kp_data,
-                                 mode='lines',
-                                 showlegend=False))
-        fig.add_trace(go.Scatter(name = 'Upper Bound',
-                                 x=times,  # x, then x reversed
-                                 y=y_upper,  # 
-                                 mode='lines',
-                                 fillcolor='rgba(0,100,80,0.2)',
-                                 line=dict(color='rgba(255,255,255,0)'),
-                                 hoverinfo="skip",
-                                 showlegend=False))
-        fig.add_trace(go.Scatter(name = 'Lower Bound',
-                                 x=times,  # x, then x reversed
-                                 y=y_lower,  # upper, then lower reversed
-                                 fill='tonexty',
-                                 fillcolor='rgba(0,100,80,0.2)',
-                                 line=dict(color='rgba(255,255,255,0)'),
-                                 hoverinfo="skip",
-                                 showlegend=False))
-
-
-        # update layout
-        fig.update_layout(template=self.template,
-                          xaxis_title=xaxis_title,
-                          yaxis_title=yaxis_title,
-                          yaxis_range=[0,max(y_upper)])
-        # save file
-        if save_file:
-            self.save_plotly(fig, 'kp_conf_int', self.folder)
-        # open it in localhost instead
-        else:
-            fig.show()
-
-    def plot_kp_video(self, df, stimulus, extention='mp4',
+    def plot_kp_video(self, df, stimulus, extention='mp4', conf_interval=None,
                       xaxis_title='Time (s)',
                       yaxis_title='Percentage of trials with ' +
                                   'response key pressed',
-                      save_file=True):
+                      xaxis_range=None, yaxis_range=None, save_file=True):
         """Plot keypresses with multiple variables as a filter.
 
         Args:
             df (dataframe): dataframe with keypress data.
-            stimulus (TYPE): Description
-            extention (str, optional): Description
+            stimulus (str): name of stimulus.
+            extention (str, optional): extension of stimulus.
+            conf_interval (float, optional): show confidence interval defined
+                                             by argument.
             xaxis_title (str, optional): title for x axis.
             yaxis_title (str, optional): title for y axis.
+            xaxis_range (list, optional): range of x axis in format [min, max].
+            yaxis_range (list, optional): range of y axis in format [min, max].
             save_file (bool, optional): flag for saving an html file with plot.
         """
         # extract video length
         video_len = df.loc[stimulus]['video_length']
         # calculate times
         times = np.array(range(self.res, video_len + self.res, self.res)) / 1000  # noqa: E501
+        # keypress data
+        kp_data = df.loc[stimulus]['kp']
         # plot keypresses
         fig = px.line(y=df.loc[stimulus]['kp'],
                       x=times,
                       title='Keypresses for stimulus ' + stimulus)
+        # show confidence interval
+        if conf_interval:
+            # calculate condidence interval
+            (y_lower, y_upper) = self.get_conf_interval_bounds(kp_data,
+                                                               conf_interval)
+            # plot interval
+            fig.add_trace(go.Scatter(name='Upper Bound',
+                                     x=times,
+                                     y=y_upper,
+                                     mode='lines',
+                                     fillcolor='rgba(0,100,80,0.2)',
+                                     line=dict(color='rgba(255,255,255,0)'),
+                                     hoverinfo="skip",
+                                     showlegend=False))
+            fig.add_trace(go.Scatter(name='Lower Bound',
+                                     x=times,
+                                     y=y_lower,
+                                     fill='tonexty',
+                                     fillcolor='rgba(0,100,80,0.2)',
+                                     line=dict(color='rgba(255,255,255,0)'),
+                                     hoverinfo="skip",
+                                     showlegend=False))
+        # define range of y axis
+        if not yaxis_range:
+            yaxis_range = [0, max(y_upper) if conf_interval else max(kp_data)]
         # update layout
         fig.update_layout(template=self.template,
                           xaxis_title=xaxis_title,
-                          yaxis_title=yaxis_title)
+                          yaxis_title=yaxis_title,
+                          xaxis_range=xaxis_range,
+                          yaxis_range=yaxis_range)
         # save file
         if save_file:
             self.save_plotly(fig, 'kp_' + stimulus, self.folder)
@@ -720,13 +727,15 @@ class Analysis:
     def plot_kp_videos(self, df, xaxis_title='Time (s)',
                        yaxis_title='Percentage of trials with ' +
                                    'response key pressed',
-                       save_file=True):
+                       xaxis_range=None, yaxis_range=None, save_file=True):
         """Plot keypresses with multiple variables as a filter.
 
         Args:
             df (dataframe): dataframe with keypress data.
             xaxis_title (str, optional): title for x axis.
             yaxis_title (str, optional): title for y axis.
+            xaxis_range (list, optional): range of x axis in format [min, max].
+            yaxis_range (list, optional): range of y axis in format [min, max].
             save_file (bool, optional): flag for saving an html file with plot.
         """
         # calculate times
@@ -765,9 +774,12 @@ class Analysis:
         fig['layout']['updatemenus'] = updatemenus
         # update layout
         fig['layout']['title'] = 'Keypresses for individual stimuli'
+        # update layout
         fig.update_layout(template=self.template,
                           xaxis_title=xaxis_title,
-                          yaxis_title=yaxis_title)
+                          yaxis_title=yaxis_title,
+                          xaxis_range=xaxis_range,
+                          yaxis_range=yaxis_range)
         # save file
         if save_file:
             self.save_plotly(fig, 'kp_videos', self.folder)
@@ -779,8 +791,8 @@ class Analysis:
                          xaxis_title='Time (s)',
                          yaxis_title='Percentage of trials with ' +
                                      'response key pressed',
-                         save_file=True):
-        """Plot figures of individual videos with analysis.
+                         xaxis_range=None, yaxis_range=None, save_file=True):
+        """Plot figures of values of a certain variable.
 
         Args:
             df (dataframe): dataframe with keypress data.
@@ -789,6 +801,8 @@ class Analysis:
                                      values are plotted.
             xaxis_title (str, optional): title for x axis.
             yaxis_title (str, optional): title for y axis.
+            xaxis_range (list, optional): range of x axis in format [min, max].
+            yaxis_range (list, optional): range of y axis in format [min, max].
             save_file (bool, optional): flag for saving an html file with plot.
         """
         logger.info('Creating visualisation of keypresses based on values ' +
@@ -848,9 +862,12 @@ class Analysis:
         fig['layout']['updatemenus'] = updatemenus
         # update layout
         fig['layout']['title'] = 'Keypresses for ' + variable
+        # update layout
         fig.update_layout(template=self.template,
                           xaxis_title=xaxis_title,
-                          yaxis_title=yaxis_title)
+                          yaxis_title=yaxis_title,
+                          xaxis_range=xaxis_range,
+                          yaxis_range=yaxis_range)
         # save file
         if save_file:
             self.save_plotly(fig,
@@ -864,6 +881,7 @@ class Analysis:
     def plot_kp_variables_or(self, df, variables, xaxis_title='Time (s)',
                              yaxis_title='Percentage of trials with ' +
                                          'response key pressed',
+                             xaxis_range=None, yaxis_range=None,
                              save_file=True):
         """Separate plots of keypresses with multiple variables as a filter.
 
@@ -872,6 +890,8 @@ class Analysis:
             variables (list): variables to plot.
             xaxis_title (str, optional): title for x axis.
             yaxis_title (str, optional): title for y axis.
+            xaxis_range (list, optional): range of x axis in format [min, max].
+            yaxis_range (list, optional): range of y axis in format [min, max].
             save_file (bool, optional): flag for saving an html file with plot.
         """
         logger.info('Creating visualisation of keypresses based on ' +
@@ -929,9 +949,12 @@ class Analysis:
         fig['layout']['updatemenus'] = updatemenus
         # update layout
         fig['layout']['title'] = 'Keypresses with OR filter'
+        # update layout
         fig.update_layout(template=self.template,
                           xaxis_title=xaxis_title,
-                          yaxis_title=yaxis_title)
+                          yaxis_title=yaxis_title,
+                          xaxis_range=xaxis_range,
+                          yaxis_range=yaxis_range)
         # save file
         if save_file:
             self.save_plotly(fig, 'kp_or' + variables_str, self.folder)
@@ -939,18 +962,23 @@ class Analysis:
         else:
             fig.show()
 
-    def plot_kp_variables_and(self, df, variables,
+    def plot_kp_variables_and(self, df, variables, conf_interval=None,
                               xaxis_title='Time (s)',
                               yaxis_title='Percentage of trials with ' +
                                           'response key pressed',
+                              xaxis_range=None, yaxis_range=None,
                               save_file=True):
         """Separate plots of keypresses with multiple variables as a filter.
 
         Args:
             df (dataframe): dataframe with keypress data.
             variables (list): variables to plot.
+            conf_interval (float, optional): show confidence interval defined
+                                             by argument.
             xaxis_title (str, optional): title for x axis.
             yaxis_title (str, optional): title for y axis.
+            xaxis_range (list, optional): range of x axis in format [min, max].
+            yaxis_range (list, optional): range of y axis in format [min, max].
             save_file (bool, optional): flag for saving an html file with plot.
         """
         logger.info('Creating visualisation of keypresses based on ' +
@@ -979,10 +1007,37 @@ class Analysis:
         fig = px.line(y=kp_data,
                       x=times,
                       title='Keypresses with AND filter')
+        # show confidence interval
+        if conf_interval:
+            # calculate condidence interval
+            (y_lower, y_upper) = self.get_conf_interval_bounds(kp_data,
+                                                               conf_interval)
+            # plot interval
+            fig.add_trace(go.Scatter(name='Upper Bound',
+                                     x=times,
+                                     y=y_upper,
+                                     mode='lines',
+                                     fillcolor='rgba(0,100,80,0.2)',
+                                     line=dict(color='rgba(255,255,255,0)'),
+                                     hoverinfo="skip",
+                                     showlegend=False))
+            fig.add_trace(go.Scatter(name='Lower Bound',
+                                     x=times,
+                                     y=y_lower,
+                                     fill='tonexty',
+                                     fillcolor='rgba(0,100,80,0.2)',
+                                     line=dict(color='rgba(255,255,255,0)'),
+                                     hoverinfo="skip",
+                                     showlegend=False))
+        # define range of y axis
+        if not yaxis_range:
+            yaxis_range = [0, max(y_upper) if conf_interval else max(kp_data)]
         # update layout
         fig.update_layout(template=self.template,
                           xaxis_title=xaxis_title,
-                          yaxis_title=yaxis_title)
+                          yaxis_title=yaxis_title,
+                          xaxis_range=xaxis_range,
+                          yaxis_range=yaxis_range)
         # save file
         if save_file:
             self.save_plotly(fig, 'kp_and' + variables_str, self.folder)
@@ -1049,7 +1104,7 @@ class Analysis:
             os.makedirs(path)
         # limit name to 255 char
         if len(path) + len(name) > 250:
-            name = name[:255-len(path)-5]
+            name = name[:255 - len(path) - 5]
         file_plot = os.path.join(path + name + '.html')
         # save to file
         py.offline.plot(fig, filename=file_plot)
@@ -1170,3 +1225,24 @@ class Analysis:
         plt.rc('ytick', labelsize=s_font)   # fontsize of the tick labels
         plt.rc('legend', fontsize=s_font)   # legend fontsize
         plt.rc('figure', titlesize=l_font)  # fontsize of the figure title
+
+    def get_conf_interval_bounds(self, data, conf_interval=0.95):
+        """Get lower and upper bounds of confidence interval.
+
+        Args:
+            data (list): list with data.
+            conf_interval (float, optional): confidence interval value.
+
+        Returns:
+            list of lsits: lower and uppoer bounds.
+        """
+        # calculate condidence interval
+        conf_interval = st.t.interval(conf_interval,
+                                      len(data) - 1,
+                                      loc=np.mean(data),
+                                      scale=st.sem(data))
+        # calcuate bounds
+        # todo: cross-check if correct
+        y_lower = data - conf_interval[0]
+        y_upper = data + conf_interval[0]
+        return y_lower, y_upper

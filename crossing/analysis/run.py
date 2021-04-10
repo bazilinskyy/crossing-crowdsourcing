@@ -102,172 +102,174 @@ if __name__ == '__main__':
         # Output
         analysis = cs.analysis.Analysis()
         logger.info('Creating figures.')
-        # all keypresses
-        analysis.plot_kp(mapping)
-        # all keypresses with coonfidence interval, not finished
-        analysis.plot_kp_conf_int(mapping)
+        # all keypresses with confidence interval
+        analysis.plot_kp(mapping, conf_interval=0.95)
         # keypresses of an individual stimulus
-        # analysis.plot_kp_video(mapping, 'video_0')
-        # # keypresses of all videos individually
-        # analysis.plot_kp_videos(mapping)
-        # # 1 var, all values
-        # analysis.plot_kp_variable(mapping, 'cross_look')
-        # # 1 var, certain values
-        # analysis.plot_kp_variable(mapping, 'cross_look', ['C_L', 'nC_L'])
-        # # separate plots for multiple variables
-        # analysis.plot_kp_variables_or(mapping, [{'variable': 'cross_look', 'value': 'C_L'},  # noqa: E501
-        #                                         {'variable': 'traffic_rules', 'value': 'traffic_lights'},  # noqa: E501
-        #                                         {'variable': 'traffic_rules', 'value': 'ped_crossing'}])  # noqa: E501
-        # # multiple variables as a single filter
-        # analysis.plot_kp_variables_and(mapping, [{'variable': 'cross_look', 'value': 'C_L'},  # noqa: E501
-        #                                                 {'variable': 'traffic_rules', 'value': 'traffic_lights'}])  # noqa: E501
-        # # columns to drop in correlation matrix and scatter matrix
-        # columns_drop = ['id_segment', 'set', 'video', 'extra',
-        #                 'alternative_frame', 'alternative_frame.1', 'kp',
-        #                 'video_length', 'min_dur', 'max_dur',
-        #                 'eye-contact-yes', 'eye-contact-yes_but_too_late',
-        #                 'eye-contact-no', 'eye-contact-i_don\'t_know',
-        #                 'eye-contact_mean', 'time_before_interaction',
-        #                 'look_frame_ms', 'cross_frame_ms', 'interaction',
-        #                 'start']
-        # # set nan to -1
-        # df = mapping
-        # df = df.fillna(-1)
-        # # create correlation matrix
-        # analysis.corr_matrix(df,
-        #                      columns_drop=columns_drop,
-        #                      save_file=True)
-        # # create correlation matrix
-        # analysis.scatter_matrix(df,
-        #                         columns_drop=columns_drop,
-        #                         color='cross_look',
-        #                         symbol='cross_look',
-        #                         diagonal_visible=False,
-        #                         save_file=True)
-        # # stimulus duration
-        # analysis.hist(heroku_data,
-        #               x=heroku_data.columns[heroku_data.columns.to_series().str.contains('-dur')],  # noqa: E501
-        #               nbins=100,
-        #               pretty_text=True,
-        #               save_file=True)
-        # # browser window dimensions
-        # analysis.scatter(heroku_data,
-        #                  x='window_width',
-        #                  y='window_height',
-        #                  color='browser_name',
-        #                  pretty_text=True,
-        #                  save_file=True)
-        # analysis.heatmap(heroku_data,
-        #                  x='window_width',
-        #                  y='window_height',
-        #                  pretty_text=True,
-        #                  save_file=True)
-        # # time of participation
-        # df = appen_data
-        # df['country'] = df['country'].fillna('NaN')
-        # df['time'] = df['time'] / 60.0  # convert to min
-        # analysis.hist(df,
-        #               x=['time'],
-        #               color='country',
-        #               pretty_text=True,
-        #               save_file=True)
-        # # eye contact of driver and pedestrian
-        # analysis.scatter(appen_data,
-        #                  x='ec_driver',
-        #                  y='ec_pedestrian',
-        #                  color='year_license',
-        #                  pretty_text=True,
-        #                  save_file=True)
-        # # barchart of communication data
-        # post_qs = ['Importance of eye contact to pedestrian',
-        #            'Importance of hand gestures to pedestrian',
-        #            'Importance of eye contact to driver',
-        #            'Importance of light signaling to driver',
-        #            'Importance of waiting for car slow down']
-        # analysis.communication(all_data,
-        #                        pre_q='communication_importance',
-        #                        post_qs=post_qs,
-        #                        save_file=True)
-        # # histogram for driving frequency
-        # analysis.hist(appen_data,
-        #               x=['driving_freq'],
-        #               pretty_text=True,
-        #               save_file=True)
-        # # grouped barchart of DBQ data
-        # analysis.hist(appen_data,
-        #               x=['dbq1_anger',
-        #                  'dbq2_speed_motorway',
-        #                  'dbq3_speed_residential',
-        #                  'dbq4_headway',
-        #                  'dbq5_traffic_lights',
-        #                  'dbq6_horn',
-        #                  'dbq7_mobile'],
-        #               marginal='violin',
-        #               pretty_text=True,
-        #               save_file=True)
-        # # post-trial questions. level of danger
-        # analysis.bar(mapping,
-        #              y=['risky_slider'],
-        #              show_all_xticks=True,
-        #              xaxis_title='Video ID',
-        #              yaxis_title='Score',
-        #              save_file=True)
-        # # post-trial questions. bar chart for eye contact
-        # analysis.bar(mapping,
-        #              y=['eye-contact-yes',
-        #                 'eye-contact-yes_but_too_late',
-        #                 'eye-contact-no',
-        #                 'eye-contact-i_don\'t_know'],
-        #              stacked=True,
-        #              show_all_xticks=True,
-        #              xaxis_title='Video ID',
-        #              yaxis_title='Count',
-        #              pretty_text=True,
-        #              save_file=True)
-        # # post-trial questions. hist for eye contact
-        # analysis.hist(mapping,
-        #               x=['eye-contact_score'],
-        #               pretty_text=True,
-        #               xaxis_title='Whether pedestiran made eye contact',
-        #               yaxis_title='Count',
-        #               save_file=True)
-        # # scatter plot of risk score / eye contact
-        # analysis.scatter(mapping,
-        #                  x='risky_slider',
-        #                  y='eye-contact_score',
-        #                  color='cross_look',
-        #                  trendline='ols',
-        #                  hover_data=['risky_slider',
-        #                              'eye-contact_score',
-        #                              'eye-contact_mean',
-        #                              'eye-contact-yes',
-        #                              'eye-contact-yes_but_too_late',
-        #                              'eye-contact-no',
-        #                              'eye-contact-i_don\'t_know',
-        #                              'cross_look',
-        #                              'traffic_rules'],
-        #                  # pretty_text=True,
-        #                  xaxis_title='The riskiness of behaviour in video '
-        #                              + '(0-100)',
-        #                  yaxis_title='Whether pedestiran made eye contact '
-        #                              + '(No=1, Yes but too late=2, Yes=3)',
-        #                  # xaxis_range=[-10, 100],
-        #                  # yaxis_range=[-1, 20],
-        #                  save_file=True)
-        # # map of participants
-        # analysis.heatmap_participants(countries_data, save_file=True)
-        # # map of mean age per country
-        # analysis.map(countries_data, color='age', save_file=True)
-        # # map of gender per country
-        # analysis.map(countries_data, color='gender', save_file=True)
-        # # map of year of obtaining license per country
-        # analysis.map(countries_data, color='year_license', save_file=True)
-        # # map of year of automated driving per country
-        # analysis.map(countries_data, color='year_ad', save_file=True)
-        # # check if any figures are to be rendered
-        # figures = [manager.canvas.figure
-        #            for manager in
-        #            matplotlib._pylab_helpers.Gcf.get_all_fig_managers()]
-        # # show figures, if any
-        # if figures:
-        #     plt.show()
+        analysis.plot_kp_video(mapping, 'video_0', conf_interval=0.95)
+        # keypresses of all videos individually
+        analysis.plot_kp_videos(mapping)
+        # 1 var, all values
+        analysis.plot_kp_variable(mapping, 'cross_look')
+        # 1 var, certain values
+        analysis.plot_kp_variable(mapping, 'cross_look', ['C_L', 'nC_L'])
+        # separate plots for multiple variables
+        analysis.plot_kp_variables_or(mapping, [{'variable': 'cross_look', 'value': 'C_L'},  # noqa: E501
+                                                {'variable': 'traffic_rules', 'value': 'traffic_lights'},  # noqa: E501
+                                                {'variable': 'traffic_rules', 'value': 'ped_crossing'}])  # noqa: E501
+        # multiple variables as a single filter
+        analysis.plot_kp_variables_and(mapping,
+                                       variables=[{'variable': 'cross_look',
+                                                   'value': 'C_L'},
+                                                  {'variable': 'traffic_rules',
+                                                   'value': 'traffic_lights'}],
+                                       conf_interval=0.95)
+        # columns to drop in correlation matrix and scatter matrix
+        columns_drop = ['id_segment', 'set', 'video', 'extra',
+                        'alternative_frame', 'alternative_frame.1', 'kp',
+                        'video_length', 'min_dur', 'max_dur',
+                        'eye-contact-yes', 'eye-contact-yes_but_too_late',
+                        'eye-contact-no', 'eye-contact-i_don\'t_know',
+                        'eye-contact_mean', 'time_before_interaction',
+                        'look_frame_ms', 'cross_frame_ms', 'interaction',
+                        'start']
+        # set nan to -1
+        df = mapping
+        df = df.fillna(-1)
+        # create correlation matrix
+        analysis.corr_matrix(df,
+                             columns_drop=columns_drop,
+                             save_file=True)
+        # create correlation matrix
+        analysis.scatter_matrix(df,
+                                columns_drop=columns_drop,
+                                color='cross_look',
+                                symbol='cross_look',
+                                diagonal_visible=False,
+                                save_file=True)
+        # stimulus duration
+        analysis.hist(heroku_data,
+                      x=heroku_data.columns[heroku_data.columns.to_series().str.contains('-dur')],  # noqa: E501
+                      nbins=100,
+                      pretty_text=True,
+                      save_file=True)
+        # browser window dimensions
+        analysis.scatter(heroku_data,
+                         x='window_width',
+                         y='window_height',
+                         color='browser_name',
+                         pretty_text=True,
+                         save_file=True)
+        analysis.heatmap(heroku_data,
+                         x='window_width',
+                         y='window_height',
+                         pretty_text=True,
+                         save_file=True)
+        # time of participation
+        df = appen_data
+        df['country'] = df['country'].fillna('NaN')
+        df['time'] = df['time'] / 60.0  # convert to min
+        analysis.hist(df,
+                      x=['time'],
+                      color='country',
+                      pretty_text=True,
+                      save_file=True)
+        # eye contact of driver and pedestrian
+        analysis.scatter(appen_data,
+                         x='ec_driver',
+                         y='ec_pedestrian',
+                         color='year_license',
+                         pretty_text=True,
+                         save_file=True)
+        # barchart of communication data
+        post_qs = ['Importance of eye contact to pedestrian',
+                   'Importance of hand gestures to pedestrian',
+                   'Importance of eye contact to driver',
+                   'Importance of light signaling to driver',
+                   'Importance of waiting for car slow down']
+        analysis.communication(all_data,
+                               pre_q='communication_importance',
+                               post_qs=post_qs,
+                               save_file=True)
+        # histogram for driving frequency
+        analysis.hist(appen_data,
+                      x=['driving_freq'],
+                      pretty_text=True,
+                      save_file=True)
+        # grouped barchart of DBQ data
+        analysis.hist(appen_data,
+                      x=['dbq1_anger',
+                         'dbq2_speed_motorway',
+                         'dbq3_speed_residential',
+                         'dbq4_headway',
+                         'dbq5_traffic_lights',
+                         'dbq6_horn',
+                         'dbq7_mobile'],
+                      marginal='violin',
+                      pretty_text=True,
+                      save_file=True)
+        # post-trial questions. level of danger
+        analysis.bar(mapping,
+                     y=['risky_slider'],
+                     show_all_xticks=True,
+                     xaxis_title='Video ID',
+                     yaxis_title='Score',
+                     save_file=True)
+        # post-trial questions. bar chart for eye contact
+        analysis.bar(mapping,
+                     y=['eye-contact-yes',
+                        'eye-contact-yes_but_too_late',
+                        'eye-contact-no',
+                        'eye-contact-i_don\'t_know'],
+                     stacked=True,
+                     show_all_xticks=True,
+                     xaxis_title='Video ID',
+                     yaxis_title='Count',
+                     pretty_text=True,
+                     save_file=True)
+        # post-trial questions. hist for eye contact
+        analysis.hist(mapping,
+                      x=['eye-contact_score'],
+                      pretty_text=True,
+                      xaxis_title='Whether pedestiran made eye contact',
+                      yaxis_title='Count',
+                      save_file=True)
+        # scatter plot of risk score / eye contact
+        analysis.scatter(mapping,
+                         x='risky_slider',
+                         y='eye-contact_score',
+                         color='cross_look',
+                         trendline='ols',
+                         hover_data=['risky_slider',
+                                     'eye-contact_score',
+                                     'eye-contact_mean',
+                                     'eye-contact-yes',
+                                     'eye-contact-yes_but_too_late',
+                                     'eye-contact-no',
+                                     'eye-contact-i_don\'t_know',
+                                     'cross_look',
+                                     'traffic_rules'],
+                         # pretty_text=True,
+                         xaxis_title='The riskiness of behaviour in video '
+                                     + '(0-100)',
+                         yaxis_title='Whether pedestiran made eye contact '
+                                     + '(No=1, Yes but too late=2, Yes=3)',
+                         # xaxis_range=[-10, 100],
+                         # yaxis_range=[-1, 20],
+                         save_file=True)
+        # map of participants
+        analysis.heatmap_participants(countries_data, save_file=True)
+        # map of mean age per country
+        analysis.map(countries_data, color='age', save_file=True)
+        # map of gender per country
+        analysis.map(countries_data, color='gender', save_file=True)
+        # map of year of obtaining license per country
+        analysis.map(countries_data, color='year_license', save_file=True)
+        # map of year of automated driving per country
+        analysis.map(countries_data, color='year_ad', save_file=True)
+        # check if any figures are to be rendered
+        figures = [manager.canvas.figure
+                   for manager in
+                   matplotlib._pylab_helpers.Gcf.get_all_fig_managers()]
+        # show figures, if any
+        if figures:
+            plt.show()
