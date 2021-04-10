@@ -258,6 +258,10 @@ class Appen:
         # todo: map textual questions to int
         # df for reassignment of textual values
         df = self.appen_data
+        # df for storing counts
+        df_counts = pd.DataFrame()
+        # get countries and counts of participants
+        df_counts['counts'] = df['country'].value_counts()
         # set i_prefer_not_to_respond as nan
         df[df == 'i_prefer_not_to_respond'] = np.nan
         # map gender
@@ -276,8 +280,13 @@ class Appen:
             numeric_only=True).reset_index()['year_ad']
         df_country['year_license'] = df.groupby('country').median(
             numeric_only=True).reset_index()['year_license']
-        # get countries and counts of participants
-        df_country['counts'] = self.appen_data['country'].value_counts()
+        # assign counts after manipulations
+        df_country = df_country.set_index('country', drop=False)
+        df_country = df_country.merge(df_counts,
+                                      left_index=True,
+                                      right_index=True,
+                                      how='left')
+        # drop not needed columns
         df_country.drop(['unit_id', 'id', 'tainted', 'worker_id'], 1)
         # assign to attribute
         self.countries_data = df_country

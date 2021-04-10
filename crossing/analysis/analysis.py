@@ -1053,6 +1053,9 @@ class Analysis:
             save_file (bool, optional): flag for saving an html file with plot.
         """
         # create map
+        logger.info('Creating visualisation of heatmap of participants by'
+                    + ' country.')
+        print(df['counts'])
         fig = px.choropleth(df, locations='country',
                             color='counts',
                             hover_name='country',
@@ -1075,6 +1078,8 @@ class Analysis:
             save_file (bool, optional): flag for saving an html file with plot.
         """
         # create map
+        logger.info('Creating visualisation of heatmap of participants by'
+                    + ' country with colour defined by {}.', color)
         fig = px.choropleth(df,
                             locations='country',
                             color=color,
