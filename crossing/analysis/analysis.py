@@ -575,7 +575,7 @@ class Analysis:
             fig.show()
 
     def plot_kp(self, df, save_file=True,
-                xaxis_title='Time (ms)',
+                xaxis_title='Time (s)',
                 yaxis_title='Percentage of trials with response key pressed'):
         """Plot keypress data.
 
@@ -612,7 +612,7 @@ class Analysis:
             fig.show()
 
     def plot_kp_conf_int(self, df, save_file=True,
-                         xaxis_title='Time (ms)',
+                         xaxis_title='Time',
                          yaxis_title='Percentage of trials with response key'
                                      + ' pressed'):
         """Plot keypress data with confidence interval.
@@ -641,26 +641,41 @@ class Analysis:
                                       len(kp_data)-1,
                                       loc=np.mean(kp_data),
                                       scale=st.sem(kp_data))
+
         y_lower = kp_data - conf_interval[0]
         y_upper = kp_data + conf_interval[0]
+
+
+        print(kp_data)
         # create figure
         fig = go.Figure()
         fig.add_trace(go.Scatter(x=times,
                                  y=kp_data,
                                  mode='lines',
                                  showlegend=False))
-        fig.add_trace(go.Scatter(x=times+times[::-1],  # x, then x reversed
-                                 y=y_upper+y_lower[::-1],  # upper, then lower reversed
-                                 fill='toself',
+        fig.add_trace(go.Scatter(name = 'Upper Bound',
+                                 x=times,  # x, then x reversed
+                                 y=y_upper,  # 
+                                 mode='lines',
+                                 fillcolor='rgba(0,100,80,0.2)',
+                                 line=dict(color='rgba(255,255,255,0)'),
+                                 hoverinfo="skip",
+                                 showlegend=False))
+        fig.add_trace(go.Scatter(name = 'Lower Bound',
+                                 x=times,  # x, then x reversed
+                                 y=y_lower,  # upper, then lower reversed
+                                 fill='tonexty',
                                  fillcolor='rgba(0,100,80,0.2)',
                                  line=dict(color='rgba(255,255,255,0)'),
                                  hoverinfo="skip",
                                  showlegend=False))
 
+
         # update layout
         fig.update_layout(template=self.template,
                           xaxis_title=xaxis_title,
-                          yaxis_title=yaxis_title)
+                          yaxis_title=yaxis_title,
+                          yaxis_range=[0,max(y_upper)])
         # save file
         if save_file:
             self.save_plotly(fig, 'kp_conf_int', self.folder)
@@ -669,7 +684,7 @@ class Analysis:
             fig.show()
 
     def plot_kp_video(self, df, stimulus, extention='mp4',
-                      xaxis_title='Time (ms)',
+                      xaxis_title='Time (s)',
                       yaxis_title='Percentage of trials with ' +
                                   'response key pressed',
                       save_file=True):
@@ -702,7 +717,7 @@ class Analysis:
         else:
             fig.show()
 
-    def plot_kp_videos(self, df, xaxis_title='Time (ms)',
+    def plot_kp_videos(self, df, xaxis_title='Time (s)',
                        yaxis_title='Percentage of trials with ' +
                                    'response key pressed',
                        save_file=True):
@@ -761,7 +776,7 @@ class Analysis:
             fig.show()
 
     def plot_kp_variable(self, df, variable, values=None,
-                         xaxis_title='Time (ms)',
+                         xaxis_title='Time (s)',
                          yaxis_title='Percentage of trials with ' +
                                      'response key pressed',
                          save_file=True):
@@ -846,7 +861,7 @@ class Analysis:
         else:
             fig.show()
 
-    def plot_kp_variables_or(self, df, variables, xaxis_title='Time (ms)',
+    def plot_kp_variables_or(self, df, variables, xaxis_title='Time (s)',
                              yaxis_title='Percentage of trials with ' +
                                          'response key pressed',
                              save_file=True):
@@ -925,7 +940,7 @@ class Analysis:
             fig.show()
 
     def plot_kp_variables_and(self, df, variables,
-                              xaxis_title='Time (ms)',
+                              xaxis_title='Time (s)',
                               yaxis_title='Percentage of trials with ' +
                                           'response key pressed',
                               save_file=True):
