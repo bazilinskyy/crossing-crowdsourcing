@@ -89,6 +89,7 @@ class Appen:
                                        'appen data')
         # process data
         else:
+            logger.info('Reading appen data from {}.', self.file_data)
             # load from csv
             df = pd.read_csv(self.file_data)
             # drop legcy worker code column
@@ -198,6 +199,7 @@ class Appen:
         Returns:
             dataframe: updated dataframe.
         """
+        logger.info('Cleaning appen data.')
         # get current number of nans
         nans_before = np.zeros(2, dtype=np.int8)
         nans_before[0] = df['year_ad'].isnull().sum()
