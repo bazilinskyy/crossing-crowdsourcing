@@ -209,7 +209,7 @@ class Appen:
             lambda x: pd.to_numeric(x, errors='coerce'))
         df['year_license'] = df['year_license'].apply(
             lambda x: pd.to_numeric(x, errors='coerce'))
-        logger.info('Cleaning a1. Replaced {} non-numeric values in column'
+        logger.info('Clean-a1. Replaced {} non-numeric values in column'
                     + ' year_ad and {} non-numeric values in column'
                     + ' year_license.',
                     df['year_ad'].isnull().sum() - nans_before[0],
@@ -222,7 +222,7 @@ class Appen:
         df.loc[df['year_ad'] > 2300,  'year_ad'] = np.nan
         # year of obtaining driver's license is assumed to be always < 70
         df.loc[df['year_license'] >= 70] = np.nan
-        logger.info('Cleaning a2. Cleaned {} values of years in column year_ad'
+        logger.info('Clean-a2. Cleaned {} values of years in column year_ad'
                     + ' and {} values of years in column year_license.',
                     df['year_ad'].isnull().sum() - nans_before[0],
                     df['year_license'].isnull().sum() - nans_before[1])
