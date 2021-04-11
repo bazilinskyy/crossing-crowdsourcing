@@ -3,6 +3,7 @@ import json
 import os
 import pandas as pd
 import numpy as np
+import datetime as dt
 from collections import Counter
 from tqdm import tqdm
 
@@ -72,11 +73,12 @@ class Appen:
                     old_shape,
                     self.appen_data.shape)
 
-    def read_data(self, filter_data=True):
+    def read_data(self, filter_data=True, clean_data=True):
         """Read data into an attribute.
 
         Args:
             filter_data (bool, optional): flag for filtering data.
+            clean_data (bool, optional): clean data.
 
         Returns:
             dataframe: udpated dataframe.
@@ -107,6 +109,9 @@ class Appen:
             # filter data
             if filter_data:
                 df = self.filter_data(df)
+            # clean data
+            if clean_data:
+                df = self.clean_data(df)
             # mask IDs and IPs
             df = self.mask_ips_ids(df)
             # move worker_code to the front
@@ -134,7 +139,6 @@ class Appen:
                (the 1st data entry is retained).
             5. People who used the same `worker_code` multiple times.
         """
-        # todo: export csv file with cheaters
         logger.info('Filtering appen data.')
         # people that did not read instructions
         df_1 = df.loc[df['instructions'] == 'no']
@@ -178,6 +182,51 @@ class Appen:
             df = df.reset_index()
         logger.info('Filtered in total in appen data: {}',
                     old_size - df.shape[0])
+        # assign to attribute
+        self.appen_data = df
+        # return df with data
+        return df
+
+    def clean_data(self, df, clean_years=True):
+        """Clean data from unexpected values.
+
+        Args:
+            df (dataframe): dataframe with data.
+            clean_years (bool, optional): clean years question by removing
+                                          unrealistic answers.
+
+        Returns:
+            dataframe: updated dataframe.
+        """
+        # get current number of nans
+        nans_before = np.zeros(2, dtype=np.int8)
+        nans_before[0] = df['year_ad'].isnull().sum()
+        nans_before[1] = df['year_license'].isnull().sum()
+        # replace all non-numeric values to nan for questions invlolving years
+        df['year_ad'] = df['year_ad'].apply(
+            lambda x: pd.to_numeric(x, errors='coerce'))
+        df['year_license'] = df['year_license'].apply(
+            lambda x: pd.to_numeric(x, errors='coerce'))
+        logger.info('Cleaning a1. Replaced {} non-numeric values in column'
+                    + ' year_ad and {} non-numeric values in column'
+                    + ' year_license.',
+                    df['year_ad'].isnull().sum() - nans_before[0],
+                    df['year_license'].isnull().sum() - nans_before[1])
+        # get current year
+        now = dt.datetime.now()
+        # year of introduction of automated driving cannot be in the past
+        # and unrealistically large values are removed
+        df.loc[df['year_ad'] < now.year, 'year_ad'] = np.nan
+        df.loc[df['year_ad'] > 2300,  'year_ad'] = np.nan
+        # year of obtaining driver's license is assumed to be always < 70
+        df.loc[df['year_license'] >= 70] = np.nan
+        logger.info('Cleaning a2. Cleaned {} values of years in column year_ad'
+                    + ' and {} values of years in column year_license.',
+                    df['year_ad'].isnull().sum() - nans_before[0],
+                    df['year_license'].isnull().sum() - nans_before[1])
+        # assign to attribute
+        self.appen_data = df
+        # return df with data
         return df
 
     def mask_ips_ids(self, df, mask_ip=True, mask_id=True):
@@ -267,11 +316,6 @@ class Appen:
         # map gender
         di = {'female': 0, 'male': 1}
         df = df.replace({'gender': di})
-        # replace all non-numeric values to nan
-        df['year_ad'] = df['year_ad'].apply(
-            lambda x: pd.to_numeric(x, errors='coerce'))
-        df['year_license'] = df['year_license'].apply(
-            lambda x: pd.to_numeric(x, errors='coerce'))
         # get mean values for countries
         df_country = df.groupby('country').mean(
             numeric_only=True).reset_index()

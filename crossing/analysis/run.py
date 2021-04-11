@@ -14,9 +14,21 @@ SAVE_P = True  # save pickle files with data
 LOAD_P = False  # load pickle files with data
 SAVE_CSV = True  # load csv files with data
 FILTER_DATA = True  # filter Appen and heroku data
+CLEAN_DATA = True  # clean Appen data
 REJECT_CHEATERS = False  # reject cheaters on Appen
 UPDATE_MAPPING = True  # update mapping with keypress data
 SHOW_OUTPUT = True  # shoud figures
+
+# for debugging, skip processing
+# SAVE_P = False  # save pickle files with data
+# LOAD_P = True  # load pickle files with data
+# SAVE_CSV = True  # load csv files with data
+# FILTER_DATA = False  # filter Appen and heroku data
+# CLEAN_DATA = False  # clean Appen data
+# REJECT_CHEATERS = False  # reject cheaters on Appen
+# UPDATE_MAPPING = False  # update mapping with keypress data
+# SHOW_OUTPUT = True  # shoud figures
+
 file_mapping = 'mapping.p'  # file to save lists with coordinates
 
 if __name__ == '__main__':
@@ -38,7 +50,8 @@ if __name__ == '__main__':
                               load_p=LOAD_P,
                               save_csv=SAVE_CSV)
     # read appen data
-    appen_data = appen.read_data(filter_data=FILTER_DATA)
+    appen_data = appen.read_data(filter_data=FILTER_DATA,
+                                 clean_data=CLEAN_DATA)
     # get keys in data files
     heroku_data_keys = heroku_data.keys()
     appen_data_keys = appen_data.keys()

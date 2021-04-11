@@ -18,6 +18,8 @@ import plotly.io as pio
 import plotly.express as px
 from plotly import subplots
 import datetime as dt
+import warnings
+
 
 import crossing as cs
 
@@ -348,8 +350,7 @@ class Analysis:
             yaxis_range (list, optional): range of y axis in format [min, max].
             save_file (bool, optional): flag for saving an html file with plot.
         """
-        logger.info('Creating scatter plot for x={} and y={}.',
-                    x, y)
+        logger.info('Creating scatter plot for x={} and y={}.', x, y)
         # using size and marker_size is not supported
         if marker_size and size:
             logger.error('Arguments marker_size and size cannot be used'
@@ -393,17 +394,19 @@ class Analysis:
             except ValueError as e:
                 logger.debug('Tried to prettify {} with exception {}', text, e)
         # scatter plot with histograms
-        fig = px.scatter(df,
-                         x=x,
-                         y=y,
-                         color=color,
-                         symbol=symbol,
-                         size=size,
-                         text=text,
-                         trendline=trendline,
-                         hover_data=hover_data,
-                         marginal_x=marginal_x,
-                         marginal_y=marginal_y)
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore', category=RuntimeWarning)
+            fig = px.scatter(df,
+                             x=x,
+                             y=y,
+                             color=color,
+                             symbol=symbol,
+                             size=size,
+                             text=text,
+                             trendline=trendline,
+                             hover_data=hover_data,
+                             marginal_x=marginal_x,
+                             marginal_y=marginal_y)
         # update layout
         fig.update_layout(template=self.template,
                           xaxis_title=xaxis_title,
@@ -763,6 +766,7 @@ class Analysis:
                                     'showlegend': True}])])
         # counter for traversing through stimuli
         counter_rows = 0
+        # go over extracted videos
         for index, row in df.iterrows():
             visibility = [[counter_rows == j] for j in range(df.shape[0])]
             visibility = [item for sublist in visibility for item in sublist]
@@ -818,10 +822,16 @@ class Analysis:
         extracted_data = []
         for value in values:
             kp_data = np.array([0.0] * len(times))
-            df_f = df[df[variable] == value]
+            # non-nan value (provide as np.nan)
+            if not pd.isnull(value):
+                df_f = df[df[variable] == value]
+            # nan value
+            else:
+                df_f = df[df[variable].isnull()]
+            # go over extracted videos
             for index, row in df_f.iterrows():
-                # append zeros to match longest duration
                 data_row = np.array(row['kp'])
+                # append zeros to match longest duration
                 data_row = np.pad(data_row, (0, len(times) - len(data_row)),
                                   'constant')
                 kp_data = kp_data + data_row
@@ -909,7 +919,13 @@ class Analysis:
         extracted_data = []
         for var in variables:
             kp_data = np.array([0.0] * len(times))
-            df_f = df[df[var['variable']] == var['value']]
+            # non-nan value (provide as np.nan)
+            if not pd.isnull(var['value']):
+                df_f = df[df[var['variable']] == var['value']]
+            # nan value
+            else:
+                df_f = df[var['variable'].isnull()]
+            # go over extracted videos
             for index, row in df_f.iterrows():  # noqa: E501
                 kp_data = kp_data + np.array(row['kp'])
             # divide sums of values over number of rows that qualify
@@ -993,18 +1009,24 @@ class Analysis:
         times = np.array(range(self.res, df['video_length'].max() + self.res, self.res)) / 1000  # noqa: E501
         # filter df based on variables given
         for var in variables:
-            df = df[df[var['variable']] == var['value']]
+            # non-nan value (provide as np.nan)
+            if not pd.isnull(var['value']):
+                df_f = df[df[var['variable']] == var['value']]
+            # nan value
+            else:
+                df_f = df[df[var['variable']].isnull()]
         # check if any data in df left
-        if df.empty:
+        if df_f.empty:
             logger.error('Provided variables yielded empty dataframe.')
             return
         # add all data together. Must be converted to np array
         kp_data = np.array([0.0] * len(times))
-        for i, data in enumerate(df['kp']):
+        # go over extracted videos
+        for i, data in enumerate(df_f['kp']):
             kp_data += np.array(data)
         # divide sums of values over number of rows that qualify
-        if df.shape[0]:
-            kp_data = kp_data / df.shape[0]
+        if df_f.shape[0]:
+            kp_data = kp_data / df_f.shape[0]
         # plot keypresses
         fig = px.line(y=kp_data,
                       x=times,
