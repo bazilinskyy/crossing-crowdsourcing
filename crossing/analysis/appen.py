@@ -214,6 +214,9 @@ class Appen:
                     + ' year_license.',
                     df['year_ad'].isnull().sum() - nans_before[0],
                     df['year_license'].isnull().sum() - nans_before[1])
+        # replace number of nans
+        nans_before[0] = df['year_ad'].isnull().sum()
+        nans_before[1] = df['year_license'].isnull().sum()
         # get current year
         now = dt.datetime.now()
         # year of introduction of automated driving cannot be in the past

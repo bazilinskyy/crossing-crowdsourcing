@@ -274,7 +274,7 @@ if __name__ == '__main__':
                          # yaxis_range=[-1, 20],
                          save_file=True)
         # map of participants
-        analysis.heatmap_participants(countries_data, save_file=True)
+        analysis.map(countries_data, color='counts', save_file=True)
         # map of mean age per country
         analysis.map(countries_data, color='age', save_file=True)
         # map of gender per country
