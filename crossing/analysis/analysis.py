@@ -1249,5 +1249,5 @@ class Analysis:
         # calcuate bounds
         # todo: cross-check if correct
         y_lower = data - conf_interval[0]
-        y_upper = data + conf_interval[0]
+        y_upper = data + conf_interval[1]
         return y_lower, y_upper

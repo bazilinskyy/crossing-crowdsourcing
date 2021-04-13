@@ -557,6 +557,7 @@ class Heroku:
                     col_name = col_name.lower()
                     # add to mapping
                     self.mapping[col_name] = count_option
+                    print(num, option, col_name, count_option)
         # save to csv
         if self.save_csv:
             # save to csv
