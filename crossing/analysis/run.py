@@ -124,11 +124,11 @@ if __name__ == '__main__':
         # 1 var, all values
         analysis.plot_kp_variable(mapping, 'cross_look')
         # 1 var, certain values
-        analysis.plot_kp_variable(mapping, 'cross_look', ['C_L', 'nC_L'])
+        analysis.plot_kp_variable(mapping, 'cross_look', ['Crossing_Looking', 'notCrossing_Looking'])
         # separate plots for multiple variables
         analysis.plot_kp_variables_or(mapping,
                                       variables=[{'variable': 'cross_look',
-                                                  'value': 'C_L'},
+                                                  'value': 'Crossing_Looking'},
                                                  {'variable': 'traffic_rules',
                                                   'value': 'traffic_lights'},
                                                  {'variable': 'traffic_rules',
@@ -136,7 +136,7 @@ if __name__ == '__main__':
         # multiple variables as a single filter
         analysis.plot_kp_variables_and(mapping,
                                        variables=[{'variable': 'cross_look',
-                                                   'value': 'C_L'},
+                                                   'value': 'Crossing_Looking'},
                                                   {'variable': 'traffic_rules',
                                                    'value': 'traffic_lights'}],
                                        conf_interval=0.95)
