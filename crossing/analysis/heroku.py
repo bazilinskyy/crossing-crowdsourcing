@@ -160,7 +160,7 @@ class Heroku:
                                         time = prev_row_info.loc[worker_code, 'time_elapsed']  # noqa: E501
                                     # calculate duration
                                     dur = float(data_cell['time_elapsed']) - time  # noqa: E501
-                                    if stim_name + '-dur' not in dict_row.keys():  # noqa: E501
+                                    if stim_name + '-dur' not in dict_row.keys() and dur > 0:  # noqa: E501
                                         # first value
                                         dict_row[stim_name + '-dur'] = dur
                     # keypresses
@@ -289,12 +289,12 @@ class Heroku:
                         elapsed_l = float(data_cell['time_elapsed'])
                 # update last time_elapsed for worker
                 prev_row_info.loc[dict_row['worker_code'], 'time_elapsed'] = elapsed_l  # noqa: E501
-                # worker_code was ecnountered before
+                # worker_code was encountered before
                 if dict_row['worker_code'] in data_dict.keys():
                     # iterate over items in the data dictionary
                     for key, value in dict_row.items():
                         # worker_code does not need to be added
-                        if key == 'worker_code':
+                        if key in self.meta_keys:
                             continue
                         # new value
                         if key + '-0' not in data_dict[dict_row['worker_code']].keys():  # noqa: E501
@@ -307,8 +307,17 @@ class Heroku:
                                 new_key = key + '-' + str(rep)
                                 if new_key not in data_dict[dict_row['worker_code']].keys():  # noqa: E501
                                     data_dict[dict_row['worker_code']][new_key] = value  # noqa: E501
-                # worker_code is ecnountered for the first time
+                                    break
+                # worker_code is encountered for the first time
                 else:
+                    # iterate over items in the data dictionary and add -0
+                    for key, value in list(dict_row.items()):
+                        # worker_code does not need to be added
+                        if key in self.meta_keys:
+                            continue
+                        # new value
+                        dict_row[key + '-0'] = dict_row.pop(key)
+                    # add row of data
                     data_dict[dict_row['worker_code']] = dict_row
             # turn into pandas dataframe
             df = pd.DataFrame(data_dict)
@@ -557,7 +566,6 @@ class Heroku:
                     col_name = col_name.lower()
                     # add to mapping
                     self.mapping[col_name] = count_option
-                    print(num, option, col_name, count_option)
         # save to csv
         if self.save_csv:
             # save to csv
