@@ -3,6 +3,7 @@ from typing import Dict
 import os
 import json
 import pickle
+import sys
 
 import crossing as cs
 
@@ -23,7 +24,9 @@ def get_configs(entry_name: str, config_file_name: str = 'config',
     Open the config file and return the requested entry.
     If no config file is found, open default.config.
     """
-
+    # check if config file is updated
+    if not cs.common.check_config():
+        sys.exit()
     try:
         with open(os.path.join(cs.settings.root_dir, config_file_name)) as f:
             content = json.load(f)
@@ -45,6 +48,10 @@ def check_config(config_file_name: str = 'config',
     except FileNotFoundError:
         logger.error('Config file {} not found.', config_file_name)
         return False
+    except json.decoder.JSONDecodeError:
+        logger.error('Config file badly formatted. Please update based on' +
+                     ' default.config.', config_file_name)
+        return False
     # load default.config file
     try:
         with open(os.path.join(cs.settings.root_dir,
@@ -52,6 +59,10 @@ def check_config(config_file_name: str = 'config',
             default = json.load(f)
     except FileNotFoundError:
         logger.error('Default config file {} not found.', config_file_name)
+        return False
+    except json.decoder.JSONDecodeError:
+        logger.error('Config file badly formatted. Please update based on' +
+                     ' default.config.', config_file_name)
         return False
     # check length of each file
     if len(config) < len(default):

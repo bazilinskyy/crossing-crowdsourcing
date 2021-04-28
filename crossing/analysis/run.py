@@ -32,9 +32,6 @@ SHOW_OUTPUT = True  # shoud figures
 file_mapping = 'mapping.p'  # file to save lists with coordinates
 
 if __name__ == '__main__':
-    # check if config file is updated
-    if not cs.common.check_config():
-        sys.exit()
     # create object for working with heroku data
     files_heroku = cs.common.get_configs('files_heroku')
     heroku = cs.analysis.Heroku(files_data=files_heroku,
