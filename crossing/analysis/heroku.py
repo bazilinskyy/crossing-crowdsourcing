@@ -245,16 +245,16 @@ class Heroku:
                     # questions in the end
                     if 'responses' in data_cell.keys() and stim_name == '':
                         # record given keypresses
-                        responses = data_cell['responses']
+                        responses_end = data_cell['responses']
                         logger.debug('Found responses to final questions {}.',
-                                     responses)
+                                     responses_end)
                         # extract pressed keys and rt values
-                        responses = ast.literal_eval(re.search('({.+})',
-                                                               responses).group(0))  # noqa: E501
+                        responses_end = ast.literal_eval(re.search('({.+})',
+                                                         responses_end).group(0))  # noqa: E501
                         # unpack questions and answers
                         questions = []
                         answers = []
-                        for key, value in responses.items():
+                        for key, value in responses_end.items():
                             questions.append(key)
                             answers.append(value)
                         # Check if inputted values were recorded previously
