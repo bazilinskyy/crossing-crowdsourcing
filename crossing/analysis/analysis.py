@@ -554,8 +554,8 @@ class Analysis:
         for i, t in enumerate(time_ranges):
             for index, row in df.iterrows():
                 if t['start'] <= row['start'] <= t['end']:
-                    start_str = t['start'].strftime('%m.%d.%Y, %H:%M:%S')
-                    end_str = t['end'].strftime('%m.%d.%Y, %H:%M:%S')
+                    start_str = t['start'].strftime('%m-%d-%Y-%H-%M-%S')
+                    end_str = t['end'].strftime('%m-%d-%Y-%H-%M-%S')
                     df.loc[index, 'range'] = start_str + ' - ' + end_str
         # drop nan
         df = df.dropna()
@@ -1134,29 +1134,6 @@ class Analysis:
                     pad_inches=pad_inches)
         # clear figure from memory
         plt.close(fig)
-
-    def save_anim(self, image, anim, output_subdir, suffix):
-        """
-        Helper function to save figure as file.
-
-        Args:
-            image (str): name of figure to save.
-            anim (matplotlib animation): animation object.
-            output_subdir (str): folder for saving file.
-            suffix (str): suffix to add in the end of the filename.
-        """
-        # extract name of stimulus after last slash
-        file_no_path = image.rsplit('/', 1)[-1]
-        # remove extension
-        file_no_path = os.path.splitext(file_no_path)[0]
-        # create path
-        path = cs.settings.output_dir + output_subdir
-        if not os.path.exists(path):
-            os.makedirs(path)
-        # save file
-        anim.save(path + file_no_path + suffix, writer='ffmpeg')
-        # clear animation from memory
-        plt.close(self.fig)
 
     def autolabel(self, ax, on_top=False, decimal=True):
         """
