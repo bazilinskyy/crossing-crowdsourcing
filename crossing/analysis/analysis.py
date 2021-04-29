@@ -1,25 +1,18 @@
 # by Pavlo Bazilinskyy <pavlo.bazilinskyy@gmail.com>
-import json
 import os
-import subprocess
-import io
-import pickle
 import matplotlib
 import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
-import matplotlib.animation as animation
 import numpy as np
 import scipy.stats as st
 import seaborn as sns
 import pandas as pd
 import plotly as py
 import plotly.graph_objs as go
-import plotly.io as pio
 import plotly.express as px
 from plotly import subplots
-import datetime as dt
 import warnings
-
+import unicodedata
+import re
 
 import crossing as cs
 
@@ -182,7 +175,7 @@ class Analysis:
             # responses
             try:
                 data = np.asfarray(data[0:4], float)
-            except ValueError as e:
+            except ValueError:
                 logger.debug('Could not process answers {} for row {}',
                              data[0:4],
                              i)
@@ -307,8 +300,8 @@ class Analysis:
             fig.update_layout(barmode='stack')
         # save file
         if save_file:
-            file_name = 'bar_' + ','.join(str(val) for val in y) + '_' + \
-                        ','.join(str(val) for val in x)
+            file_name = 'bar_' + '-'.join(str(val) for val in y) + '_' + \
+                        '-'.join(str(val) for val in x)
             self.save_plotly(fig,
                              file_name,
                              self.folder)
@@ -419,7 +412,7 @@ class Analysis:
         # save file
         if save_file:
             self.save_plotly(fig,
-                             'scatter_' + x + ',' + y,
+                             'scatter_' + x + '-' + y,
                              self.folder)
         # open it in localhost instead
         else:
@@ -472,7 +465,7 @@ class Analysis:
         # save file
         if save_file:
             self.save_plotly(fig,
-                             'heatmap_' + x + ',' + y,
+                             'heatmap_' + x + '-' + y,
                              self.folder)
         # open it in localhost instead
         else:
@@ -532,7 +525,7 @@ class Analysis:
         # save file
         if save_file:
             self.save_plotly(fig,
-                             'hist_' + ','.join(str(val) for val in x),
+                             'hist_' + '-'.join(str(val) for val in x),
                              self.folder)
         # open it in localhost instead
         else:
@@ -581,7 +574,7 @@ class Analysis:
         if save_file:
             self.save_plotly(fig,
                              'hist_stim_duration' +
-                             ','.join(t['start'].strftime('%m.%d.%Y,%H:%M:%S') +  # noqa: E501
+                             '-'.join(t['start'].strftime('%m.%d.%Y,%H:%M:%S') +  # noqa: E501
                                       '-' +
                                       t['end'].strftime('%m.%d.%Y,%H:%M:%S')
                                       for t in time_ranges),
@@ -884,7 +877,7 @@ class Analysis:
         if save_file:
             self.save_plotly(fig,
                              'kp_' + variable + '-' +
-                             ','.join(str(val) for val in values),
+                             '-'.join(str(val) for val in values),
                              self.folder)
         # open it in localhost instead
         else:
@@ -1129,6 +1122,8 @@ class Analysis:
         file_no_path = image.rsplit('/', 1)[-1]
         # remove extension
         file_no_path = os.path.splitext(file_no_path)[0]
+        # turn name into valid file name
+        file_no_path = self.slugify(file_no_path)
         # create path
         path = cs.settings.output_dir + output_subdir
         if not os.path.exists(path):
@@ -1251,3 +1246,20 @@ class Analysis:
         y_lower = data - conf_interval[0]
         y_upper = data + conf_interval[1]
         return y_lower, y_upper
+
+    def slugify(self, value, allow_unicode=False):
+        """
+        Taken from https://github.com/django/django/blob/master/django/utils/text.py  # noqa: E501
+        Convert to ASCII if 'allow_unicode' is False. Convert spaces or repeated
+        dashes to single dashes. Remove characters that aren't alphanumerics,
+        underscores, or hyphens. Convert to lowercase. Also strip leading and
+        trailing whitespace, dashes, and underscores.
+        """
+        value = str(value)
+        if allow_unicode:
+            value = unicodedata.normalize('NFKC', value)
+        else:
+            value = unicodedata.normalize('NFKD', value).encode('ascii',
+                                                                'ignore').decode('ascii')  # noqa: E501
+        value = re.sub(r'[^\w\s-]', '', value.lower())
+        return re.sub(r'[-\s]+', '-', value).strip('-_')
