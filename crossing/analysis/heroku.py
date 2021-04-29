@@ -607,8 +607,6 @@ class Heroku:
             data_count = 0
             counter_filtered = 0
             for i in range(self.num_stimuli):
-                # video ID
-                video_id = 'video_' + str(i)
                 for rep in range(self.num_repeat):
                     # add suffix with repetition ID
                     video_dur = 'video_' + str(i) + '-dur-' + str(rep)
