@@ -10,7 +10,7 @@ logger = cs.CustomLogger(__name__)  # use custom logger
 
 
 class Appen:
-    file_data = []  # list of files with appen data
+    file_data: list = []  # list of files with appen data
     appen_data = pd.DataFrame()  # pandas dataframe with extracted data
     countries_data = pd.DataFrame()  # pandas dataframe with data per country
     save_p = False  # save data as pickle file

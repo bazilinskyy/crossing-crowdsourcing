@@ -4,7 +4,7 @@
 ## Linter GitHub Actions ##
 ###########################
 ###########################
-name: Lint Code Base
+name: Lint codebase
 
 #
 # Documentation:
@@ -27,7 +27,7 @@ on:
 jobs:
   build:
     # Name the Job
-    name: Lint Code Base
+    name: Lint codebase
     # Set the agent to run on
     runs-on: ubuntu-latest
 
@@ -38,7 +38,7 @@ jobs:
       ##########################
       # Checkout the code base #
       ##########################
-      - name: Checkout Code
+      - name: Checkout code
         uses: actions/checkout@v2
         with:
           # Full git history is needed to get a proper list of changed files within `super-linter`
@@ -47,7 +47,7 @@ jobs:
       ################################
       # Run Linter against code base #
       ################################
-      - name: Lint Code Base
+      - name: Lint codebase
         uses: github/super-linter@v3
         env:
           VALIDATE_ALL_CODEBASE: false
