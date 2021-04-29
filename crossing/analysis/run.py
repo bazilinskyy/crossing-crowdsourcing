@@ -1,8 +1,6 @@
 # by Pavlo Bazilinskyy <pavlo.bazilinskyy@gmail.com>
-from tqdm import tqdm
 import matplotlib.pyplot as plt
 import matplotlib._pylab_helpers
-import sys
 
 import crossing as cs
 
@@ -121,7 +119,9 @@ if __name__ == '__main__':
         # 1 var, all values
         analysis.plot_kp_variable(mapping, 'cross_look')
         # 1 var, certain values
-        analysis.plot_kp_variable(mapping, 'cross_look', ['Crossing_Looking', 'notCrossing_Looking'])
+        analysis.plot_kp_variable(mapping,
+                                  'cross_look',
+                                  ['Crossing_Looking', 'notCrossing_Looking'])
         # separate plots for multiple variables
         analysis.plot_kp_variables_or(mapping,
                                       variables=[{'variable': 'cross_look',
@@ -133,7 +133,7 @@ if __name__ == '__main__':
         # multiple variables as a single filter
         analysis.plot_kp_variables_and(mapping,
                                        variables=[{'variable': 'cross_look',
-                                                   'value': 'Crossing_Looking'},
+                                                   'value': 'Crossing_Looking'},  # noqa: E501
                                                   {'variable': 'traffic_rules',
                                                    'value': 'traffic_lights'}],
                                        conf_interval=0.95)
