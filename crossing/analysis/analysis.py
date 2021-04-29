@@ -272,7 +272,7 @@ class Analysis:
             counter_rows = 0
             for variable in y:
                 visibility = [[counter_rows == j] for j in range(len(y))]
-                visibility = [item for sublist in visibility for item in sublist]  # noqa: E501
+                visibility = [item for sublist in visibility for item in sublist]  # type: ignore # noqa: E501
                 button = dict(label=variable,
                               method='update',
                               args=[{'visible': visibility},
