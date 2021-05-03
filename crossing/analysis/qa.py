@@ -1,7 +1,6 @@
 # by Pavlo Bazilinskyy <pavlo.bazilinskyy@gmail.com>
 import requests
 import pandas as pd
-from datetime import datetime
 from tqdm import tqdm
 
 import crossing as cs
