@@ -31,7 +31,7 @@ class QA:
         logger.info('Flagging {} users.', df.shape[0])
         # count flagged users
         flagged_counter = 0
-        # loop over users in the job
+        # loop over users in the job for flagging
         for index, row in tqdm(df.iterrows(), total=df.shape[0]):
             # make a PUT request for flagging
             cmd_put = 'https://api.appen.com/v1/jobs/' + \
@@ -85,9 +85,9 @@ class QA:
         logger.info('Rejecting {} users.', df.shape[0])
         # count rejected users
         rejected_counter = 0
-        # loop over users in the job
+        # loop over users in the job for rejecting
         for index, row in tqdm(df.iterrows(), total=df.shape[0]):
-            # make a PUT request for flagging
+            # make a PUT request for rejecting
             cmd_put = 'https://api.appen.com/v1/jobs/' + \
                       str(self.job_id) + \
                       '/workers/' + \
