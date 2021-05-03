@@ -38,7 +38,7 @@ class QA:
             cmd_put = 'https://api.appen.com/v1/jobs/' + \
                       str(self.job_id) + \
                       '/workers/' + \
-                      str(row['_worker_id']) + \
+                      str(row['worker_id']) + \
                       '.json'
             if not pd.isna(row['worker_code']):
                 flag_text = 'User repeatidly ignored our instructions and ' \
@@ -65,7 +65,7 @@ class QA:
                 flagged_counter += 1
             logger.debug('Flagged user {} with message \'{}\' .Returned '
                          + 'code {}: {}',
-                         str(row['_worker_id']),
+                         str(row['worker_id']),
                          flag_text,
                          str(code),
                          r.content)
@@ -92,7 +92,7 @@ class QA:
             cmd_put = 'https://api.appen.com/v1/jobs/' + \
                       str(self.job_id) + \
                       '/workers/' + \
-                      str(row['_worker_id']) + \
+                      str(row['worker_id']) + \
                       '/reject.json'
             if not pd.isna(row['worker_code']):
                 reason_text = 'User repeatidly ignored our instructions and ' \
@@ -119,7 +119,7 @@ class QA:
                 rejected_counter += 1
             logger.debug('Rejected user {} with message \'{}\' .Returned '
                          + 'code {}: {}',
-                         str(row['_worker_id']),
+                         str(row['worker_id']),
                          reason_text,
                          str(code),
                          msg)
