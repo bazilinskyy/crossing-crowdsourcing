@@ -22,20 +22,18 @@ logger = cs.CustomLogger(__name__)  # use custom logger
 
 # todo: add optinal arguments to pass axis labels
 class Analysis:
+    # set template for plotly output
+    template = cs.common.get_configs('plotly_template')
+    # store resolution for keypress data
+    res = cs.common.get_configs('kp_resolution')
+    # number of stimuli
+    num_stimuli = cs.common.get_configs('num_stimuli')
     # folder for output
     folder = '/figures/'
-    # resolution of keypress data
-    res = 0
 
     def __init__(self):
         # set font to Times
         plt.rc('font', family='serif')
-        # set template for plotly output
-        self.template = cs.common.get_configs('plotly_template')
-        # store resolution for keypress data
-        self.res = cs.common.get_configs('kp_resolution')
-        # number of stimuli
-        self.num_stimuli = cs.common.get_configs('num_stimuli')
 
     def corr_matrix(self, df, columns_drop, save_file=False):
         """

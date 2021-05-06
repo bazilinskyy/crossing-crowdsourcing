@@ -10,16 +10,18 @@ logger = cs.CustomLogger(__name__)  # use custom logger
 
 
 class Appen:
-    file_data: list = []  # list of files with appen data
-    appen_data = pd.DataFrame()  # pandas dataframe with extracted data
-    countries_data = pd.DataFrame()  # pandas dataframe with data per country
-    save_p = False  # save data as pickle file
-    load_p = False  # load data as pickle file
-    save_csv = False  # save data as csv file
-    file_p = 'appen_data.p'  # pickle file for saving data
-    file_csv = 'appen_data.csv'  # csv file for saving data
-    file_country_csv = 'country_data.csv'  # csv file for saving country data
-    file_cheaters_csv = 'cheaters.csv'  # csv file for saving list of cheaters
+    # pandas dataframe with extracted data
+    appen_data = pd.DataFrame()
+    # pandas dataframe with data per country
+    countries_data = pd.DataFrame()
+    # pickle file for saving data
+    file_p = 'appen_data.p'
+    # csv file for saving data
+    file_csv = 'appen_data.csv'
+    # csv file for saving country data
+    file_country_csv = 'country_data.csv'
+    # csv file for saving list of cheaters
+    file_cheaters_csv = 'cheaters.csv'
     # mapping between appen column names and readable names
     columns_mapping = {'_started_at': 'start',
                        '_created_at': 'end',
@@ -56,9 +58,13 @@ class Appen:
                  save_p: bool,
                  load_p: bool,
                  save_csv: bool):
+        # file with raw data
         self.file_data = file_data
+        # save data as pickle file
         self.save_p = save_p
+        # load data as pickle file
         self.load_p = load_p
+        # save data as csv file
         self.save_csv = save_csv
 
     def set_data(self, appen_data):

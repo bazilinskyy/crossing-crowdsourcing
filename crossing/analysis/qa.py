@@ -9,13 +9,13 @@ logger = cs.CustomLogger(__name__)  # use custom logger
 
 
 class QA:
-    file_cheaters = ''  # csv file with cheaters
-    job_id = -1  # appen job ID
 
     def __init__(self,
                  file_cheaters: str,
                  job_id: int):
+        # csv file with cheaters
         self.file_cheaters = file_cheaters
+        # appen job ID
         self.job_id = job_id
 
     def flag_users(self):
