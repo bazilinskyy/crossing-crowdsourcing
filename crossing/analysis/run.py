@@ -86,7 +86,7 @@ if __name__ == '__main__':
                       'options': ['Yes',
                                   'Yes but too late',
                                   'No',
-                                  'I don’t know']}]
+                                  'I don't know']}]
         # process post-trial questions and update mapping
         mapping = heroku.process_stimulus_questions(questions)
         # calculate mean of eye contact
@@ -142,7 +142,7 @@ if __name__ == '__main__':
                         'alternative_frame', 'alternative_frame.1', 'kp',
                         'video_length', 'min_dur', 'max_dur',
                         'eye-contact-yes', 'eye-contact-yes_but_too_late',
-                        'eye-contact-no', 'eye-contact-i_don’t_know',
+                        'eye-contact-no', 'eye-contact-i_don't_know',
                         'eye-contact_mean', 'time_before_interaction',
                         'look_frame_ms', 'cross_frame_ms', 'interaction',
                         'start']
@@ -233,7 +233,7 @@ if __name__ == '__main__':
                      y=['eye-contact-yes',
                         'eye-contact-yes_but_too_late',
                         'eye-contact-no',
-                        'eye-contact-i_don’t_know'],
+                        'eye-contact-i_don't_know'],
                      stacked=True,
                      show_all_xticks=True,
                      xaxis_title='Video ID',
@@ -259,7 +259,7 @@ if __name__ == '__main__':
                                      'eye-contact-yes',
                                      'eye-contact-yes_but_too_late',
                                      'eye-contact-no',
-                                     'eye-contact-i_don’t_know',
+                                     'eye-contact-i_don't_know',
                                      'cross_look',
                                      'traffic_rules'],
                          # pretty_text=True,
