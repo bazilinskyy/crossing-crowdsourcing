@@ -971,7 +971,8 @@ class Analysis:
         else:
             fig.show()
 
-    def plot_kp_variables_and(self, df, plot_names, variables_list, conf_interval=None,
+    def plot_kp_variables_and(self, df, plot_names, variables_list, 
+                              conf_interval=None,
                               xaxis_title='Time (s)',
                               yaxis_title='Percentage of trials with ' +
                                           'response key pressed',
@@ -1037,14 +1038,14 @@ class Analysis:
             if conf_interval:
                 # calculate condidence interval
                 (y_lower, y_upper) = self.get_conf_interval_bounds(kp_data,
-                                                                   conf_interval)
+                                                                   conf_interval) # noqa: E501
                 # plot interval
                 fig.add_trace(go.Scatter(name='Upper Bound',
                                          x=times,
                                          y=y_upper,
                                          mode='lines',
                                          fillcolor='rgba(0,100,80,0.2)',
-                                         line=dict(color='rgba(255,255,255,0)'),
+                                         line=dict(color='rgba(255,255,255,0)'), # noqa: E501
                                          hoverinfo="skip",
                                          showlegend=False))
                 fig.add_trace(go.Scatter(name='Lower Bound',
@@ -1052,12 +1053,12 @@ class Analysis:
                                          y=y_lower,
                                          fill='tonexty',
                                          fillcolor='rgba(0,100,80,0.2)',
-                                         line=dict(color='rgba(255,255,255,0)'),
+                                         line=dict(color='rgba(255,255,255,0)'), # noqa: E501
                                          hoverinfo="skip",
                                          showlegend=False))
             # define range of y axis
             if not yaxis_range:
-                yaxis_range = [0, max(y_upper) if conf_interval else max(kp_data)]
+                yaxis_range = [0, max(y_upper) if conf_interval else max(kp_data)] # noqa: E501
             # update layout
             fig.update_layout(template=self.template,
                               xaxis_title=xaxis_title,

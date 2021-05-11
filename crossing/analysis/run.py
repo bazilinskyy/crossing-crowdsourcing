@@ -127,24 +127,25 @@ if __name__ == '__main__':
 
         #Plot of combined variables
         analysis.plot_kp_variables_and(mapping,
-                                       plot_names=['traffic rules', 'no traffic rules'],
-                                       variables_list=[[{'variable': 'traffic_rules',
-                                                         'value': 'stop_sign'},
-                                                        {'variable': 'traffic_rules',
-                                                         'value': 'traffic_lights'},
-                                                        {'variable': 'traffic_rules',
-                                                         'value': 'ped_crossing'}],
-                                                       [{'variable': 'traffic_rules',
+                                       plot_names=['traffic rules',
+                                                   'no traffic rules'], 
+                                       variables_list=[[{'variable': 'traffic_rules', # noqa: E501
+                                                         'value': 'stop_sign'},       # noqa: E501
+                                                        {'variable': 'traffic_rules', # noqa: E501
+                                                         'value': 'traffic_lights'},  # noqa: E501
+                                                        {'variable': 'traffic_rules', # noqa: E501
+                                                         'value': 'ped_crossing'}],   # noqa: E501
+                                                       [{'variable': 'traffic_rules', # noqa: E501
                                                          'value': 'none'}]])
 
         # plot of seperate variables
         analysis.plot_kp_variables_or(mapping,
                                       variables=[{'variable': 'cross_look',
-                                                  'value': 'Crossing_Looking'},
+                                                  'value': 'Crossing_Looking'},    # noqa: E501
                                                  {'variable': 'cross_look',
-                                                  'value': 'notCrossing_Looking'},
+                                                  'value': 'notCrossing_Looking'}, # noqa: E501
                                                  {'variable': 'cross_look',
-                                                  'value': 'Crossing_notLooking'},
+                                                  'value': 'Crossing_notLooking'}, # noqa: E501
                                                  {'variable': 'cross_look',
                                                   'value': 'nonspecific'}])
 
