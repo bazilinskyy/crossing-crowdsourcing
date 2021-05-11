@@ -86,7 +86,7 @@ if __name__ == '__main__':
                       'options': ['Yes',
                                   'Yes but too late',
                                   'No',
-                                  'I don't know']}]
+                                  "I don't know"]}]
         # process post-trial questions and update mapping
         mapping = heroku.process_stimulus_questions(questions)
         # calculate mean of eye contact
@@ -122,27 +122,36 @@ if __name__ == '__main__':
         analysis.plot_kp_variable(mapping,
                                   'cross_look',
                                   ['Crossing_Looking', 'notCrossing_Looking'])
-        # separate plots for multiple variables
+        # plot of multiple combined AND variables
+        analysis.plot_kp_variables_and(mapping,
+                                       plot_names=['traffic rules',
+                                                   'no traffic rules'],
+                                       variables_list=[[{'variable': 'traffic_rules',  # noqa: E501
+                                                         'value': 'stop_sign'},        # noqa: E501
+                                                        {'variable': 'traffic_rules',  # noqa: E501
+                                                         'value': 'traffic_lights'},   # noqa: E501
+                                                        {'variable': 'traffic_rules',  # noqa: E501
+                                                         'value': 'ped_crossing'}],    # noqa: E501
+                                                       [{'variable': 'traffic_rules',  # noqa: E501
+                                                         'value': 'none'}]])
+
+        # plot of seperate variables
         analysis.plot_kp_variables_or(mapping,
                                       variables=[{'variable': 'cross_look',
-                                                  'value': 'Crossing_Looking'},
-                                                 {'variable': 'traffic_rules',
-                                                  'value': 'traffic_lights'},
-                                                 {'variable': 'traffic_rules',
-                                                  'value': 'ped_crossing'}])
-        # multiple variables as a single filter
-        analysis.plot_kp_variables_and(mapping,
-                                       variables=[{'variable': 'cross_look',
-                                                   'value': 'Crossing_Looking'},  # noqa: E501
-                                                  {'variable': 'traffic_rules',
-                                                   'value': 'traffic_lights'}],
-                                       conf_interval=0.95)
+                                                  'value': 'Crossing_Looking'},     # noqa: E501
+                                                 {'variable': 'cross_look',
+                                                  'value': 'notCrossing_Looking'},  # noqa: E501
+                                                 {'variable': 'cross_look',
+                                                  'value': 'Crossing_notLooking'},  # noqa: E501
+                                                 {'variable': 'cross_look',
+                                                  'value': 'nonspecific'}])
+
         # columns to drop in correlation matrix and scatter matrix
         columns_drop = ['id_segment', 'set', 'video', 'extra',
                         'alternative_frame', 'alternative_frame.1', 'kp',
                         'video_length', 'min_dur', 'max_dur',
                         'eye-contact-yes', 'eye-contact-yes_but_too_late',
-                        'eye-contact-no', 'eye-contact-i_don't_know',
+                        'eye-contact-no', "eye-contact-i_don't_know",
                         'eye-contact_mean', 'time_before_interaction',
                         'look_frame_ms', 'cross_frame_ms', 'interaction',
                         'start']
@@ -233,7 +242,7 @@ if __name__ == '__main__':
                      y=['eye-contact-yes',
                         'eye-contact-yes_but_too_late',
                         'eye-contact-no',
-                        'eye-contact-i_don't_know'],
+                        "eye-contact-i_don't_know"],
                      stacked=True,
                      show_all_xticks=True,
                      xaxis_title='Video ID',
@@ -259,7 +268,7 @@ if __name__ == '__main__':
                                      'eye-contact-yes',
                                      'eye-contact-yes_but_too_late',
                                      'eye-contact-no',
-                                     'eye-contact-i_don't_know',
+                                     "eye-contact-i_don't_know",
                                      'cross_look',
                                      'traffic_rules'],
                          # pretty_text=True,
