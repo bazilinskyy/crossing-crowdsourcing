@@ -122,30 +122,27 @@ if __name__ == '__main__':
         analysis.plot_kp_variable(mapping,
                                   'cross_look',
                                   ['Crossing_Looking', 'notCrossing_Looking'])
-        # separate plots for multiple variables
-
-
-        #Plot of combined variables
+        # plot of multiple combined AND variables
         analysis.plot_kp_variables_and(mapping,
                                        plot_names=['traffic rules',
-                                                   'no traffic rules'], 
-                                       variables_list=[[{'variable': 'traffic_rules', # noqa: E501
-                                                         'value': 'stop_sign'},       # noqa: E501
-                                                        {'variable': 'traffic_rules', # noqa: E501
-                                                         'value': 'traffic_lights'},  # noqa: E501
-                                                        {'variable': 'traffic_rules', # noqa: E501
-                                                         'value': 'ped_crossing'}],   # noqa: E501
-                                                       [{'variable': 'traffic_rules', # noqa: E501
+                                                   'no traffic rules'],
+                                       variables_list=[[{'variable': 'traffic_rules',  # noqa: E501
+                                                         'value': 'stop_sign'},        # noqa: E501
+                                                        {'variable': 'traffic_rules',  # noqa: E501
+                                                         'value': 'traffic_lights'},   # noqa: E501
+                                                        {'variable': 'traffic_rules',  # noqa: E501
+                                                         'value': 'ped_crossing'}],    # noqa: E501
+                                                       [{'variable': 'traffic_rules',  # noqa: E501
                                                          'value': 'none'}]])
 
         # plot of seperate variables
         analysis.plot_kp_variables_or(mapping,
                                       variables=[{'variable': 'cross_look',
-                                                  'value': 'Crossing_Looking'},    # noqa: E501
+                                                  'value': 'Crossing_Looking'},     # noqa: E501
                                                  {'variable': 'cross_look',
-                                                  'value': 'notCrossing_Looking'}, # noqa: E501
+                                                  'value': 'notCrossing_Looking'},  # noqa: E501
                                                  {'variable': 'cross_look',
-                                                  'value': 'Crossing_notLooking'}, # noqa: E501
+                                                  'value': 'Crossing_notLooking'},  # noqa: E501
                                                  {'variable': 'cross_look',
                                                   'value': 'nonspecific'}])
 
