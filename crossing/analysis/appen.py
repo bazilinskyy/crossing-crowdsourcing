@@ -110,12 +110,12 @@ class Appen:
             df['time'] = (df['end'] - df['start']) / pd.Timedelta(seconds=1)
             # remove underscores in the beginning of column name
             df.columns = df.columns.str.lstrip('_')
-            # filter data
-            if filter_data:
-                df = self.filter_data(df)
             # clean data
             if clean_data:
                 df = self.clean_data(df)
+            # filter data
+            if filter_data:
+                df = self.filter_data(df)
             # mask IDs and IPs
             df = self.mask_ips_ids(df)
             # move worker_code to the front
@@ -203,35 +203,47 @@ class Appen:
             dataframe: updated dataframe.
         """
         logger.info('Cleaning appen data.')
-        # get current number of nans
-        nans_before = np.zeros(2, dtype=np.int8)
-        nans_before[0] = df['year_ad'].isnull().sum()
-        nans_before[1] = df['year_license'].isnull().sum()
-        # replace all non-numeric values to nan for questions invlolving years
-        df['year_ad'] = df['year_ad'].apply(
-            lambda x: pd.to_numeric(x, errors='coerce'))
-        df['year_license'] = df['year_license'].apply(
-            lambda x: pd.to_numeric(x, errors='coerce'))
-        logger.info('Clean-a1. Replaced {} non-numeric values in column'
-                    + ' year_ad and {} non-numeric values in column'
-                    + ' year_license.',
-                    df['year_ad'].isnull().sum() - nans_before[0],
-                    df['year_license'].isnull().sum() - nans_before[1])
-        # replace number of nans
-        nans_before[0] = df['year_ad'].isnull().sum()
-        nans_before[1] = df['year_license'].isnull().sum()
-        # get current year
-        now = dt.datetime.now()
-        # year of introduction of automated driving cannot be in the past
-        # and unrealistically large values are removed
-        df.loc[df['year_ad'] < now.year, 'year_ad'] = np.nan
-        df.loc[df['year_ad'] > 2300,  'year_ad'] = np.nan
-        # year of obtaining driver's license is assumed to be always < 70
-        df.loc[df['year_license'] >= 70] = np.nan
-        logger.info('Clean-a2. Cleaned {} values of years in column year_ad'
-                    + ' and {} values of years in column year_license.',
-                    df['year_ad'].isnull().sum() - nans_before[0],
-                    df['year_license'].isnull().sum() - nans_before[1])
+        if clean_years:
+            # get current number of nans
+            nans_before = np.zeros(3, dtype=np.int8)
+            nans_before[0] = df['year_ad'].isnull().sum()
+            nans_before[1] = df['year_license'].isnull().sum()
+            nans_before[2] = df['age'].isnull().sum()
+            # replace all non-numeric values to nan for questions invlolving
+            # years
+            df['year_ad'] = df['year_ad'].apply(
+                lambda x: pd.to_numeric(x, errors='coerce'))
+            df['year_license'] = df['year_license'].apply(
+                lambda x: pd.to_numeric(x, errors='coerce'))
+            df['age'] = df['age'].apply(
+                lambda x: pd.to_numeric(x, errors='coerce'))
+            logger.info('Clean-a1. Replaced {} non-numeric values in columns'
+                        + ' year_ad, {} non-numeric values in column'
+                        + ' year_license, {} non-numeric values in column'
+                        + ' age.',
+                        df['year_ad'].isnull().sum() - nans_before[0],
+                        df['year_license'].isnull().sum() - nans_before[1],
+                        df['age'].isnull().sum() - nans_before[2])
+            # replace number of nans
+            nans_before[0] = df['year_ad'].isnull().sum()
+            nans_before[1] = df['year_license'].isnull().sum()
+            nans_before[2] = df['age'].isnull().sum()
+            # get current year
+            now = dt.datetime.now()
+            # year of introduction of automated driving cannot be in the past
+            # and unrealistically large values are removed
+            df.loc[df['year_ad'] < now.year, 'year_ad'] = np.nan
+            df.loc[df['year_ad'] > 2300,  'year_ad'] = np.nan
+            # year of obtaining driver's license is assumed to be always < 70
+            df.loc[df['year_license'] >= 70] = np.nan
+            # age is assumed to be always < 100
+            df.loc[df['age'] >= 100] = np.nan
+            logger.info('Clean-a2. Cleaned {} values of years in column'
+                        + ' year_ad, {} values of years in column year_license'
+                        + ' , {} values in column age.',
+                        df['year_ad'].isnull().sum() - nans_before[0],
+                        df['year_license'].isnull().sum() - nans_before[1],
+                        df['age'].isnull().sum() - nans_before[2])
         # assign to attribute
         self.appen_data = df
         # return df with data
