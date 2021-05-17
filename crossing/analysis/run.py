@@ -15,7 +15,7 @@ FILTER_DATA = True  # filter Appen and heroku data
 CLEAN_DATA = True  # clean Appen data
 REJECT_CHEATERS = True  # reject cheaters on Appen
 UPDATE_MAPPING = True  # update mapping with keypress data
-SHOW_OUTPUT = True  # shoud figures
+SHOW_OUTPUT = True  # shoud figures be plotted
 
 # for debugging, skip processing
 # SAVE_P = False  # save pickle files with data
