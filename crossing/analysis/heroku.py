@@ -702,7 +702,7 @@ class Heroku:
                 vel = np.array([float(i) for i in tolist])
                 kp = np.array([float(i) for i in row['kp']])
                 # append dot product of velocity divided by sum of % keypresses
-                vel_risk.append(np.dot(vel,kp)/np.sum(kp))
+                vel_risk.append(np.dot(vel, kp)/np.sum(kp))
             else:
                 # if no velocity data was present, append this string
                 vel_risk.append('No velocity data found')
