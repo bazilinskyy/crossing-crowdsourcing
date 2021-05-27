@@ -153,8 +153,8 @@ if __name__ == '__main__':
         # columns to drop in correlation matrix and scatter matrix
         columns_drop = ['id_segment', 'set', 'video', 'extra',
                         'alternative_frame', 'alternative_frame.1',
-                        'video_length', 'min_dur', 'max_dur', 'start', 
-                        'danger_b', 'danger-p', 'look_moment', 'cross_moment', 
+                        'video_length', 'min_dur', 'max_dur', 'start',
+                        'danger_b', 'danger-p', 'look_moment', 'cross_moment',
                         'time_before_interaction', "eye-contact-i_don't_know",
                         'eye-contact-yes_but_too_late', 'gesture',
                         'eye-contact-no', 'eye-contact-yes', 'kp',
@@ -259,8 +259,8 @@ if __name__ == '__main__':
                      stacked=True,
                      show_all_xticks=True,
                      xaxis_title='Video ID',
-                     yaxis_title='Eye contact score '
-                                     + '(No=0, Yes but too late=0.25, Yes=1)',
+                     yaxis_title='Eye contact score ' +
+                                 '(No=0, Yes but too late=0.25, Yes=1)',
                      pretty_text=True,
                      save_file=True)
         # post-trial questions. hist for eye contact
@@ -269,8 +269,8 @@ if __name__ == '__main__':
                      stacked=True,
                      show_all_xticks=True,
                      xaxis_title='Video ID',
-                     yaxis_title='Eye contact score '
-                                     + '(No=0, Yes but too late=0.25, Yes=1)',
+                     yaxis_title='Eye contact score ' +
+                                 '(No=0, Yes but too late=0.25, Yes=1)',
                      pretty_text=True,
                      save_file=True)
         # scatter plot of risk score / eye contact
@@ -323,7 +323,7 @@ if __name__ == '__main__':
         analysis.scatter(mapping[(mapping['traffic_rules'] == 'none') &
                                  (mapping['velocity_risk'] != 'No velocity data found')],  # noqa: E501
                          x='velocity_risk',
-                         y='risky_slider',                         
+                         y='risky_slider',                     
                          color='cross_look',
                          trendline='ols',
                          hover_data=['risky_slider',

@@ -724,12 +724,12 @@ class Heroku:
         for index, row in df.iterrows():
             totalvalue = row['eye-contact-yes'] + \
                          row['eye-contact-yes_but_too_late'] + \
-                         row['eye-contact-no'] 
+                         row['eye-contact-no']
 
             if re.search('_Looking', row['cross_look']) is not None:
                 failed = row['eye-contact-no']/totalvalue
             elif re.search('notLooking', row['cross_look']) is not None:
-                failed = (row['eye-contact-yes'] + \
+                failed = (row['eye-contact-yes'] +
                           row['eye-contact-yes_but_too_late'])/totalvalue
             else:
                 failed = 0
