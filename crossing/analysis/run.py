@@ -273,30 +273,7 @@ if __name__ == '__main__':
                                  '(No=0, Yes but too late=0.25, Yes=1)',
                      pretty_text=True,
                      save_file=True)
-        # scatter plot of risk score / eye contact
-        analysis.scatter(mapping,
-                         x='eye-contact_score',
-                         y='risky_slider',
-                         color='cross_look',
-                         trendline='ols',
-                         hover_data=['risky_slider',
-                                     'eye-contact_score',
-                                     'eye-contact_mean',
-                                     'eye-contact-yes',
-                                     'eye-contact-yes_but_too_late',
-                                     'eye-contact-no',
-                                     "eye-contact-i_don't_know",
-                                     'cross_look',
-                                     'traffic_rules'],
-                         # pretty_text=True,
-                         xaxis_title='Eye contact score '
-                                     + '(No=0, Yes but too late=0.25, Yes=1)',
-                         yaxis_title='The riskiness of behaviour in video '
-                                     + '(0-100)',
-                         # xaxis_range=[-10, 100],
-                         # yaxis_range=[-1, 20],
-                         save_file=True)
-        # scatter plot without traffic rules involved
+        # scatter plot of risk / eye contact without traffic rules involved
         analysis.scatter(mapping[(mapping['traffic_rules'] == 'none')],
                          x='eye-contact_score',
                          y='risky_slider',
@@ -323,7 +300,7 @@ if __name__ == '__main__':
         analysis.scatter(mapping[(mapping['traffic_rules'] == 'none') &
                                  (mapping['velocity_risk'] != 'No velocity data found')],  # noqa: E501
                          x='velocity_risk',
-                         y='risky_slider',                     
+                         y='risky_slider',  
                          color='cross_look',
                          trendline='ols',
                          hover_data=['risky_slider',
