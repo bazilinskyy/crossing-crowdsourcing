@@ -297,14 +297,14 @@ if __name__ == '__main__':
                                      'cross_look',
                                      'traffic_rules'],
                          # pretty_text=True,
-                         xaxis_title='Eye contact score' 
+                         xaxis_title='Eye contact score'
                                      + '(No=0, Yes but too late=0.25, Yes=1)',
                          yaxis_title='Velocity (avg) at keypresses',
                          # xaxis_range=[-10, 100],
                          # yaxis_range=[-1, 20],
                          save_file=True)
         # create plots of velocity vs eye contact
-        analysis.scatter(mapping[(mapping['traffic_rules'] == 'none') & 
+        analysis.scatter(mapping[(mapping['traffic_rules'] == 'none') &
                                  (mapping['velocity_risk'] != 'No velocity data found')],  # noqa: E501
                          x='risky_slider',
                          y='velocity_risk',
