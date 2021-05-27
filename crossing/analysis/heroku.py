@@ -681,6 +681,35 @@ class Heroku:
                     old_size - df.shape[0])
         return df
 
+    def process_velocity(self, df):
+        """
+        add extra column to dataframe, which is the quantification
+        of velocity to risk per video
+
+        Args:
+            df (dataframe): dataframe with data.
+
+        Returns:
+            dataframe: updated dataframe.
+        """
+        vel_risk = []
+
+        for index, row in df.iterrows():
+            # change character array to normal array
+            tolist = ast.literal_eval(row['vehicle_velocity_GPS'])
+            if len(tolist) > 1:
+                # change integers to float
+                vel = np.array([float(i) for i in tolist])
+                kp = np.array([float(i) for i in row['kp']])
+                # append dot product of velocity divided by sum of % keypresses
+                vel_risk.append(np.dot(vel, kp)/np.sum(kp))
+            else:
+                # if no velocity data was present, append this string
+                vel_risk.append('No velocity data found')
+
+        df['velocity_risk'] = vel_risk
+        return df
+
     def show_info(self):
         """
         Output info for data in object.
