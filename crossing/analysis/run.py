@@ -300,7 +300,7 @@ if __name__ == '__main__':
         analysis.scatter(mapping[(mapping['traffic_rules'] == 'none') &
                                  (mapping['velocity_risk'] != 'No velocity data found')],  # noqa: E501
                          x='velocity_risk',
-                         y='risky_slider',  
+                         y='risky_slider',
                          color='cross_look',
                          trendline='ols',
                          hover_data=['risky_slider',
