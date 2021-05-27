@@ -78,6 +78,8 @@ if __name__ == '__main__':
         mapping = heroku.read_mapping()
         # process keypresses and update mapping
         mapping = heroku.process_kp()
+        # add quantification of danger of velocity for each video
+        mapping = heroku.process_velocity(mapping)
         # post-trial questions to process
         questions = [{'question': 'risky_slider',
                       'type': 'num'},
@@ -90,9 +92,9 @@ if __name__ == '__main__':
         # process post-trial questions and update mapping
         mapping = heroku.process_stimulus_questions(questions)
         # calculate mean of eye contact
-        mapping['eye-contact-no'] = mapping['eye-contact-no'] * 1
-        mapping['eye-contact-yes_but_too_late'] = mapping['eye-contact-yes_but_too_late'] * 2  # noqa: E501
-        mapping['eye-contact-yes'] = mapping['eye-contact-yes'] * 3
+        mapping['eye-contact-no'] = mapping['eye-contact-no'] * 0
+        mapping['eye-contact-yes_but_too_late'] = mapping['eye-contact-yes_but_too_late'] * 0.25  # noqa: E501
+        mapping['eye-contact-yes'] = mapping['eye-contact-yes'] * 1
         mapping['eye-contact_score'] = mapping[['eye-contact-yes',
                                                 'eye-contact-yes_but_too_late',
                                                 'eye-contact-no']].sum(axis=1)
@@ -147,14 +149,13 @@ if __name__ == '__main__':
                                                   'value': 'nonspecific'}])
 
         # columns to drop in correlation matrix and scatter matrix
-        columns_drop = ['id_segment', 'set', 'video', 'extra',
-                        'alternative_frame', 'alternative_frame.1', 'kp',
+        columns_drop = ['id_segment', 'set','extra',
+                        'alternative_frame', 'alternative_frame.1',
                         'video_length', 'min_dur', 'max_dur',
                         'eye-contact-yes', 'eye-contact-yes_but_too_late',
                         'eye-contact-no', "eye-contact-i_don't_know",
                         'eye-contact_mean', 'time_before_interaction',
-                        'look_frame_ms', 'cross_frame_ms', 'interaction',
-                        'start']
+                        'look_frame_ms', 'cross_frame_ms', 'interaction']
         # set nan to -1
         df = mapping
         df = df.fillna(-1)
@@ -276,6 +277,53 @@ if __name__ == '__main__':
                                      + '(0-100)',
                          yaxis_title='Whether pedestiran made eye contact '
                                      + '(No=1, Yes but too late=2, Yes=3)',
+                         # xaxis_range=[-10, 100],
+                         # yaxis_range=[-1, 20],
+                         save_file=True)
+        # create plots of velocity vs risk rating
+        analysis.scatter(mapping[(mapping['traffic_rules']=='none') & 
+                                 (mapping['velocity_risk']!='No velocity data found')], # noqa: E501
+                         x='eye-contact_score',
+                         y='velocity_risk',
+                         color='cross_look',
+                         trendline='ols',
+                         hover_data=['risky_slider',
+                                     'eye-contact_score',
+                                     'eye-contact_mean',
+                                     'eye-contact-yes',
+                                     'eye-contact-yes_but_too_late',
+                                     'eye-contact-no',
+                                     "eye-contact-i_don't_know",
+                                     'cross_look',
+                                     'traffic_rules'],
+                         # pretty_text=True,
+                         xaxis_title='Eye contact score (No=1, Yes but too late=2, Yes=3)'
+                                     + '(0-100)',
+                         yaxis_title='(avg) velocity at keypresses',
+                         # xaxis_range=[-10, 100],
+                         # yaxis_range=[-1, 20],
+                         save_file=True)
+        # create plots of velocity vs eye contact
+        analysis.scatter(mapping[(mapping['traffic_rules']=='none') & 
+                                 (mapping['velocity_risk']!='No velocity data found')], # noqa: E501
+                         x='risky_slider',
+                         y='velocity_risk',
+                         color='cross_look',
+                         trendline='ols',
+                         hover_data=['risky_slider',
+                                     'eye-contact_score',
+                                     'eye-contact_mean',
+                                     'eye-contact-yes',
+                                     'eye-contact-yes_but_too_late',
+                                     'eye-contact-no',
+                                     "eye-contact-i_don't_know",
+                                     'cross_look',
+                                     'traffic_rules'],
+                         # pretty_text=True,
+                         xaxis_title='The riskiness of behaviour in video '
+                                     + '(0-100)',
+                         yaxis_title='(avg) velocity at keypresses',
+    
                          # xaxis_range=[-10, 100],
                          # yaxis_range=[-1, 20],
                          save_file=True)
