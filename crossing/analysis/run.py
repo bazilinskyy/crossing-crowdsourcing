@@ -8,24 +8,24 @@ cs.logs(show_level='info', show_color=True)
 logger = cs.CustomLogger(__name__)  # use custom logger
 
 # Const
-SAVE_P = True  # save pickle files with data
-LOAD_P = False  # load pickle files with data
-SAVE_CSV = True  # load csv files with data
-FILTER_DATA = True  # filter Appen and heroku data
-CLEAN_DATA = True  # clean Appen data
-REJECT_CHEATERS = True  # reject cheaters on Appen
-UPDATE_MAPPING = True  # update mapping with keypress data
-SHOW_OUTPUT = True  # shoud figures be plotted
+# SAVE_P = True  # save pickle files with data
+# LOAD_P = False  # load pickle files with data
+# SAVE_CSV = True  # load csv files with data
+# FILTER_DATA = True  # filter Appen and heroku data
+# CLEAN_DATA = True  # clean Appen data
+# REJECT_CHEATERS = True  # reject cheaters on Appen
+# UPDATE_MAPPING = True  # update mapping with keypress data
+# SHOW_OUTPUT = True  # shoud figures be plotted
 
 # for debugging, skip processing
-# SAVE_P = False  # save pickle files with data
-# LOAD_P = True  # load pickle files with data
-# SAVE_CSV = True  # load csv files with data
-# FILTER_DATA = False  # filter Appen and heroku data
-# CLEAN_DATA = False  # clean Appen data
-# REJECT_CHEATERS = False  # reject cheaters on Appen
-# UPDATE_MAPPING = False  # update mapping with keypress data
-# SHOW_OUTPUT = True  # shoud figures be plotted
+SAVE_P = False  # save pickle files with data
+LOAD_P = True  # load pickle files with data
+SAVE_CSV = True  # load csv files with data
+FILTER_DATA = False  # filter Appen and heroku data
+CLEAN_DATA = False  # clean Appen data
+REJECT_CHEATERS = False  # reject cheaters on Appen
+UPDATE_MAPPING = False  # update mapping with keypress data
+SHOW_OUTPUT = True  # shoud figures be plotted
 
 file_mapping = 'mapping.p'  # file to save updated mapping
 
@@ -91,6 +91,8 @@ if __name__ == '__main__':
                                   "I don't know"]}]
         # process post-trial questions and update mapping
         mapping = heroku.process_stimulus_questions(questions)
+        # add percentage of participants who wrongly indicated looking data
+        mapping = heroku.verify_looking(mapping)
         # calculate mean of eye contact
         mapping['eye-contact-no'] = mapping['eye-contact-no'] * 0
         mapping['eye-contact-yes_but_too_late'] = mapping['eye-contact-yes_but_too_late'] * 0.25  # noqa: E501
@@ -149,13 +151,15 @@ if __name__ == '__main__':
                                                   'value': 'nonspecific'}])
 
         # columns to drop in correlation matrix and scatter matrix
-        columns_drop = ['id_segment', 'set', 'extra',
+        columns_drop = ['id_segment', 'set', 'video', 'extra',
                         'alternative_frame', 'alternative_frame.1',
-                        'video_length', 'min_dur', 'max_dur',
-                        'eye-contact-yes', 'eye-contact-yes_but_too_late',
-                        'eye-contact-no', "eye-contact-i_don't_know",
-                        'eye-contact_mean', 'time_before_interaction',
-                        'look_frame_ms', 'cross_frame_ms', 'interaction']
+                        'video_length', 'min_dur', 'max_dur', 'start', 
+                        'danger_b', 'danger-p', 'look_moment', 'cross_moment', 
+                        'time_before_interaction', "eye-contact-i_don't_know",
+                        'eye-contact-yes_but_too_late', 'gesture',
+                        'eye-contact-no', 'eye-contact-yes', 'kp',
+                        'look_frame_ms', 'cross_frame_ms', 'interaction',
+                        'vehicle_velocity_OBD', 'vehicle_velocity_GPS']
         # set nan to -1
         df = mapping
         df = df.fillna(-1)
@@ -233,10 +237,18 @@ if __name__ == '__main__':
                       save_file=True)
         # post-trial questions. level of danger
         analysis.bar(mapping,
+                     y=['misindication_looking'],
+                     show_all_xticks=True,
+                     xaxis_title='Video ID',
+                     yaxis_title='% participants that wrongly' +
+                                 'indicated looking behaviour',
+                     save_file=True)
+        # post-trial questions. bar chart for eye contact
+        analysis.bar(mapping,
                      y=['risky_slider'],
                      show_all_xticks=True,
                      xaxis_title='Video ID',
-                     yaxis_title='Score',
+                     yaxis_title='Risk score',
                      save_file=True)
         # post-trial questions. bar chart for eye contact
         analysis.bar(mapping,
@@ -247,20 +259,24 @@ if __name__ == '__main__':
                      stacked=True,
                      show_all_xticks=True,
                      xaxis_title='Video ID',
-                     yaxis_title='Count',
+                     yaxis_title='Eye contact score '
+                                     + '(No=0, Yes but too late=0.25, Yes=1)',
                      pretty_text=True,
                      save_file=True)
         # post-trial questions. hist for eye contact
-        analysis.hist(mapping,
-                      x=['eye-contact_score'],
-                      pretty_text=True,
-                      xaxis_title='Whether pedestiran made eye contact',
-                      yaxis_title='Count',
-                      save_file=True)
+        analysis.bar(mapping,
+                     y=['eye-contact_score'],
+                     stacked=True,
+                     show_all_xticks=True,
+                     xaxis_title='Video ID',
+                     yaxis_title='Eye contact score '
+                                     + '(No=0, Yes but too late=0.25, Yes=1)',
+                     pretty_text=True,
+                     save_file=True)
         # scatter plot of risk score / eye contact
         analysis.scatter(mapping,
-                         x='risky_slider',
-                         y='eye-contact_score',
+                         x='eye-contact_score',
+                         y='risky_slider',
                          color='cross_look',
                          trendline='ols',
                          hover_data=['risky_slider',
@@ -273,18 +289,17 @@ if __name__ == '__main__':
                                      'cross_look',
                                      'traffic_rules'],
                          # pretty_text=True,
-                         xaxis_title='The riskiness of behaviour in video '
-                                     + '(0-100)',
-                         yaxis_title='Whether pedestiran made eye contact '
+                         xaxis_title='Eye contact score '
                                      + '(No=0, Yes but too late=0.25, Yes=1)',
+                         yaxis_title='The riskiness of behaviour in video '
+                                     + '(0-100)',
                          # xaxis_range=[-10, 100],
                          # yaxis_range=[-1, 20],
                          save_file=True)
-        # create plots of velocity vs risk rating
-        analysis.scatter(mapping[(mapping['traffic_rules'] == 'none') &
-                                 (mapping['velocity_risk'] != 'No velocity data found')],  # noqa: E501
+        # scatter plot without traffic rules involved
+        analysis.scatter(mapping[(mapping['traffic_rules'] == 'none')],
                          x='eye-contact_score',
-                         y='velocity_risk',
+                         y='risky_slider',
                          color='cross_look',
                          trendline='ols',
                          hover_data=['risky_slider',
@@ -297,17 +312,18 @@ if __name__ == '__main__':
                                      'cross_look',
                                      'traffic_rules'],
                          # pretty_text=True,
-                         xaxis_title='Eye contact score'
+                         xaxis_title='Eye contact score '
                                      + '(No=0, Yes but too late=0.25, Yes=1)',
-                         yaxis_title='Velocity (avg) at keypresses',
+                         yaxis_title='The riskiness of behaviour in video '
+                                     + '(0-100)',
                          # xaxis_range=[-10, 100],
                          # yaxis_range=[-1, 20],
                          save_file=True)
         # create plots of velocity vs eye contact
         analysis.scatter(mapping[(mapping['traffic_rules'] == 'none') &
                                  (mapping['velocity_risk'] != 'No velocity data found')],  # noqa: E501
-                         x='risky_slider',
-                         y='velocity_risk',
+                         x='velocity_risk',
+                         y='risky_slider',                         
                          color='cross_look',
                          trendline='ols',
                          hover_data=['risky_slider',
@@ -320,9 +336,9 @@ if __name__ == '__main__':
                                      'cross_look',
                                      'traffic_rules'],
                          # pretty_text=True,
-                         xaxis_title='The riskiness of behaviour in video '
+                         xaxis_title='Velocity (avg) at keypresses',
+                         yaxis_title='The riskiness of behaviour in video '
                                      + '(0-100)',
-                         yaxis_title='Velocity (avg) at keypresses',
                          # xaxis_range=[-10, 100],
                          # yaxis_range=[-1, 20],
                          save_file=True)

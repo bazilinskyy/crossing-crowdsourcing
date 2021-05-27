@@ -698,6 +698,10 @@ class Heroku:
             # change character array to normal array
             tolist = ast.literal_eval(row['vehicle_velocity_GPS'])
             if len(tolist) > 1:
+                # loop to counter weird data
+                for velocity in tolist:
+                    if velocity > 100:
+                        tolist = ast.literal_eval(row['vehicle_velocity_OBD'])
                 # change integers to float
                 vel = np.array([float(i) for i in tolist])
                 kp = np.array([float(i) for i in row['kp']])
@@ -708,6 +712,32 @@ class Heroku:
                 vel_risk.append('No velocity data found')
 
         df['velocity_risk'] = vel_risk
+        return df
+
+    def verify_looking(self, df):
+        """Check if looking is correctly perceived by the participants
+
+        Args:
+            df (dataframe): dataframe with keypress data.
+        """
+        failedarray = []
+        for index, row in df.iterrows():
+            totalvalue = row['eye-contact-yes'] + \
+                         row['eye-contact-yes_but_too_late'] + \
+                         row['eye-contact-no'] 
+
+            if re.search('_Looking', row['cross_look']) is not None:
+                failed = row['eye-contact-no']/totalvalue
+            elif re.search('notLooking', row['cross_look']) is not None:
+                failed = (row['eye-contact-yes'] + \
+                          row['eye-contact-yes_but_too_late'])/totalvalue
+            else:
+                failed = 0
+
+            print(failed)
+            failedarray.append(failed)
+
+        df['misindication_looking'] = failedarray
         return df
 
     def show_info(self):
