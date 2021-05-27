@@ -149,7 +149,7 @@ if __name__ == '__main__':
                                                   'value': 'nonspecific'}])
 
         # columns to drop in correlation matrix and scatter matrix
-        columns_drop = ['id_segment', 'set','extra',
+        columns_drop = ['id_segment', 'set', 'extra',
                         'alternative_frame', 'alternative_frame.1',
                         'video_length', 'min_dur', 'max_dur',
                         'eye-contact-yes', 'eye-contact-yes_but_too_late',
@@ -276,13 +276,13 @@ if __name__ == '__main__':
                          xaxis_title='The riskiness of behaviour in video '
                                      + '(0-100)',
                          yaxis_title='Whether pedestiran made eye contact '
-                                     + '(No=1, Yes but too late=2, Yes=3)',
+                                     + '(No=0, Yes but too late=0.25, Yes=1)',
                          # xaxis_range=[-10, 100],
                          # yaxis_range=[-1, 20],
                          save_file=True)
         # create plots of velocity vs risk rating
-        analysis.scatter(mapping[(mapping['traffic_rules']=='none') & 
-                                 (mapping['velocity_risk']!='No velocity data found')], # noqa: E501
+        analysis.scatter(mapping[(mapping['traffic_rules'] == 'none') &
+                                 (mapping['velocity_risk'] != 'No velocity data found')],  # noqa: E501
                          x='eye-contact_score',
                          y='velocity_risk',
                          color='cross_look',
@@ -297,15 +297,15 @@ if __name__ == '__main__':
                                      'cross_look',
                                      'traffic_rules'],
                          # pretty_text=True,
-                         xaxis_title='Eye contact score (No=1, Yes but too late=2, Yes=3)'
-                                     + '(0-100)',
-                         yaxis_title='(avg) velocity at keypresses',
+                         xaxis_title='Eye contact score' 
+                                     + '(No=0, Yes but too late=0.25, Yes=1)',
+                         yaxis_title='Velocity (avg) at keypresses',
                          # xaxis_range=[-10, 100],
                          # yaxis_range=[-1, 20],
                          save_file=True)
         # create plots of velocity vs eye contact
-        analysis.scatter(mapping[(mapping['traffic_rules']=='none') & 
-                                 (mapping['velocity_risk']!='No velocity data found')], # noqa: E501
+        analysis.scatter(mapping[(mapping['traffic_rules'] == 'none') & 
+                                 (mapping['velocity_risk'] != 'No velocity data found')],  # noqa: E501
                          x='risky_slider',
                          y='velocity_risk',
                          color='cross_look',
@@ -322,8 +322,7 @@ if __name__ == '__main__':
                          # pretty_text=True,
                          xaxis_title='The riskiness of behaviour in video '
                                      + '(0-100)',
-                         yaxis_title='(avg) velocity at keypresses',
-    
+                         yaxis_title='Velocity (avg) at keypresses',
                          # xaxis_range=[-10, 100],
                          # yaxis_range=[-1, 20],
                          save_file=True)
