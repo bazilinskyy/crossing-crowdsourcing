@@ -733,10 +733,7 @@ class Heroku:
                           row['eye-contact-yes_but_too_late'])/totalvalue
             else:
                 failed = 0
-
-            print(failed)
             failedarray.append(failed)
-
         df['misindication_looking'] = failedarray
         return df
 
