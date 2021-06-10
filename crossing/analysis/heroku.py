@@ -681,7 +681,59 @@ class Heroku:
                     old_size - df.shape[0])
         return df
 
-    def process_velocity(self, df):
+    def evaluate_velocity_bins(self, df):
+        """
+        Update bins, to specific bin size
+        Args:
+            df (dataframe): dataframe with data.
+        Returns:
+            dataframe: updated dataframe.
+        """
+        # arrays to store row arrays with velocities
+        vel_GPS_col = []
+        vel_OBD_col = []
+        # current length of velocity bins
+        bin_length = 100
+        # check if averaging of data is needed
+        new_bin_length = int(self.res/bin_length)
+        # iterate over videos
+        for index, row in df.iterrows():
+            # arrays to store in velocity data of one video
+            vel_GPS_bin = []
+            vel_OBD_bin = []
+            # convert data from string to array
+            vel_GPS = ast.literal_eval(row['vehicle_velocity_GPS'])
+            vel_OBD = ast.literal_eval(row['vehicle_velocity_OBD'])
+            # check if there is actually data to process
+            if len(vel_GPS) > 1:
+                bin_count = 0
+                bin_sum_GPS = 0
+                bin_sum_OBD = 0
+                # iterate over all velocity data to divide in bins
+                for i in range(len(vel_GPS)):
+                    bin_sum_GPS = bin_sum_GPS + vel_GPS[i]
+                    bin_sum_OBD = bin_sum_OBD + vel_OBD[i]
+                    bin_count = bin_count + 1
+
+                    if bin_count >= new_bin_length:
+                        vel_GPS_bin.append(bin_sum_GPS/new_bin_length)
+                        vel_OBD_bin.append(bin_sum_OBD/new_bin_length)
+                        bin_sum_GPS = 0
+                        bin_sum_OBD = 0
+                        bin_count = 0
+                        # append average of velocity data of new bin size
+                vel_GPS_col.append(vel_GPS_bin)
+                vel_OBD_col.append(vel_OBD_bin)
+
+            else:
+                vel_GPS_col.append('No velocity data found')
+                vel_OBD_col.append('No velocity data found')
+
+        df['vehicle_velocity_GPS'] = vel_GPS_col
+        df['vehicle_velocity_OBD'] = vel_OBD_col
+        return df
+
+    def process_velocity_risk(self, df):
         """
         add extra column to dataframe, which is the quantification
         of velocity to risk per video
@@ -696,12 +748,12 @@ class Heroku:
 
         for index, row in df.iterrows():
             # change character array to normal array
-            tolist = ast.literal_eval(row['vehicle_velocity_GPS'])
-            if len(tolist) > 1:
+            tolist = row['vehicle_velocity_GPS']
+            if type(tolist) == list:
                 # loop to counter weird data
                 for velocity in tolist:
                     if velocity > 100:
-                        tolist = ast.literal_eval(row['vehicle_velocity_OBD'])
+                        tolist = row['vehicle_velocity_OBD']
                 # change integers to float
                 vel = np.array([float(i) for i in tolist])
                 kp = np.array([float(i) for i in row['kp']])
@@ -722,19 +774,74 @@ class Heroku:
         """
         failedarray = []
         for index, row in df.iterrows():
-            totalvalue = row['eye-contact-yes'] + \
-                         row['eye-contact-yes_but_too_late'] + \
-                         row['eye-contact-no']
+            totalvalue = row['EC-yes'] + \
+                         row['EC-yes_but_too_late'] + \
+                         row['EC-no']
 
             if re.search('_Looking', row['cross_look']) is not None:
-                failed = row['eye-contact-no']/totalvalue
+                failed = row['EC-no']/totalvalue
             elif re.search('notLooking', row['cross_look']) is not None:
-                failed = (row['eye-contact-yes'] +
-                          row['eye-contact-yes_but_too_late'])/totalvalue
+                failed = (row['EC-yes'] +
+                          row['EC-yes_but_too_late'])/totalvalue
             else:
                 failed = 0
+                
             failedarray.append(failed)
-        df['misindication_looking'] = failedarray
+
+        df['looking_fails'] = failedarray
+        return df
+
+    def add_velocity_at_time(self, df, time):
+        """retrieve column with velocity data at a certain time.
+
+        Args:
+            time (s): The speed on which time you want to receive
+
+        Returns:
+            df: containing an extra column with speed data at specific time.
+        """
+        # time from s to ms
+        velocity_data = []
+        time = time*1000 
+        # get index of the array to find the velocity
+        vel_index = int(time/self.res)
+        for index, row in df.iterrows():
+            # convert data from string to array
+            array = row['vehicle_velocity_GPS']
+            # check if there is actually data to process
+            if type(array) == list:
+                # check if no errors in data by thresholding
+                if array[vel_index] > 70:
+                    array = row['vehicle_velocity_OBD']
+                
+                velocity_data.append(array[vel_index])
+            else:
+                velocity_data.append('No velocity data found')
+
+        name = 'velocity_at_' + str(time/1000)
+        df[name] = velocity_data
+        return df
+
+    def add_kp_at_time(self, df, time):
+        """retrieve column with keypress data at a certain time.
+
+        Args:
+            time (s): Time on which you want to obtain The % of keypresses.
+
+        Returns:
+            df: containing an extra column with speed data at specific time.
+        """
+        kp_data = []
+        # time from s to ms
+        time = time*1000 
+        # get index of the array to find the velocity
+        vel_index = int(time/self.res)
+        for index, row in df.iterrows():
+            kp_array = row['kp']
+            kp_data.append(kp_array[vel_index])
+
+        name = 'kp_at_' + str(time/1000)
+        df[name] = kp_data
         return df
 
     def show_info(self):

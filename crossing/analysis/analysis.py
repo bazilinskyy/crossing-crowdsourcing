@@ -53,19 +53,20 @@ class Analysis:
         mask = np.zeros_like(corr)
         mask[np.triu_indices_from(mask)] = True
         # set larger font
+        vs_font = 10 # very small
         s_font = 12  # small
         m_font = 16  # medium
         l_font = 18  # large
         plt.rc('font', size=s_font)         # controls default text sizes
         plt.rc('axes', titlesize=s_font)    # fontsize of the axes title
-        plt.rc('axes', labelsize=m_font)    # fontsize of the axes labels
-        plt.rc('xtick', labelsize=s_font)   # fontsize of the tick labels
-        plt.rc('ytick', labelsize=s_font)   # fontsize of the tick labels
+        plt.rc('axes', labelsize=s_font)   # fontsize of the axes labels
+        plt.rc('xtick', labelsize=vs_font)   # fontsize of the tick labels
+        plt.rc('ytick', labelsize=vs_font)   # fontsize of the tick labels
         plt.rc('legend', fontsize=s_font)   # fontsize of the legend
         plt.rc('figure', titlesize=l_font)  # fontsize of the figure title
         plt.rc('axes', titlesize=m_font)    # fontsize of the subplot title
         # create figure
-        fig = plt.figure(figsize=(15, 8))
+        fig = plt.figure(figsize=(20, 12))
         g = sns.heatmap(corr,
                         annot=True,
                         mask=mask,
@@ -73,7 +74,7 @@ class Analysis:
                         fmt=".2f")
         # rotate ticks
         for item in g.get_xticklabels():
-            item.set_rotation(45)
+            item.set_rotation(55)
         # save image
         if save_file:
             self.save_fig('all',
