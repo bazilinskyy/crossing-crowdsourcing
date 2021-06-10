@@ -102,20 +102,20 @@ if __name__ == '__main__':
         mapping = heroku.add_velocity_at_time(mapping, 14)
 
         # post-trial questions to process
-        questions = [{'question':'risky_slider',
-                      'type':'num'},
-                     {'question':'eye-contact',
-                      'type':'str',
+        questions = [{'question': 'risky_slider',
+                      'type': 'num'},
+                     {'question': 'eye-contact',
+                      'type': 'str',
                       'options': ['Yes',
                                   'Yes but too late',
                                   'No',
                                   "I don't know"]}]
         # process post-trial questions and update mapping
         mapping = heroku.process_stimulus_questions(questions)
-        mapping.rename(columns={'eye-contact-yes_but_too_late':'EC-yes_but_too_late',  # noqa: E501
-                                'eye-contact-yes':'EC-yes',
-                                "eye-contact-i_don't_know":"EC-i_don't_know",
-                                'eye-contact-no':'EC-no'},
+        mapping.rename(columns={'eye-contact-yes_but_too_late': 'EC-yes_but_too_late',  # noqa: E501
+                                'eye-contact-yes': 'EC-yes',
+                                "eye-contact-i_don't_know": "EC-i_don't_know",
+                                'eye-contact-no': 'EC-no'},
                        inplace=True)
         # add percentage of participants who wrongly indicated looking data
         mapping = heroku.verify_looking(mapping)
@@ -328,7 +328,7 @@ if __name__ == '__main__':
         # # create plots of velocity vs eye contact
         # analysis.scatter(mapping[(mapping['cross_look'] != 'notCrossing_Looking') &  # noqa: E501
         #                 (mapping['cross_look'] != 'notCrossing_notLooking') &
-        #                 (mapping['velocity_risk'] != 'No velocity data found')],
+        #                 (mapping['velocity_risk'] != 'No velocity data found')],     # noqa: E501
         #                            # noqa: E501
         #                  x='velocity_risk',
         #                  y='risky_slider',

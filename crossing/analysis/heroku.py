@@ -784,7 +784,7 @@ class Heroku:
                 failed = (row['EC-yes'] +
                           row['EC-yes_but_too_late'])/totalvalue
             else:
-                failed = 0   
+                failed = 0
             failedarray.append(failed)
 
         df['looking_fails'] = failedarray
