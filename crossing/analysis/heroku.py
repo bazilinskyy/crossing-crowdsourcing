@@ -784,8 +784,7 @@ class Heroku:
                 failed = (row['EC-yes'] +
                           row['EC-yes_but_too_late'])/totalvalue
             else:
-                failed = 0
-                
+                failed = 0   
             failedarray.append(failed)
 
         df['looking_fails'] = failedarray
@@ -802,7 +801,7 @@ class Heroku:
         """
         # time from s to ms
         velocity_data = []
-        time = time*1000 
+        time = time*1000
         # get index of the array to find the velocity
         vel_index = int(time/self.res)
         for index, row in df.iterrows():
@@ -813,7 +812,6 @@ class Heroku:
                 # check if no errors in data by thresholding
                 if array[vel_index] > 70:
                     array = row['vehicle_velocity_OBD']
-                
                 velocity_data.append(array[vel_index])
             else:
                 velocity_data.append('No velocity data found')
@@ -833,7 +831,7 @@ class Heroku:
         """
         kp_data = []
         # time from s to ms
-        time = time*1000 
+        time = time*1000
         # get index of the array to find the velocity
         vel_index = int(time/self.res)
         for index, row in df.iterrows():

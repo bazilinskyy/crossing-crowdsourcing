@@ -1,6 +1,6 @@
 # by Pavlo Bazilinskyy <pavlo.bazilinskyy@gmail.com>
-import matplotlib.pyplot as plt
-import matplotlib._pylab_helpers
+# import matplotlib.pyplot as plt
+# import matplotlib._pylab_helpers
 
 import crossing as cs
 
@@ -34,7 +34,7 @@ if __name__ == '__main__':
     files_heroku = cs.common.get_configs('files_heroku')
     heroku = cs.analysis.Heroku(files_data=files_heroku,
                                 save_p=SAVE_P,
-                                load_p=LOAD_P, 
+                                load_p=LOAD_P,
                                 save_csv=SAVE_CSV)
     # read heroku data
     heroku_data = heroku.read_data(filter_data=FILTER_DATA)
@@ -80,7 +80,7 @@ if __name__ == '__main__':
         mapping = heroku.process_kp()
         # check is velocity data is processed correctly to match kp
         mapping = heroku.evaluate_velocity_bins(mapping)
-
+        # add keypresses at specific times
         mapping = heroku.add_kp_at_time(mapping, 7)
         mapping = heroku.add_kp_at_time(mapping, 8)
         mapping = heroku.add_kp_at_time(mapping, 9)
@@ -90,8 +90,8 @@ if __name__ == '__main__':
         mapping = heroku.add_kp_at_time(mapping, 13)
         mapping = heroku.add_kp_at_time(mapping, 14)
         # add quantification of danger of velocity for each video
-        
         mapping = heroku.process_velocity_risk(mapping)
+        # add keypresses at specific times
         mapping = heroku.add_velocity_at_time(mapping, 7)
         mapping = heroku.add_velocity_at_time(mapping, 8)
         mapping = heroku.add_velocity_at_time(mapping, 9)
@@ -101,23 +101,22 @@ if __name__ == '__main__':
         mapping = heroku.add_velocity_at_time(mapping, 13)
         mapping = heroku.add_velocity_at_time(mapping, 14)
 
-
         # post-trial questions to process
-        questions = [{'question': 'risky_slider',
-                      'type': 'num'},
-                     {'question': 'eye-contact',
-                      'type': 'str',
+        questions = [{'question':'risky_slider',
+                      'type':'num'},
+                     {'question':'eye-contact',
+                      'type':'str',
                       'options': ['Yes',
                                   'Yes but too late',
                                   'No',
                                   "I don't know"]}]
         # process post-trial questions and update mapping
         mapping = heroku.process_stimulus_questions(questions)
-        mapping.rename(columns={'eye-contact-yes_but_too_late':'EC-yes_but_too_late',
+        mapping.rename(columns={'eye-contact-yes_but_too_late':'EC-yes_but_too_late',  # noqa: E501
                                 'eye-contact-yes':'EC-yes',
                                 "eye-contact-i_don't_know":"EC-i_don't_know",
                                 'eye-contact-no':'EC-no'},
-                       inplace = True)
+                       inplace=True)
         # add percentage of participants who wrongly indicated looking data
         mapping = heroku.verify_looking(mapping)
         # calculate mean of eye contact
@@ -182,14 +181,14 @@ if __name__ == '__main__':
                         'alternative_frame', 'alternative_frame.1',
                         'video_length', 'min_dur', 'max_dur', 'start',
                         'danger_b', 'danger-p', 'look_moment', 'cross_moment',
-                        'time_before_interaction', 'gesture','kp',
+                        'time_before_interaction', 'gesture', 'kp',
                         'look_frame_ms', 'cross_frame_ms', 'interaction',
                         'vehicle_velocity_OBD', 'vehicle_velocity_GPS',
-                        'EC-yes-score','EC-no-score',
+                        'EC-yes-score', 'EC-no-score',
                         'EC-yes_but_too_late-score']
         # set nan to -1
-        df = mapping[(mapping['velocity_risk'] != 'No velocity data found') & 
-                     (mapping['traffic_rules'] == 'stop_sign')]        
+        df = mapping[(mapping['velocity_risk'] != 'No velocity data found') &
+                     (mapping['traffic_rules'] == 'stop_sign')]
         df = df.fillna(-1)
         # create correlation matrix
         analysis.corr_matrix(df,
@@ -302,9 +301,9 @@ if __name__ == '__main__':
         #              pretty_text=True,
         #              save_file=True)
         # # scatter plot of risk / eye contact without traffic rules involved
-        # analysis.scatter(mapping[(mapping['cross_look'] != 'notCrossing_Looking') & 
-        #                 (mapping['cross_look'] != 'notCrossing_notLooking') & 
-        #                 (mapping['velocity_risk'] != 'No velocity data found')],
+        # analysis.scatter(mapping[(mapping['cross_look'] != 'notCrossing_Looking') &  # noqa: E501
+        #                 (mapping['cross_look'] != 'notCrossing_notLooking') &
+        #                 (mapping['velocity_risk'] != 'No velocity data found')],     # noqa: E501
         #                  x='EC_score',
         #                  y='risky_slider',
         #                  #color='traffic_rules',
@@ -320,15 +319,15 @@ if __name__ == '__main__':
         #                              'traffic_rules'],
         #                  # pretty_text=True,
         #                  xaxis_title='Eye contact score '
-        #                              + '(No=0, Yes but too late=0.25, Yes=1)',
+        #                              + '(No=0, Yes but too late=0.25, Yes=1)',  # noqa: E501
         #                  yaxis_title='The riskiness of behaviour in video '
         #                              + '(0-100)',
         #                  # xaxis_range=[-10, 100],
         #                  # yaxis_range=[-1, 20],
         #                  save_file=True)
         # # create plots of velocity vs eye contact
-        # analysis.scatter(mapping[(mapping['cross_look'] != 'notCrossing_Looking') & 
-        #                 (mapping['cross_look'] != 'notCrossing_notLooking') & 
+        # analysis.scatter(mapping[(mapping['cross_look'] != 'notCrossing_Looking') &  # noqa: E501
+        #                 (mapping['cross_look'] != 'notCrossing_notLooking') &
         #                 (mapping['velocity_risk'] != 'No velocity data found')],
         #                            # noqa: E501
         #                  x='velocity_risk',

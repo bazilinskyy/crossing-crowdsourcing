@@ -53,10 +53,10 @@ class Analysis:
         mask = np.zeros_like(corr)
         mask[np.triu_indices_from(mask)] = True
         # set larger font
-        vs_font = 10 # very small
-        s_font = 12  # small
-        m_font = 16  # medium
-        l_font = 18  # large
+        vs_font = 10  # very small
+        s_font = 12   # small
+        m_font = 16   # medium
+        l_font = 18   # large
         plt.rc('font', size=s_font)         # controls default text sizes
         plt.rc('axes', titlesize=s_font)    # fontsize of the axes title
         plt.rc('axes', labelsize=s_font)   # fontsize of the axes labels
