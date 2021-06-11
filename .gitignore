@@ -20,3 +20,4 @@ secret
 
 # Pickle files
 crossing/analysis/*.p
+crossing/*.p
