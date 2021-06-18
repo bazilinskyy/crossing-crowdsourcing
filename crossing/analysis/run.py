@@ -80,27 +80,15 @@ if __name__ == '__main__':
         mapping = heroku.process_kp()
         # check is velocity data is processed correctly to match kp
         mapping = heroku.evaluate_velocity_bins(mapping)
-        # add keypresses at specific times
-        mapping = heroku.add_kp_at_time(mapping, 7)
-        mapping = heroku.add_kp_at_time(mapping, 8)
-        mapping = heroku.add_kp_at_time(mapping, 9)
-        mapping = heroku.add_kp_at_time(mapping, 10)
-        mapping = heroku.add_kp_at_time(mapping, 11)
-        mapping = heroku.add_kp_at_time(mapping, 12)
-        mapping = heroku.add_kp_at_time(mapping, 13)
-        mapping = heroku.add_kp_at_time(mapping, 14)
+        # add data at specific times
+        mapping = heroku.add_data_at_time(mapping, 'kp', [7,8,9,10,11,12,13])
+        mapping = heroku.add_data_at_time(mapping, 'dist_to_ped', [7,8,9,10,11,12,13])
+        mapping = heroku.add_data_at_time(mapping, 'object_count', [7,8,9,10,11,12,13])
+        mapping = heroku.add_data_at_time(mapping, 'object_surface', [7,8,9,10,11,12,13])
         # add quantification of danger of velocity for each video
         mapping = heroku.process_velocity_risk(mapping)
         # add keypresses at specific times
-        mapping = heroku.add_velocity_at_time(mapping, 7)
-        mapping = heroku.add_velocity_at_time(mapping, 8)
-        mapping = heroku.add_velocity_at_time(mapping, 9)
-        mapping = heroku.add_velocity_at_time(mapping, 10)
-        mapping = heroku.add_velocity_at_time(mapping, 11)
-        mapping = heroku.add_velocity_at_time(mapping, 12)
-        mapping = heroku.add_velocity_at_time(mapping, 13)
-        mapping = heroku.add_velocity_at_time(mapping, 14)
-
+        mapping = heroku.add_velocity_at_time(mapping, [7,8,9,10,11,12,13])
         # post-trial questions to process
         questions = [{'question': 'risky_slider',
                       'type': 'num'},
@@ -187,8 +175,7 @@ if __name__ == '__main__':
                         'EC-yes-score', 'EC-no-score',
                         'EC-yes_but_too_late-score']
         # set nan to -1
-        df = mapping[(mapping['velocity_risk'] != 'No velocity data found') &
-                     (mapping['traffic_rules'] == 'stop_sign')]
+        df = mapping[(mapping['dist_to_ped_at_7.0'] != 'no data found')]
         df = df.fillna(-1)
         # create correlation matrix
         analysis.corr_matrix(df,
