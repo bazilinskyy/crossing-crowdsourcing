@@ -800,7 +800,7 @@ class Heroku:
             time (s): Array of data on which time you want to receive
 
         Returns:
-            df: containing an extra column with requested data at specific time.
+            df: containing an extra column with requested data at time
         """
         for time in time_array:
 
@@ -824,7 +824,7 @@ class Heroku:
                     else:
                         data_array.append(array[vel_index])
 
-            name = col + '_at_'+ str(time/1000)
+            name = col + '_at_' + str(time/1000)
             df[name] = data_array
 
         return df

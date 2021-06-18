@@ -81,14 +81,19 @@ if __name__ == '__main__':
         # check is velocity data is processed correctly to match kp
         mapping = heroku.evaluate_velocity_bins(mapping)
         # add data at specific times
-        mapping = heroku.add_data_at_time(mapping, 'kp', [7,8,9,10,11,12,13])
-        mapping = heroku.add_data_at_time(mapping, 'dist_to_ped', [7,8,9,10,11,12,13])
-        mapping = heroku.add_data_at_time(mapping, 'object_count', [7,8,9,10,11,12,13])
-        mapping = heroku.add_data_at_time(mapping, 'object_surface', [7,8,9,10,11,12,13])
+        mapping = heroku.add_data_at_time(mapping, 'kp',
+                                          [7, 8, 9, 10, 11, 12, 13])
+        mapping = heroku.add_data_at_time(mapping, 'dist_to_ped',
+                                          [7, 8, 9, 10, 11, 12, 13])
+        mapping = heroku.add_data_at_time(mapping, 'object_count',
+                                          [7, 8, 9, 10, 11, 12, 13])
+        mapping = heroku.add_data_at_time(mapping, 'object_surface',
+                                          [7, 8, 9, 10, 11, 12, 13])
         # add quantification of danger of velocity for each video
         mapping = heroku.process_velocity_risk(mapping)
         # add keypresses at specific times
-        mapping = heroku.add_velocity_at_time(mapping, [7,8,9,10,11,12,13])
+        mapping = heroku.add_velocity_at_time(mapping,
+                                              [7, 8, 9, 10, 11, 12, 13])
         # post-trial questions to process
         questions = [{'question': 'risky_slider',
                       'type': 'num'},
