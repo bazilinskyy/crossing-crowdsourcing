@@ -761,7 +761,7 @@ class Heroku:
                 vel_risk.append(np.dot(vel, kp)/np.sum(kp))
             else:
                 # if no velocity data was present, append this string
-                vel_risk.append('No velocity data found')
+                vel_risk.append('no data found')
 
         df['velocity_risk'] = vel_risk
         return df
@@ -790,7 +790,46 @@ class Heroku:
         df['looking_fails'] = failedarray
         return df
 
-    def add_velocity_at_time(self, df, time):
+    def add_data_at_time(self, df, col, time_array):
+
+        """retrieve column with data at a certain time.
+
+        Args:
+            df: dataframe of mapping file
+            col: column of which data you want to process
+            time (s): Array of data on which time you want to receive
+
+        Returns:
+            df: containing an extra column with requested data at time
+        """
+        for time in time_array:
+
+            data_array = []
+            # time from s to ms
+            time = time*1000
+            # get index of the array to find the velocity
+            vel_index = int(time/self.res)
+            for index, row in df.iterrows():
+                # convert data from string to array
+                array = row[col]
+                # check if data is correctly perceived
+                if type(array) == list:
+                    data_array.append(array[vel_index])
+                # create array if data is perceived as string
+                elif type(array) == str:
+                    array = ast.literal_eval(array)
+                    # Check if values exist in array
+                    if len(array) < 2:
+                        data_array.append('no data found')
+                    else:
+                        data_array.append(array[vel_index])
+
+            name = col + '_at_' + str(time/1000)
+            df[name] = data_array
+
+        return df
+
+    def add_velocity_at_time(self, df, time_array):
         """retrieve column with velocity data at a certain time.
 
         Args:
@@ -800,46 +839,25 @@ class Heroku:
             df: containing an extra column with speed data at specific time.
         """
         # time from s to ms
-        velocity_data = []
-        time = time*1000
-        # get index of the array to find the velocity
-        vel_index = int(time/self.res)
-        for index, row in df.iterrows():
-            # convert data from string to array
-            array = row['vehicle_velocity_GPS']
-            # check if there is actually data to process
-            if type(array) == list:
-                # check if no errors in data by thresholding
-                if array[vel_index] > 70:
-                    array = row['vehicle_velocity_OBD']
-                velocity_data.append(array[vel_index])
-            else:
-                velocity_data.append('No velocity data found')
+        for time in time_array:
+            velocity_data = []
+            time = time*1000
+            # get index of the array to find the velocity
+            vel_index = int(time/self.res)
+            for index, row in df.iterrows():
+                # convert data from string to array
+                array = row['vehicle_velocity_GPS']
+                # check if there is actually data to process
+                if type(array) == list:
+                    # check if no errors in data by thresholding
+                    if array[vel_index] > 70:
+                        array = row['vehicle_velocity_OBD']
+                    velocity_data.append(array[vel_index])
+                else:
+                    velocity_data.append('no data found')
 
-        name = 'velocity_at_' + str(time/1000)
-        df[name] = velocity_data
-        return df
-
-    def add_kp_at_time(self, df, time):
-        """retrieve column with keypress data at a certain time.
-
-        Args:
-            time (s): Time on which you want to obtain The % of keypresses.
-
-        Returns:
-            df: containing an extra column with speed data at specific time.
-        """
-        kp_data = []
-        # time from s to ms
-        time = time*1000
-        # get index of the array to find the velocity
-        vel_index = int(time/self.res)
-        for index, row in df.iterrows():
-            kp_array = row['kp']
-            kp_data.append(kp_array[vel_index])
-
-        name = 'kp_at_' + str(time/1000)
-        df[name] = kp_data
+            name = 'velocity_at_' + str(time/1000)
+            df[name] = velocity_data
         return df
 
     def show_info(self):
