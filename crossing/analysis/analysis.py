@@ -724,11 +724,12 @@ class Analysis:
         else:
             fig.show()
 
-    def plot_video_data(self, df, stimulus, cols, extention='mp4', conf_interval=None,
-                      xaxis_title='Time (s)',
-                      yaxis_title='Percentage of trials with ' +
+    def plot_video_data(self, df, stimulus, cols, extention='mp4', 
+                        conf_interval=None,
+                        xaxis_title='Time (s)',
+                        yaxis_title='Percentage of trials with ' +
                                   'response key pressed',
-                      xaxis_range=None, yaxis_range=None, save_file=True):
+                        xaxis_range=None, yaxis_range=None, save_file=True):
         """Plot keypresses with multiple variables as a filter.
 
         Args:
@@ -770,39 +771,14 @@ class Analysis:
                                      name=col),
                           row=1,
                           col=1)
-            # show confidence interval
-            # if conf_interval:
-            #     # calculate condidence interval
-            #     (y_lower, y_upper) = self.get_conf_interval_bounds(kp_data,
-            #                                                        conf_interval)
-            #     # plot interval
-            #     fig.add_trace(go.Scatter(name='Upper Bound',
-            #                              x=times,
-            #                              y=y_upper,
-            #                              mode='lines',
-            #                              fillcolor='rgba(0,100,80,0.2)',
-            #                              line=dict(color='rgba(255,255,255,0)'),
-            #                              hoverinfo="skip",
-            #                              showlegend=False))
-            #     fig.add_trace(go.Scatter(name='Lower Bound',
-            #                              x=times,
-            #                              y=y_lower,
-            #                              fill='tonexty',
-            #                              fillcolor='rgba(0,100,80,0.2)',
-            #                              line=dict(color='rgba(255,255,255,0)'),
-            #                              hoverinfo="skip",
-            #                              showlegend=False))
-            # define range of y axis
-            # if not yaxis_range:
-            #     yaxis_range = [0, max(y_upper) if conf_interval else max(kp_data)]
-            # update layout
+        # update layout
         fig.update_layout(template=self.template,
                           title=stimulus,
                           xaxis_title=xaxis_title,
                           yaxis_title=yaxis_title,
                           xaxis_range=xaxis_range,
                           yaxis_range=yaxis_range)
-            # save file
+        # save file
         if save_file:
             self.save_plotly(fig, 'video_data_' + stimulus, self.folder)
         # open it in localhost instead
@@ -825,7 +801,6 @@ class Analysis:
         """
         # calculate times
         times = np.array(range(self.res, df['video_length'].max() + self.res, self.res)) / 1000  # noqa: E501
-
         # plotly
         fig = subplots.make_subplots(rows=1,
                                      cols=1,

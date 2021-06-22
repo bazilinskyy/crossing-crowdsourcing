@@ -171,10 +171,10 @@ if __name__ == '__main__':
         #     if type(row['dist_to_ped_at_10.0']) != str:
         #         if row['dist_to_ped_at_10.0'] > 40:
         #             vid = str(index)
-        #             analysis.plot_video_data(mapping, vid, ['vehicle_velocity_GPS', 'dist_to_ped'], 
-        #                                 yaxis_title='Distance & velocity data', conf_interval=0.95)
-        # analysis.plot_video_data(mapping, 'video_50', ['vehicle_velocity_GPS','dist_to_ped'], 
-        #                             yaxis_title='Distance & velocity data', conf_interval=0.95)
+        #             analysis.plot_video_data(mapping, vid, ['vehicle_velocity_GPS', 'dist_to_ped'],  # noqa: E501
+        #                                 yaxis_title='Distance & velocity data', conf_interval=0.95)  # noqa: E501
+        # analysis.plot_video_data(mapping, 'video_50', ['vehicle_velocity_GPS','dist_to_ped'],        # noqa: E501
+        #                             yaxis_title='Distance & velocity data', conf_interval=0.95)      # noqa: E501
         # analysis.plot_kp_variables_and(mapping,
         #                                plot_names=['traffic rules',
         #                                            'no traffic rules'],
