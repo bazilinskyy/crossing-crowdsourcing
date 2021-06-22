@@ -681,56 +681,50 @@ class Heroku:
                     old_size - df.shape[0])
         return df
 
-    def evaluate_velocity_bins(self, df):
+    def evaluate_bins(self, df, col_name):
         """
-        Update bins, to specific bin size
+        Update bins to specific bin size
         Args:
             df (dataframe): dataframe with data.
+            col_name: nmae of column to update
         Returns:
             dataframe: updated dataframe.
         """
         # arrays to store row arrays with velocities
-        vel_GPS_col = []
-        vel_OBD_col = []
+        updated_col = []
         # current length of velocity bins
         bin_length = 100
         # check if averaging of data is needed
         new_bin_length = int(self.res/bin_length)
         # iterate over videos
         for index, row in df.iterrows():
-            # arrays to store in velocity data of one video
-            vel_GPS_bin = []
-            vel_OBD_bin = []
+            # arrays to store in data of one video
+            bin_data = []
             # convert data from string to array
-            vel_GPS = ast.literal_eval(row['vehicle_velocity_GPS'])
-            vel_OBD = ast.literal_eval(row['vehicle_velocity_OBD'])
-            # check if there is actually data to process
-            if len(vel_GPS) > 1:
-                bin_count = 0
-                bin_sum_GPS = 0
-                bin_sum_OBD = 0
-                # iterate over all velocity data to divide in bins
-                for i in range(len(vel_GPS)):
-                    bin_sum_GPS = bin_sum_GPS + vel_GPS[i]
-                    bin_sum_OBD = bin_sum_OBD + vel_OBD[i]
-                    bin_count = bin_count + 1
-
-                    if bin_count >= new_bin_length:
-                        vel_GPS_bin.append(bin_sum_GPS/new_bin_length)
-                        vel_OBD_bin.append(bin_sum_OBD/new_bin_length)
-                        bin_sum_GPS = 0
-                        bin_sum_OBD = 0
-                        bin_count = 0
-                        # append average of velocity data of new bin size
-                vel_GPS_col.append(vel_GPS_bin)
-                vel_OBD_col.append(vel_OBD_bin)
-
+            if type(row[col_name]) != list:
+                data = ast.literal_eval(row[col_name])
             else:
-                vel_GPS_col.append('No velocity data found')
-                vel_OBD_col.append('No velocity data found')
-
-        df['vehicle_velocity_GPS'] = vel_GPS_col
-        df['vehicle_velocity_OBD'] = vel_OBD_col
+                data = row[col_name]
+            # check if there is actually data to process
+            if len(data) > 1:
+                bin_count = 0
+                bin_sum = 0
+                # iterate over all data to divide in bins
+                for i in range(len(data)):
+                    # save sum of the data + count
+                    bin_sum = bin_sum + data[i]
+                    bin_count = bin_count + 1
+                    # when all data in 1 bin is found, append to new bin
+                    if bin_count >= new_bin_length:
+                        bin_data.append(bin_sum/new_bin_length)
+                        bin_sum = 0
+                        bin_count = 0
+                        # append average of the data of new bin size
+                updated_col.append(bin_data)
+            else:
+                updated_col.append(['no data found'])
+        # add data to mapping
+        df[col_name] = updated_col
         return df
 
     def process_velocity_risk(self, df):
@@ -750,20 +744,57 @@ class Heroku:
             # change character array to normal array
             tolist = row['vehicle_velocity_GPS']
             if type(tolist) == list:
-                # loop to counter weird data
-                for velocity in tolist:
-                    if velocity > 100:
-                        tolist = row['vehicle_velocity_OBD']
-                # change integers to float
-                vel = np.array([float(i) for i in tolist])
-                kp = np.array([float(i) for i in row['kp']])
-                # append dot product of velocity divided by sum of % keypresses
-                vel_risk.append(np.dot(vel, kp)/np.sum(kp))
+                if len(tolist) > 2:
+                    # loop to counter weird data
+                    for velocity in tolist:
+                        if velocity > 100:
+                            tolist = row['vehicle_velocity_OBD']
+                    # change integers to float
+                    vel = np.array([float(i) for i in tolist])
+                    kp = np.array([float(i) for i in row['kp']])
+                    # append dot product of velocity divided by sum of % keypresses
+                    vel_risk.append(np.dot(vel, kp)/np.sum(kp))
+                else:
+                    vel_risk.append(['no data found'])
             else:
                 # if no velocity data was present, append this string
-                vel_risk.append('no data found')
+                vel_risk.append(['no data found'])
 
         df['velocity_risk'] = vel_risk
+        return df
+
+    def add_object_count(self, df, object_name):
+        """
+        add extra column to dataframe counting the frequency
+        of occurance of an object in each frame
+
+        Args:
+            df (dataframe): dataframe with data.
+            object_name: name of the object to count
+
+        Returns:
+            dataframe: updated dataframe.
+        """
+        col_data = []
+        # loop over dataframe
+        for index, row in df.iterrows():
+            entity_count_array = []
+            # loop over entity data of one video
+            for frame in ast.literal_eval(row['object_entities']):
+                entity_count = 0
+                # find all object data in each frame
+                for entity in frame.split('_'):
+                    # if entity is the requested object, up counter
+                    if entity == object_name:
+                        entity_count = entity_count + 1
+                # after going through one frame, append frame count
+                entity_count_array.append(entity_count)
+            # after going through one video, append array with all data
+            col_data.append(entity_count_array)
+
+        # add data to dataframe
+        col_name = object_name + '_count'
+        df[col_name] = col_data
         return df
 
     def verify_looking(self, df):
@@ -790,6 +821,30 @@ class Heroku:
         df['looking_fails'] = failedarray
         return df
 
+    def add_binary_data(self, df, col_name, key, new_col_name):
+        """Check for a certain key in rows
+
+        Args:
+            df: dataframe of mapping file
+            row: Which row to retrieve from
+            key: keyword of which to retrieve
+
+        Returns:
+            df: new dataframe with binary data of requested key
+        """
+        binary_data = []
+        # loop over rows in dataframe
+        for index, row in df.iterrows():
+            # if key is found in rows, then
+            if re.search(key, row[col_name]) is not None:
+                value = 0
+            else:
+                value = 1
+            binary_data.append(value)
+        # add data to mapping
+        df[new_col_name] = binary_data
+        return df
+
     def add_data_at_time(self, df, col, time_array):
 
         """retrieve column with data at a certain time.
@@ -814,13 +869,17 @@ class Heroku:
                 array = row[col]
                 # check if data is correctly perceived
                 if type(array) == list:
-                    data_array.append(array[vel_index])
+                    # check if correct data is contained in list
+                    if len(array) < 2:
+                        data_array.append(['no data found'])
+                    else:
+                        data_array.append(array[vel_index])
                 # create array if data is perceived as string
                 elif type(array) == str:
                     array = ast.literal_eval(array)
                     # Check if values exist in array
                     if len(array) < 2:
-                        data_array.append('no data found')
+                        data_array.append(['no data found'])
                     else:
                         data_array.append(array[vel_index])
 
