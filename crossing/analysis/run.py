@@ -78,8 +78,22 @@ if __name__ == '__main__':
         mapping = heroku.read_mapping()
         # process keypresses and update mapping
         mapping = heroku.process_kp()
+        # add count of specific object (pedestrian or vehicle)
+        mapping = heroku.add_object_count(mapping, 'person')
+        mapping = heroku.add_object_count(mapping, 'car')
         # check is velocity data is processed correctly to match kp
-        mapping = heroku.evaluate_velocity_bins(mapping)
+        mapping = heroku.evaluate_bins(mapping, 'vehicle_velocity_GPS')
+        mapping = heroku.evaluate_bins(mapping, 'vehicle_velocity_OBD')
+        mapping = heroku.evaluate_bins(mapping, 'dist_to_ped')
+        mapping = heroku.evaluate_bins(mapping, 'object_count')
+        mapping = heroku.evaluate_bins(mapping, 'object_surface')
+        mapping = heroku.evaluate_bins(mapping, 'person_count')
+        mapping = heroku.evaluate_bins(mapping, 'car_count')
+        # add binary data to mapping without specific keys
+        mapping = heroku.add_binary_data(mapping, 'traffic_rules',
+                                         'none', 'Traffic_rules_binary')
+        mapping = heroku.add_binary_data(mapping, 'cross_look',
+                                         'notCrossing', 'Crossing_binary')
         # add data at specific times
         mapping = heroku.add_data_at_time(mapping, 'kp',
                                           [7, 8, 9, 10, 11, 12, 13])
@@ -89,11 +103,12 @@ if __name__ == '__main__':
                                           [7, 8, 9, 10, 11, 12, 13])
         mapping = heroku.add_data_at_time(mapping, 'object_surface',
                                           [7, 8, 9, 10, 11, 12, 13])
+        mapping = heroku.add_data_at_time(mapping, 'car_count',
+                                          [7, 8, 9, 10, 11, 12, 13])
+        mapping = heroku.add_data_at_time(mapping, 'person_count',
+                                          [7, 8, 9, 10, 11, 12, 13])
         # add quantification of danger of velocity for each video
         mapping = heroku.process_velocity_risk(mapping)
-        # add keypresses at specific times
-        mapping = heroku.add_velocity_at_time(mapping,
-                                              [7, 8, 9, 10, 11, 12, 13])
         # post-trial questions to process
         questions = [{'question': 'risky_slider',
                       'type': 'num'},
@@ -115,7 +130,6 @@ if __name__ == '__main__':
         # calculate mean of eye contact
         mapping['EC-no-score'] = mapping['EC-no'] * 0
         mapping['EC-yes_but_too_late-score'] = mapping['EC-yes_but_too_late'] * 0.25  # noqa: E501
-        print(mapping['EC-yes_but_too_late-score'])
         mapping['EC-yes-score'] = mapping['EC-yes'] * 1
         mapping['EC_score'] = mapping[['EC-yes-score',
                                        'EC-yes_but_too_late-score',
@@ -135,29 +149,43 @@ if __name__ == '__main__':
         analysis = cs.analysis.Analysis()
         logger.info('Creating figures.')
         # all keypresses with confidence interval
-        analysis.plot_kp(mapping, conf_interval=0.95)
-        # keypresses of an individual stimulus
-        analysis.plot_kp_video(mapping, 'video_0', conf_interval=0.95)
-        # keypresses of all videos individually
-        analysis.plot_kp_videos(mapping)
-        # 1 var, all values
-        analysis.plot_kp_variable(mapping, 'traffic_rules')
-        # 1 var, certain values
-        analysis.plot_kp_variable(mapping,
-                                  'traffic_rules',
-                                  ['ped_crossing', 'stop_sign'])
+        # analysis.plot_kp(mapping, conf_interval=0.95)
+        # # keypresses of an individual stimulus
+        # analysis.plot_kp_video(mapping, 'video_0', conf_interval=0.95)
+        # # keypresses of all videos individually
+        # analysis.plot_kp_videos(mapping)
+        # # 1 var, all values
+        # analysis.plot_kp_variable(mapping, 'traffic_rules')
+        # # 1 var, certain values
+        # analysis.plot_kp_variable(mapping,
+        #                           'traffic_rules',
+        #                           ['ped_crossing', 'stop_sign'])
         # plot of multiple combined AND variables
-        analysis.plot_kp_variables_and(mapping,
-                                       plot_names=['traffic rules',
-                                                   'no traffic rules'],
-                                       variables_list=[[{'variable': 'traffic_rules',  # noqa: E501
-                                                         'value': 'stop_sign'},        # noqa: E501
-                                                        {'variable': 'traffic_rules',  # noqa: E501
-                                                         'value': 'traffic_lights'},   # noqa: E501
-                                                        {'variable': 'traffic_rules',  # noqa: E501
-                                                         'value': 'ped_crossing'}],    # noqa: E501
-                                                       [{'variable': 'traffic_rules',  # noqa: E501
-                                                         'value': 'none'}]])
+
+        analysis.plot_video_data(mapping, 'video_5',
+                                 ['vehicle_velocity_GPS', 'dist_to_ped'],
+                                 yaxis_title='Distance & velocity data',
+                                 conf_interval=0.95)
+
+        # for index, row in mapping.iterrows():
+        #     if type(row['dist_to_ped_at_10.0']) != str:
+        #         if row['dist_to_ped_at_10.0'] > 40:
+        #             vid = str(index)
+        #             analysis.plot_video_data(mapping, vid, ['vehicle_velocity_GPS', 'dist_to_ped'],  # noqa: E501
+        #                                 yaxis_title='Distance & velocity data', conf_interval=0.95)  # noqa: E501
+        # analysis.plot_video_data(mapping, 'video_50', ['vehicle_velocity_GPS','dist_to_ped'],        # noqa: E501
+        #                             yaxis_title='Distance & velocity data', conf_interval=0.95)      # noqa: E501
+        # analysis.plot_kp_variables_and(mapping,
+        #                                plot_names=['traffic rules',
+        #                                            'no traffic rules'],
+        #                                variables_list=[[{'variable': 'traffic_rules',  # noqa: E501
+        #                                                  'value': 'stop_sign'},        # noqa: E501
+        #                                                 {'variable': 'traffic_rules',  # noqa: E501
+        #                                                  'value': 'traffic_lights'},   # noqa: E501
+        #                                                 {'variable': 'traffic_rules',  # noqa: E501
+        #                                                  'value': 'ped_crossing'}],    # noqa: E501
+        #                                                [{'variable': 'traffic_rules',  # noqa: E501
+        #                                                  'value': 'none'}]])
         # plot of seperate variables
         # analysis.plot_kp_variables_or(mapping,
         #                               variables=[{'variable': 'cross_look',
@@ -177,8 +205,10 @@ if __name__ == '__main__':
                         'time_before_interaction', 'gesture', 'kp',
                         'look_frame_ms', 'cross_frame_ms', 'interaction',
                         'vehicle_velocity_OBD', 'vehicle_velocity_GPS',
-                        'EC-yes-score', 'EC-no-score',
-                        'EC-yes_but_too_late-score']
+                        'EC-yes-score', 'EC-no-score', 'dist_to_ped',
+                        'EC-yes_but_too_late-score', 'object_count',
+                        'object_surface', 'object_entities', 'person_count',
+                        'car_count']
         # set nan to -1
         df = mapping[(mapping['dist_to_ped_at_7.0'] != 'no data found')]
         df = df.fillna(-1)
@@ -189,8 +219,8 @@ if __name__ == '__main__':
         # create correlation matrix
         analysis.scatter_matrix(df,
                                 columns_drop=columns_drop,
-                                color='cross_look',
-                                symbol='cross_look',
+                                color='traffic_rules',
+                                symbol='traffic_rules',
                                 diagonal_visible=False,
                                 save_file=True)
         # stimulus duration
