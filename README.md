@@ -63,31 +63,31 @@ After running `python crossing-crowdsourcing/gazes/analysis/run.py`, a number of
 The correlation matrix that was created using the experimental parameters.
 
 <p float="left">
-  <img src="https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/public/img/ec-vs-kp.png?raw=true" width="480" />
-  <img src="https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/public/img/ec-vs-slider.png?raw=true" width="480" /> 
+  <img src="https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/public/img/ec-vs-kp.png?raw=true"/>
+  <img src="https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/public/img/ec-vs-slider.png?raw=true"/> 
 </p>
 Regression results for eye contact data
 
 <p float="left">
-  <img src="https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/public/img/objects-vs-kp.png?raw=true" width="480" />
-  <img src="https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/public/img/objects-vs-slider.png?raw=true" width="480" /> 
+  <img src="https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/public/img/objects-vs-kp.png?raw=true"/>
+  <img src="https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/public/img/objects-vs-slider.png?raw=true"/> 
 </p>
 
 <p float="left">
-  <img src="https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/public/img/objsurface-vs-kp.png?raw=true" width="480" />
-  <img src="https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/public/img/objsurface-vs-slider.png?raw=true" width="480" /> 
+  <img src="https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/public/img/objsurface-vs-kp.png?raw=true"/>
+  <img src="https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/public/img/objsurface-vs-slider.png?raw=true"/> 
 </p>
 Regression results for object data
 
 <p float="left">
-  <img src="https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/public/img/speed-vs-kp.png?raw=true" width="480" />
-  <img src="https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/public/img/speed-vs-slider.png?raw=true" width="480" /> 
+  <img src="https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/public/img/speed-vs-kp.png?raw=true"/>
+  <img src="https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/public/img/speed-vs-slider.png?raw=true"/> 
 </p>
 Regression results for vehicle speed
 
 <p float="left">
-  <img src="https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/public/img/distance-vs-kp.png?raw=true" width="480" />
-  <img src="https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/public/img/distance-vs-slider.png?raw=true" width="480" /> 
+  <img src="https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/public/img/distance-vs-kp.png?raw=true"/>
+  <img src="https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/public/img/distance-vs-slider.png?raw=true"/> 
 </p>
 Regression results for distance to the pedestrian
 
