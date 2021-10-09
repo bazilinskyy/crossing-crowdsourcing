@@ -59,7 +59,7 @@ Visualisations of how dynamic variables (keypresses, objects, velocity) change o
 ### Regression and correlation analysis
 After running `python crossing-crowdsourcing/gazes/analysis/run.py`, a number of plots should show up, including the results of the linear regression. The result of the correlation matrix, and linear regressions for eye contact, vehicle speed, vehicle distance, and object data are shown below:
 
-![Correlation matrix](https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/public/img/all_corr_matrix.png?raw=true)
+![Correlation matrix](https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/all_corr_matrix.png?raw=true)
 The correlation matrix that was created using the experimental parameters.
 
 <p float="left">
