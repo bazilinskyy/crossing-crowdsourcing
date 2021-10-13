@@ -45,8 +45,10 @@ Analysis can be started by running `python crossing-crowdsourcing/gazes/analysis
 
 Visualisations of how dynamic variables (keypresses, objects, velocity) change over time. An example for a single video is presented below in terms of keypress data, object data and vehicle speed:
 
-![Dynamic plot](https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/dynamic.gif?raw=true)
-
+<p float="left">
+  <img src="https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/dynamic.gif?raw=true" width="800"/></a>
+</p>
+            
 ### Regression and correlation analysis
 After running `python crossing-crowdsourcing/gazes/analysis/run.py`, a number of plots should show up, including the results of the linear regression. The result of the correlation matrix, and linear regressions for eye contact, vehicle speed, vehicle distance, and object data are shown below:
 
@@ -54,7 +56,7 @@ After running `python crossing-crowdsourcing/gazes/analysis/run.py`, a number of
 The correlation matrix that was created using the experimental parameters.
 
 <p float="left">
-  <img src="https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/ec-vs-kp.png?raw=true"/>
+  <img src="https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/dynamic_figures/communication.html?raw=true""/>
   <img src="https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/ec-vs-slider.png?raw=true"/> 
 </p>
 Regression results for eye contact data
