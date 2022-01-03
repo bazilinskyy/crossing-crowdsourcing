@@ -39,7 +39,7 @@ Data from appen is anonymised in the following way:
 2. IDs are anonymised by subtracting the given ID from `config.mask_id`.
 
 ## Analysis
-Analysis can be started by running `python crossing-crowdsourcing/gazes/analysis/run.py`. A number of csv files used data processing are saved in `crossing-crowdsourcing/_output`. Visualisations of all data were saved in `crossing-crowdsourcing/_output/figures/`.
+Analysis can be started by running `python crossing-crowdsourcing/crossing/run.py`. A number of csv files used data processing are saved in `crossing-crowdsourcing/_output`. Visualisations of all data were saved in `crossing-crowdsourcing/_output/figures/`.
 
 ### Visualisation
 
@@ -50,7 +50,7 @@ Visualisations of how dynamic variables (keypresses, objects, velocity) change o
 </p>
             
 ### Regression and correlation analysis
-After running `python crossing-crowdsourcing/gazes/analysis/run.py`, a number of plots should show up, including the results of the linear regression. The result of the correlation matrix, and linear regressions for eye contact, vehicle speed, vehicle distance, and object data are shown below:
+After running `python crossing-crowdsourcing/crossing/run.py`, a number of plots should show up, including the results of the linear regression. The result of the correlation matrix, and linear regressions for eye contact, vehicle speed, vehicle distance, and object data are shown below:
 
 ![Correlation matrix](https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/all_corr_matrix.png?raw=true)
 The correlation matrix that was created using the experimental parameters.
@@ -85,7 +85,7 @@ Regression results for vehicle speed
 Regression results for distance to the pedestrian
 
 ### Configuration of analysis
-Configuration of analysis needs to be defined in `gazes-crowdsourced/gazes/analysis/config`. Please use the `default.config` file for the required structure of the file. If no custom config file is provided, `default.config` is used. The config file has the following parameters:
+Configuration of analysis needs to be defined in `crossing-crowdsourcing/crossing/config`. Please use the `default.config` file for the required structure of the file. If no custom config file is provided, `default.config` is used. The config file has the following parameters:
 * `appen_job`: ID of the appen job.
 * `num_stimuli`: number of videos in the study.
 * `num_stimuli_participant`: amount of videos each participant watched
