@@ -7,6 +7,8 @@ Tested with Python 3.8.5. To setup the environment run these two commands in a p
 - `pip install -e crossing-crowdsourcing` will setup the project as a package accessible in the environment.
 - `pip install -r crossing-crowdsourcing/requirements.txt` will install required packages.
 
+For QA, the API key of appen needs to be places in file `crossing-crowdsourcing/secret`. The file needs to be formatted as `crossing-crowdsourcing/secret example`.
+
 ## Implementation on heroku
 We use [Heroku](https://www.heroku.com/) to host the node.js implementation. The demo of the implementation may be viewed [here](https://crossing-crowdsourced.herokuapp.com/?debug=1&save_data=0). Implementation supports images and/or videos as stimuli.
 
@@ -29,9 +31,9 @@ We use [appen](http://appen.com) to run a crowdsourcing job. You need to create 
 Data from appen is filtered based on the following criteria:
 1. People who did not read instructions.
 2. People who are younger than 18 years of age.
-3. People who completed the study in under `config.allowed_min_time` min.::vpanel
+3. People who completed the study in under `config.allowed_min_time`.
 4. People who completed the study from the same IP more than once (the 1st data entry is retained).
-5. People who used the same `worker_code` multiple times. One of the disadvantages of crowdsourcing is having to deal with workers that accept and do crowdsourcing jobs just for money (i.e., `cheaters`). The framework offers filtering mechanisms to remove data from such people from the dataset used for the analysis. Cheaters can be reported from the `crossing.qa.QA` class. It also rejects rows of data from cheaters in appen data and triggers appen to acquire more data to replace the filtered rows.
+5. People who used the same `worker_code` multiple times. One of the disadvantages of crowdsourcing is having to deal with workers that accept and do crowdsourcing jobs just for money (i.e., `cheaters`). The framework offers filtering mechanisms to remove data from such people from the dataset used for the analysis. Cheaters can be reported from the `crossing.analysis.QA` class. It also rejects rows of data from cheaters in appen data and triggers appen to acquire more data to replace the filtered rows.
 
 ### Anonymisation of data
 Data from appen is anonymised in the following way:
@@ -39,10 +41,9 @@ Data from appen is anonymised in the following way:
 2. IDs are anonymised by subtracting the given ID from `config.mask_id`.
 
 ## Analysis
-Analysis can be started by running `python crossing-crowdsourcing/crossing/run.py`. A number of csv files used data processing are saved in `crossing-crowdsourcing/_output`. Visualisations of all data were saved in `crossing-crowdsourcing/_output/figures/`.
+Analysis can be started by running `python crossing-crowdsourcing/crossing/run.py`. A number of CSV files used for data processing are saved in `crossing-crowdsourcing/_output`. Visualisations of all data are saved in `crossing-crowdsourcing/_output/figures/`.
 
 ### Visualisation
-
 Visualisations of how dynamic variables (keypresses, objects, velocity) change over time. An example for a single video is presented below in terms of keypress data, object data and vehicle speed:
 
 <p float="left">
@@ -98,9 +99,9 @@ Configuration of analysis needs to be defined in `crossing-crowdsourcing/crossin
 * `mask_id`: number for masking worker IDs in appen data.
 * `files_heroku`: files with data from heroku.
 * `file_appen`: file with data from appen.
-* `file_cheaters`: csv file with cheaters for flagging.
+* `file_cheaters`: CSV file with cheaters for flagging.
 * `path_stimuli`: path consisting of all videos included in the survey.
-* `mapping_stimuli`: csv file that contains all data found in the videos.
+* `mapping_stimuli`: CSV file that contains all data found in the videos.
 * `plotly_template`: template used to make graphs in the analysis.
 
 ## Troubleshooting
