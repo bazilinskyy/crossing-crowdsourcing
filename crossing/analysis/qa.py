@@ -40,13 +40,13 @@ class QA:
                       str(row['worker_id']) + \
                       '.json'
             if not pd.isna(row['worker_code']):
-                flag_text = 'User repeatidly ignored our instructions and ' \
+                flag_text = 'User repeatedly ignored our instructions and ' \
                             + 'joined job from different accounts/IP ' \
                             + 'addresses. The same code ' \
                             + str(row['worker_code']) \
                             + ' used internally in the job was reused.'
             else:
-                flag_text = 'User repeatidly ignored our instructions and ' \
+                flag_text = 'User repeatedly ignored our instructions and ' \
                             + 'joined job from different accounts/IP ' \
                             + 'addresses. No worker code used internally  ' \
                             + 'was inputted (html regex validator was ' \
