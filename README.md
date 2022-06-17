@@ -57,9 +57,12 @@ After running `python crossing-crowdsourcing/crossing/run.py`, a number of plots
 The correlation matrix that was created using the experimental parameters.
 
 <p float="left">
-  <img src="https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/dynamic_figures/communication.html?raw=true""/>
+  <img src="https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/dynamic_figures/communication.html?raw=true"/>
   <img src="https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/ec-vs-slider.png?raw=true"/> 
 </p>
+
+[![regression results for eye contact data](figures/ec-vs-slider.png)](https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/dynamic_figures/scatter_ec_driver-ec_pedestrian.html?raw=true)
+
 Regression results for eye contact data
 
 <p float="left">
