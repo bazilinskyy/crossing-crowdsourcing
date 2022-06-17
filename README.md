@@ -44,20 +44,24 @@ Data from appen is anonymised in the following way:
 Analysis can be started by running `python crossing-crowdsourcing/crossing/run.py`. A number of CSV files used for data processing are saved in `crossing-crowdsourcing/_output`. Visualisations of all data are saved in `crossing-crowdsourcing/_output/figures/`.
 
 ### Visualisation
+All static figures below link to their corresponding dynamic and clickable versions in html format.
 
 ![change of keypresses, objects, velocity over time](https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/dynamic.gif?raw=true)
-
 Visualisation of how dynamic variables (keypresses, objects, velocity) change over time.
 
-            
-### Regression and correlation analysis
-
+#### Correlation matrix
 ![Correlation matrix](https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/all_corr_matrix.jpg?raw=true)
-Correlation matrix
+Correlation matrix.
 
+#### Keypress data
 [![keypresses for all videos](figures/kp.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/dynamic_figures/kp.html)
-Keypresses for all videos
+Average keypresses for all videos.
 
+[![keypresses for individual videos](figures/kp_videos.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/dynamic_figures/kp_videos.html)
+Individual keypresses for all videos.
+
+[![keypresses for one video](figures/kp_video_0.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/dynamic_figures/kp_video_0.html)
+Keypresses for one selected video (video_0).
 
 ### Configuration of analysis
 Configuration of analysis needs to be defined in `crossing-crowdsourcing/crossing/config`. Please use the `default.config` file for the required structure of the file. If no custom config file is provided, `default.config` is used. The config file has the following parameters:
