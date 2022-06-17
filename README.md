@@ -50,8 +50,11 @@ All static figures below link to their corresponding dynamic and clickable versi
 Visualisation of how dynamic variables (keypresses, objects, velocity) change over time.
 
 #### Correlation matrix
-![Correlation matrix](https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/all_corr_matrix.jpg?raw=true)  
+![correlation matrix](https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/all_corr_matrix.jpg?raw=true)  
 Correlation matrix.
+
+[![scatter matrix](figures/scatter_matrix.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/scatter_matrix.html)  
+Scatter matrix.
 
 #### Keypress data
 [![keypresses for all videos](figures/kp.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/kp.html)  
