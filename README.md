@@ -54,13 +54,13 @@ Visualisation of how dynamic variables (keypresses, objects, velocity) change ov
 Correlation matrix.
 
 #### Keypress data
-[![keypresses for all videos](figures/kp.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/dynamic_figures/kp.html)
+[![keypresses for all videos](figures/kp.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/kp.html)
 Average keypresses for all videos.
 
-[![keypresses for individual videos](figures/kp_videos.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/dynamic_figures/kp_videos.html)
+[![keypresses for individual videos](figures/kp_videos.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/kp_videos.html)
 Individual keypresses for all videos.
 
-[![keypresses for one video](figures/kp_video_0.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/dynamic_figures/kp_video_0.html)
+[![keypresses for one video](figures/kp_video_0.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/kp_video_0.html)
 Keypresses for one selected video (video_0).
 
 ### Configuration of analysis
