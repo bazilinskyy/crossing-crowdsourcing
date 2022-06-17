@@ -61,7 +61,8 @@ The correlation matrix that was created using the experimental parameters.
   <img src="https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/ec-vs-slider.png?raw=true"/> 
 </p>
 
-[![regression results for eye contact data](figures/ec-vs-slider.png)](https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/dynamic_figures/scatter_ec_driver-ec_pedestrian.html?raw=true)
+[![regression results for eye contact data](figures/ec-vs-slider.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/dynamic_figures/scatter_ec_driver-ec_pedestrian.html
+)
 
 Regression results for eye contact data
 
