@@ -63,6 +63,12 @@ Individual keypresses for all videos.
 [![keypresses for one video](figures/kp_video_0.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/kp_video_0.html)  
 Keypresses for one selected video (video_0).
 
+[![keypresses for traffic rules](figures/kp_and_traffic_rules.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/kp_and_traffic_rules.html)  
+Keypresses in relation to traffic rules.
+
+[![keypresses for traffic signs](figures/kp_or_cross_look-Crossing_Looking_cross_look-notCrossing_Looking_cross_look-Crossing_notLooking_cross_look-nonspecific.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/kp_or_cross_look-Crossing_Looking_cross_look-notCrossing_Looking_cross_look-Crossing_notLooking_cross_look-nonspecific.html)  
+Keypresses in relation to the traffic signs.
+
 ### Configuration of analysis
 Configuration of analysis needs to be defined in `crossing-crowdsourcing/crossing/config`. Please use the `default.config` file for the required structure of the file. If no custom config file is provided, `default.config` is used. The config file has the following parameters:
 * `appen_job`: ID of the appen job.
