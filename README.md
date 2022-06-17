@@ -46,6 +46,7 @@ Analysis can be started by running `python crossing-crowdsourcing/crossing/run.p
 ### Visualisation
 
 ![change of keypresses, objects, velocity over time](https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/dynamic.gif?raw=true)
+
 Visualisation of how dynamic variables (keypresses, objects, velocity) change over time.
 
             
@@ -59,33 +60,8 @@ Correlation matrix
   <img src="https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/ec-vs-slider.png?raw=true"/> 
 </p>
 
-[![regression results for eye contact data](figures/ec-vs-slider.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/dynamic_figures/scatter_ec_driver-ec_pedestrian.html
-)
+[![keypresses for all videos](figures/kp.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/dynamic_figures/kp.html)
 
-Regression results for eye contact data
-
-<p float="left">
-  <img src="https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/object-vs-kp.png?raw=true"/>
-  <img src="https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/object-vs-slider.png?raw=true"/> 
-</p>
-
-<p float="left">
-  <img src="https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/objsurface-vs-kp.png?raw=true"/>
-  <img src="https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/objsurface-vs-slider.png?raw=true"/> 
-</p>
-Regression results for object data
-
-<p float="left">
-  <img src="https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/speed-vs-kp.png?raw=true"/>
-  <img src="https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/speed-vs-slider.png?raw=true"/> 
-</p>
-Regression results for vehicle speed
-
-<p float="left">
-  <img src="https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/distance-vs-kp.png?raw=true"/>
-  <img src="https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/distance-vs-slider.png?raw=true"/> 
-</p>
-Regression results for distance to the pedestrian
 
 ### Configuration of analysis
 Configuration of analysis needs to be defined in `crossing-crowdsourcing/crossing/config`. Please use the `default.config` file for the required structure of the file. If no custom config file is provided, `default.config` is used. The config file has the following parameters:
