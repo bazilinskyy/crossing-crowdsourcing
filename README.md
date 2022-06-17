@@ -53,11 +53,9 @@ Visualisation of how dynamic variables (keypresses, objects, velocity) change ov
 ### Regression and correlation analysis
 
 ![Correlation matrix](https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/all_corr_matrix.jpg?raw=true)
-
 Correlation matrix
 
 [![keypresses for all videos](figures/kp.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/dynamic_figures/kp.html)
-
 Keypresses for all videos
 
 
