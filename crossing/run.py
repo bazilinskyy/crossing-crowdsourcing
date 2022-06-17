@@ -165,13 +165,6 @@ if __name__ == '__main__':
                                  ['vehicle_velocity_GPS', 'dist_to_ped'],
                                  yaxis_title='Distance & velocity data',
                                  conf_interval=0.95)
-
-        # for index, row in mapping.iterrows():
-        #     if type(row['dist_to_ped_at_10.0']) != str:
-        #         if row['dist_to_ped_at_10.0'] > 40:
-        #             vid = str(index)
-        #             analysis.plot_video_data(mapping, vid, ['vehicle_velocity_GPS', 'dist_to_ped'],  # noqa: E501
-        #                                      yaxis_title='Distance & velocity data', conf_interval=0.95)  # noqa: E501
         analysis.plot_video_data(mapping, 'video_50', ['vehicle_velocity_GPS', 'dist_to_ped'],  # noqa: E501
                                  yaxis_title='Distance & velocity data', conf_interval=0.95)  # noqa: E501
         analysis.plot_kp_variables_and(mapping,
@@ -185,7 +178,7 @@ if __name__ == '__main__':
                                                          'value': 'ped_crossing'}],    # noqa: E501
                                                        [{'variable': 'traffic_rules',  # noqa: E501
                                                          'value': 'none'}]])
-        # plot of seperate variables
+        # plot of separate variables
         analysis.plot_kp_variables_or(mapping,
                                       variables=[{'variable': 'cross_look',
                                                   'value': 'Crossing_Looking'},     # noqa: E501
@@ -346,7 +339,7 @@ if __name__ == '__main__':
                          # xaxis_range=[-10, 100],
                          # yaxis_range=[-1, 20],
                          save_file=True)
-        # create plots of velocity vs eye contact
+        # scatter of velocity vs eye contact
         analysis.scatter(mapping[(mapping['cross_look'] != 'notCrossing_Looking') &  # noqa: E501
                                  (mapping['cross_look'] != 'notCrossing_notLooking') &  # noqa: E501
                                  (mapping['velocity_risk'] != 'No velocity data found')],  # noqa: E501
