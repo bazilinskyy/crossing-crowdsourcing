@@ -56,12 +56,9 @@ Visualisation of how dynamic variables (keypresses, objects, velocity) change ov
 
 Correlation matrix
 
-<p float="left">
-  <img src="https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/dynamic_figures/communication.html?raw=true"/>
-  <img src="https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/ec-vs-slider.png?raw=true"/> 
-</p>
-
 [![keypresses for all videos](figures/kp.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/dynamic_figures/kp.html)
+
+Keypresses for all videos
 
 
 ### Configuration of analysis
