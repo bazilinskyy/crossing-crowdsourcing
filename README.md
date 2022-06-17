@@ -44,17 +44,15 @@ Data from appen is anonymised in the following way:
 Analysis can be started by running `python crossing-crowdsourcing/crossing/run.py`. A number of CSV files used for data processing are saved in `crossing-crowdsourcing/_output`. Visualisations of all data are saved in `crossing-crowdsourcing/_output/figures/`.
 
 ### Visualisation
-Visualisations of how dynamic variables (keypresses, objects, velocity) change over time. An example for a single video is presented below in terms of keypress data, object data and vehicle speed:
 
-<p float="left">
-  <img src="https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/dynamic.gif?raw=true" width="800"/></a>
-</p>
+![change of keypresses, objects, velocity over time](https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/dynamic.gif?raw=true)
+Visualisation of how dynamic variables (keypresses, objects, velocity) change over time.
+
             
 ### Regression and correlation analysis
-After running `python crossing-crowdsourcing/crossing/run.py`, a number of plots should show up, including the results of the linear regression. The result of the correlation matrix, and linear regressions for eye contact, vehicle speed, vehicle distance, and object data are shown below:
 
 ![Correlation matrix](https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/all_corr_matrix.png?raw=true)
-The correlation matrix that was created using the experimental parameters.
+Correlation matrix
 
 <p float="left">
   <img src="https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/dynamic_figures/communication.html?raw=true"/>
