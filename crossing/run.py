@@ -289,7 +289,7 @@ if __name__ == '__main__':
                      show_all_xticks=True,
                      xaxis_title='Video ID',
                      yaxis_title='% participants that wrongly' +
-                                 'indicated looking behaviour',
+                                 ' indicated looking behaviour',
                      save_file=True)
         # post-trial questions. bar chart for eye contact
         analysis.bar(mapping,

@@ -49,7 +49,7 @@ All static figures below link to their corresponding dynamic and clickable versi
 ![change of keypresses, objects, velocity over time](https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/dynamic.gif?raw=true)  
 Visualisation of how dynamic variables (keypresses, objects, velocity) change over time.
 
-#### Correlation matrix
+#### Correlation and scatter matrices
 ![correlation matrix](https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/all_corr_matrix.jpg?raw=true)  
 Correlation matrix.
 
@@ -64,13 +64,70 @@ Average keypresses for all videos.
 Individual keypresses for all videos.
 
 [![keypresses for one video](figures/kp_video_0.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/kp_video_0.html)  
-Keypresses for one selected video (video_0).
+Keypresses for a selected video (video_0).
 
 [![keypresses for traffic rules](figures/kp_and_traffic_rules.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/kp_and_traffic_rules.html)  
 Keypresses in relation to traffic rules.
 
 [![keypresses for traffic signs](figures/kp_or_cross_look-Crossing_Looking_cross_look-notCrossing_Looking_cross_look-Crossing_notLooking_cross_look-nonspecific.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/kp_or_cross_look-Crossing_Looking_cross_look-notCrossing_Looking_cross_look-Crossing_notLooking_cross_look-nonspecific.html)  
 Keypresses in relation to the traffic signs.
+
+#### Communication
+[![communication](figures/communication.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/communication.html)  
+Communication.
+
+#### Distance to pedestrian
+[![distance to pedestrian for video 5](figures/video_data_video_5.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/video_data_video_5.html)  
+Distance to pedestrian over speed for a selected video (video_5).
+
+[![distance to pedestrian for video 5](figures/video_data_video_50.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/video_data_video_50.html)  
+Distance to pedestrian over speed for a selected video (video_50).
+
+#### Risk
+[![risk score](figures/bar_risky_slider_video_0-video_1-video_2-video_3-video_4-video_5-video_6-video_7-video_8-video_9-video_10-video_11-video_12-video_13-video_14-video_15-video_16-video_17-video_18-video_19-video.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/bar_risky_slider_video_0-video_1-video_2-video_3-video_4-video_5-video_6-video_7-video_8-video_9-video_10-video_11-video_12-video_13-video_14-video_15-video_16-video_17-video_18-video_19-video.html)  
+Risk score for individual videos.
+
+[![relationship between eye contact and risk score](figures/scatter_EC_score-risky_slider.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/scatter_EC_score-risky_slider.html)  
+Relationship between eye contact and risk score.
+
+[![relationship between velocity and risk score](figures/scatter_velocity_risk-risky_slider.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/scatter_velocity_risk-risky_slider.html)  
+Relationship between car velocity and risk score.
+
+#### Eye contact
+[![eye contact score](figures/bar_EC-yes-EC-yes_but_too_late-EC-no-EC-i_don't_know_video_0-video_1-video_2-video_3-video_4-video_5-video_6-video_7-video_8-video_9-video_10-video_11-video_12-video_13-video_14-video_15-video.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/bar_EC-yes-EC-yes_but_too_late-EC-no-EC-i_don't_know_video_0-video_1-video_2-video_3-video_4-video_5-video_6-video_7-video_8-video_9-video_10-video_11-video_12-video_13-video_14-video_15-video.html)  
+Eye contact score.
+
+[![wrong eye contact](figures/bar_looking_fails_video_0-video_1-video_2-video_3-video_4-video_5-video_6-video_7-video_8-video_9-video_10-video_11-video_12-video_13-video_14-video_15-video_16-video_17-video_18-video_19-vide.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/bar_looking_fails_video_0-video_1-video_2-video_3-video_4-video_5-video_6-video_7-video_8-video_9-video_10-video_11-video_12-video_13-video_14-video_15-video_16-video_17-video_18-video_19-vide.html)  
+Percentage of participants that wrongly indicated looking behaviour.
+
+#### Information on participants
+[![driving frequency](figures/hist_driving_freq.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/hist_driving_freq.html)  
+Driving frequency.
+
+[![driving behaviour questionnaire](figures/hist_dbq1_anger-dbq2_speed_motorway-dbq3_speed_residential-dbq4_headway-dbq5_traffic_lights-dbq6_horn-dbq7_mobile.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/hist_dbq1_anger-dbq2_speed_motorway-dbq3_speed_residential-dbq4_headway-dbq5_traffic_lights-dbq6_horn-dbq7_mobile.html)  
+Driving behaviour questionnaire (DBQ).
+
+[![time of participation](figures/hist_time.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/hist_time.html)  
+Time of participation.
+
+[![map of counts of participants](figures/map_counts.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/map_counts.html)  
+Map of counts of participants.
+
+[![map of years of having a license](figures/map_year_license.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/map_year_license.html)  
+Map of years of having a license.
+
+[![map of prediction of year of introduction of automated cars](figures/map_year_ad.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/map_year_ad.html)  
+Map of prediction of the year of introduction of automated cars in the country of residence.
+
+[![map of age](figures/map_age.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/map_age.html)  
+Map of age of participants.
+
+[![map of gender](figures/map_gender.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/map_gender.html)  
+Map of distribution of gender.
+
+#### Technical characteristics of participants
+[![dimensions of browser](figures/scatter_window_width-window_height.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/scatter_window_width-window_height.html)  
+Dimensions of browser.
 
 ### Configuration of analysis
 Configuration of analysis needs to be defined in `crossing-crowdsourcing/crossing/config`. Please use the `default.config` file for the required structure of the file. If no custom config file is provided, `default.config` is used. The config file has the following parameters:
