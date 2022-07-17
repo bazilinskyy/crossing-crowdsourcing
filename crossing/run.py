@@ -102,7 +102,6 @@ if __name__ == '__main__':
                                          'urbs', 'Urbs')
         mapping = heroku.add_binary_data(mapping, False, 'district',
                                          'outskirt', 'Outskirts')
-         
         mapping = heroku.add_binary_data(mapping, False, 'traffic_rules',
                                          'ped_crossing', 'pedestrian crossing')
         mapping = heroku.add_binary_data(mapping, False, 'traffic_rules',
@@ -426,7 +425,7 @@ if __name__ == '__main__':
         # scatter plot of risk and eye contact without traffic rules involved
         analysis.scatter_mult(mapping,
                               x=['EC-yes',
-                                 'EC-yes_but_too_late', 
+                                 'EC-yes_but_too_late',
                                  'EC-no',
                                  'EC-i_don\'t_know'],
                               y='risky_slider',
@@ -448,7 +447,7 @@ if __name__ == '__main__':
         # contact
         analysis.scatter_mult(mapping,
                               x=['EC-yes',
-                                  'EC-yes_but_too_late', 
+                                  'EC-yes_but_too_late',
                                   'EC-no',
                                   'EC-i_don\'t_know'],
                               y='avg_kp',
@@ -462,7 +461,7 @@ if __name__ == '__main__':
         # todo: add comment
         analysis.scatter_mult(mapping,
                               x=['EC-yes',
-                                 'EC-yes_but_too_late', 
+                                 'EC-yes_but_too_late',
                                  'EC-no',
                                  'EC-i_don\'t_know'],
                               y='risky_slider',
