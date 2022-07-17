@@ -90,10 +90,25 @@ if __name__ == '__main__':
         mapping = heroku.evaluate_bins(mapping, 'person_count')
         mapping = heroku.evaluate_bins(mapping, 'car_count')
         # add binary data to mapping without specific keys
-        mapping = heroku.add_binary_data(mapping, 'traffic_rules',
-                                         'none', 'Traffic_rules_binary')
-        mapping = heroku.add_binary_data(mapping, 'cross_look',
-                                         'notCrossing', 'Crossing_binary')
+        mapping = heroku.add_binary_data(mapping, True, 'traffic_rules',
+                                         'none', 'Traffic_rules')
+        mapping = heroku.add_binary_data(mapping, True, 'cross_look',
+                                         'notCrossing', 'Crossing')
+        mapping = heroku.add_binary_data(mapping, True, 'cross_look',
+                                         'notLooking', 'Looking')
+        mapping = heroku.add_binary_data(mapping, False, 'district',
+                                         'suburbs', 'Suburbs')
+        mapping = heroku.add_binary_data(mapping, False, 'district',
+                                         'urbs', 'Urbs')
+        mapping = heroku.add_binary_data(mapping, False, 'district',
+                                         'outskirt', 'Outskirts')
+         
+        mapping = heroku.add_binary_data(mapping, False, 'traffic_rules',
+                                         'ped_crossing', 'pedestrian crossing')
+        mapping = heroku.add_binary_data(mapping, False, 'traffic_rules',
+                                         'stop_sign', 'stop sign')
+        mapping = heroku.add_binary_data(mapping, False, 'traffic_rules',
+                                         'traffic_lights', 'traffic lights')
         # add data at specific times
         mapping = heroku.add_data_at_time(mapping, 'kp',
                                           [7, 8, 9, 10, 11, 12, 13])
@@ -108,6 +123,16 @@ if __name__ == '__main__':
         mapping = heroku.add_data_at_time(mapping, 'person_count',
                                           [7, 8, 9, 10, 11, 12, 13])
         # add quantification of danger of velocity for each video
+        mapping = heroku.add_avg(mapping, 'kp', 'kp')
+        mapping = heroku.add_avg(mapping, 'vehicle_velocity_GPS', 'velocity')
+        mapping = heroku.add_avg(mapping, 'object_count', 'object')
+        mapping = heroku.add_avg(mapping, 'person_count', 'person')
+        mapping = heroku.add_avg(mapping, 'car_count', 'car')
+        mapping = heroku.add_avg(mapping, 'object_surface', 'obj_surface')
+        mapping = heroku.add_cols_avg(mapping,
+                                      ['dist_at_9', 'dist_at_10', 'dist_at_11'],  # noqa: E501
+                                      'dist')
+        # add quantification of danger of velocity for each video
         mapping = heroku.process_velocity_risk(mapping)
         # post-trial questions to process
         questions = [{'question': 'risky_slider',
@@ -117,12 +142,12 @@ if __name__ == '__main__':
                       'options': ['Yes',
                                   'Yes but too late',
                                   'No',
-                                  "I don't know"]}]
+                                  'I don\'t know']}]
         # process post-trial questions and update mapping
         mapping = heroku.process_stimulus_questions(questions)
         mapping.rename(columns={'eye-contact-yes_but_too_late': 'EC-yes_but_too_late',  # noqa: E501
                                 'eye-contact-yes': 'EC-yes',
-                                "eye-contact-i_don't_know": "EC-i_don't_know",
+                                'eye-contact-i_don\'t_know': 'EC-i_don\'t_know',  # noqa: E501
                                 'eye-contact-no': 'EC-no'},
                        inplace=True)
         # add percentage of participants who wrongly indicated looking data
@@ -264,6 +289,41 @@ if __name__ == '__main__':
                       x=['driving_freq'],
                       pretty_text=True,
                       save_file=True)
+        # histogram for the year of license
+        analysis.hist(appen_data,
+                      x=['year_license'],
+                      pretty_text=True,
+                      save_file=True)
+        # histogram for the mode of transportation
+        analysis.hist(appen_data,
+                      x=['mode_transportation'],
+                      pretty_text=True,
+                      save_file=True)
+        # histogram for the input device
+        analysis.hist(appen_data,
+                      x=['device'],
+                      pretty_text=True,
+                      save_file=True)
+        # histogram for milage
+        analysis.hist(appen_data,
+                      x=['milage'],
+                      pretty_text=True,
+                      save_file=True)
+        # histogram for the place of participant
+        analysis.hist(appen_data,
+                      x=['place'],
+                      pretty_text=True,
+                      save_file=True)
+        # histogram for the eye contact of driver
+        analysis.hist(appen_data,
+                      x=['ec_driver'],
+                      pretty_text=True,
+                      save_file=True)
+        # histogram for the eye contact of pedestrian
+        analysis.hist(appen_data,
+                      x=['ec_pedestrian'],
+                      pretty_text=True,
+                      save_file=True)
         # grouped barchart of DBQ data
         analysis.hist(appen_data,
                       x=['dbq1_anger',
@@ -296,7 +356,7 @@ if __name__ == '__main__':
                      y=['EC-yes',
                         'EC-yes_but_too_late',
                         'EC-no',
-                        "EC-i_don't_know"],
+                        'EC-i_don\'t_know'],
                      stacked=True,
                      show_all_xticks=True,
                      xaxis_title='Video ID',
@@ -328,7 +388,7 @@ if __name__ == '__main__':
                                      'EC-yes',
                                      'EC-yes_but_too_late',
                                      'EC-no',
-                                     "EC-i_don't_know",
+                                     'EC-i_don\'t_know',
                                      'cross_look',
                                      'traffic_rules'],
                          # pretty_text=True,
@@ -353,7 +413,7 @@ if __name__ == '__main__':
                                      'EC-yes',
                                      'EC-yes_but_too_late',
                                      'EC-no',
-                                     "EC-i_don't_know",
+                                     'EC-i_don\'t_know',
                                      'cross_look',
                                      'traffic_rules'],
                          # pretty_text=True,
@@ -362,6 +422,118 @@ if __name__ == '__main__':
                                      + '(0-100)',
                          # xaxis_range=[-10, 100],
                          # yaxis_range=[-1, 20],
+                         save_file=True)
+        # scatter plot of risk and eye contact without traffic rules involved
+        analysis.scatter_mult(mapping,
+                              x=['EC-yes',
+                                 'EC-yes_but_too_late', 
+                                 'EC-no',
+                                 'EC-i_don\'t_know'],
+                              y='risky_slider',
+                              trendline='ols',
+                              hover_data=['risky_slider',
+                                          'EC-yes',
+                                          'EC-yes_but_too_late',
+                                          'EC-no',
+                                          'EC-i_don\'t_know',
+                                          'cross_look',
+                                          'traffic_rules'],
+                              xaxis_title='Subjective eye contact (n)',
+                              yaxis_title='Mean risk slider'
+                                          + ' (0-100)',
+                              marginal_x='rug',
+                              marginal_y=None,
+                              save_file=True)
+        # scatter plot of risk and percentage of participants indicating eye
+        # contact
+        analysis.scatter_mult(mapping,
+                              x=['EC-yes',
+                                  'EC-yes_but_too_late', 
+                                  'EC-no',
+                                  'EC-i_don\'t_know'],
+                              y='avg_kp',
+                              trendline='ols',
+                              xaxis_title='Percentage of participants indicating eye contact (%)',  # noqa: E501
+                              yaxis_title='Mean keypresses'
+                                          + ' (%)',
+                              marginal_y=None,
+                              marginal_x='rug',
+                              save_file=True)
+        # todo: add comment
+        analysis.scatter_mult(mapping,
+                              x=['EC-yes',
+                                 'EC-yes_but_too_late', 
+                                 'EC-no',
+                                 'EC-i_don\'t_know'],
+                              y='risky_slider',
+                              trendline='ols',
+                              xaxis_title='Percentage of participants indicating eye contact (%)',  # noqa: E501
+                              yaxis_title='Mean risk slider'
+                                          + '(0-100)',
+                              marginal_y=None,
+                              marginal_x='rug',
+                              save_file=True)
+        # todo: add comment
+        analysis.scatter(mapping[mapping['Mean distance to the pedestrian'] != ''],  # noqa: E501
+                         x='avg_dist',
+                         y='risky_slider',
+                         trendline='ols',
+                         xaxis_title='Mean distance to pedestrian (m)',
+                         yaxis_title='Mean risk slider'
+                                     + '(0-100)',
+                         marginal_x='rug',
+                         save_file=True)
+        # todo: add comment
+        analysis.scatter(mapping[mapping['Mean distance to the pedestrian'] != ''],  # noqa: E501
+                         x='avg_velocity',
+                         y='avg_kp',
+                         trendline='ols',
+                         xaxis_title='Mean speed of the vehicle (km/h)',
+                         yaxis_title='Mean risk slider'
+                                     + '(0-100)',
+                         marginal_x='rug',
+                         save_file=True)
+        # todo: add comment
+        analysis.scatter_mult(mapping[mapping['Mean pedestrian count'] != ''],     # noqa: E501
+                              x=['avg_object', 'avg_person', 'avg_car'],
+                              y='risky_slider',
+                              trendline='ols',
+                              xaxis_title='Object count',
+                              yaxis_title='Mean risk slider'
+                                          + '(0-100)',
+                              marginal_y=None,
+                              marginal_x='rug',
+                              save_file=True)
+        # todo: add comment
+        analysis.scatter_mult(mapping[mapping['Mean pedestrian count'] != ''],     # noqa: E501
+                              x=['avg_object', 'avg_person', 'avg_car'],
+                              y='avg_kp',
+                              trendline='ols',
+                              xaxis_title='Object count',
+                              yaxis_title='Mean keypresses'
+                                          + ' (%)',
+                              marginal_y=None,
+                              marginal_x='rug',
+                              save_file=True)
+        # todo: add comment
+        analysis.scatter(mapping[mapping['Mean object surface'] != ''],    # noqa: E501
+                         x='avg_object',
+                         y='avg_kp',
+                         trendline='ols',
+                         xaxis_title='Mean object surface (0-1)',
+                         yaxis_title='Mean keypresses'
+                                     + ' (%)',
+                         marginal_x='rug',
+                         save_file=True)
+        # todo: add comment
+        analysis.scatter(mapping[mapping['Mean object surface'] != ''],    # noqa: E501
+                         x='avg_obj_surface',
+                         y='risky_slider',
+                         trendline='ols',
+                         xaxis_title='Mean object surface (0-1)',
+                         yaxis_title='Mean risk slider'
+                                     + '(0-100)',
+                         marginal_x='rug',
                          save_file=True)
         # map of participants
         analysis.map(countries_data, color='counts', save_file=True)

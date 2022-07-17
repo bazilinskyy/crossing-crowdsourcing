@@ -317,7 +317,7 @@ class Analysis:
                 xaxis_title=None, yaxis_title=None, xaxis_range=None,
                 yaxis_range=None, save_file=True):
         """
-        Output scatter plot of variables x and y with optinal assignment of
+        Output scatter plot of variables x and y with optional assignment of
         colour and size.
 
         Args:
@@ -415,6 +415,123 @@ class Analysis:
         if save_file:
             self.save_plotly(fig,
                              'scatter_' + x + '-' + y,
+                             self.folder)
+        # open it in localhost instead
+        else:
+            fig.show()
+
+    def scatter_mult(self, df, x, y, color=None, symbol=None,
+                     text=None, trendline=None, hover_data=None,
+                     marker_size=None, pretty_text=False, marginal_x='violin',
+                     marginal_y='violin', xaxis_title=None, yaxis_title=None,
+                     xaxis_range=None, yaxis_range=None, save_file=True):
+        """
+        Output scatter plot of multiple variables x and y with optional
+        assignment of colour and size.
+
+        Args:
+            df (dataframe): dataframe with data from heroku.
+            x (str): dataframe columns to plot on x axis.
+            y (str): dataframe column to plot on y axis.
+            symbol (str, optional): dataframe column to assign symbol of
+                                    points.
+            text (str, optional): dataframe column to assign text labels.
+            trendline (str, optional): trendline. Can be 'ols', 'lowess'
+            hover_data (list, optional): dataframe columns to show on hover.
+            marker_size (int, optional): size of marker. Should not be used
+                                         together with size argument.
+            pretty_text (bool, optional): prettify ticks by replacing _ with
+                                          spaces and capitilisng each value.
+            marginal_x (str, optional): type of marginal on x axis. Can be
+                                        'histogram', 'rug', 'box', or 'violin'.
+            marginal_y (str, optional): type of marginal on y axis. Can be
+                                        'histogram', 'rug', 'box', or 'violin'.
+            xaxis_title (str, optional): title for x axis.
+            yaxis_title (str, optional): title for y axis.
+            xaxis_range (list, optional): range of x axis in format [min, max].
+            yaxis_range (list, optional): range of y axis in format [min, max].
+            save_file (bool, optional): flag for saving an html file with plot.
+        """
+        # todo: extend with multiple columns for y
+        logger.info('Creating scatter plot for x={} and y={}.', x, y)
+        # using marker_size with histogram marginal(s) is not supported
+        if (marker_size and
+                (marginal_x == 'histogram' or marginal_y == 'histogram')):
+            logger.error('Argument marker_size cannot be used together with'
+                         + ' histogram marginal(s).')
+            return -1
+        # prettify text
+        if pretty_text:
+            for x_col in x:
+                if isinstance(df.iloc[0][x_col], str):  # check if string
+                    # replace underscores with spaces
+                    df[x_col] = df[x_col].str.replace('_', ' ')
+                    # capitlise
+                    df[x_col] = df[x_col].str.capitalize()
+            if isinstance(df.iloc[0][y], str):  # check if string
+                # replace underscores with spaces
+                df[y] = df[y].str.replace('_', ' ')
+                # capitlise
+                df[y] = df[y].str.capitalize()
+            try:
+                # check if string
+                if text and isinstance(df.iloc[0][text], str):
+                    # replace underscores with spaces
+                    df[text] = df[text].str.replace('_', ' ')
+                    # capitlise
+                    df[text] = df[text].str.capitalize()
+            except ValueError as e:
+                logger.debug('Tried to prettify {} with exception {}', text, e)
+        # create new dataframe with the necessary data
+        color = []
+        val_y = []
+        val_x = []
+        for x_col in x:
+            for index, row in df.iterrows():
+                color.append(x_col)
+                val_x.append(row[x_col])
+                val_y.append(row[y])
+        data = {'val_y': val_y,
+                'color': color,
+                'val_x': val_x}
+        df = pd.DataFrame(data)
+        # scatter plot with histograms
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore', category=RuntimeWarning)
+            fig = px.scatter(df,
+                             x='val_x',
+                             y='val_y',
+                             color='color',
+                             symbol=symbol,
+                             text=text,
+                             trendline=trendline,
+                             # hover_data=hover_data,
+                             marginal_x=marginal_x,
+                             marginal_y=marginal_y)
+        # update layout
+        fig.update_layout(template=self.template,
+                          xaxis_title=xaxis_title,
+                          yaxis_title=yaxis_title,
+                          xaxis_range=xaxis_range,
+                          yaxis_range=yaxis_range,
+                          legend_title_text=' ',
+                          font=dict(size=20),
+                          legend=dict(orientation='h',
+                                      yanchor='bottom',
+                                      y=1.02,
+                                      xanchor='right',
+                                      x=0.78
+                                      ))        
+        results = px.get_trendline_results(fig)
+        for i in range(len(x)):
+            print(results.px_fit_results.iloc[i].summary())
+        # change marker size
+        if marker_size:
+            fig.update_traces(marker=dict(size=marker_size))
+        # save file
+        if save_file:
+            self.save_plotly(fig,
+                             'scatter_' + ','.join(x) + '-' + y,
                              self.folder)
         # open it in localhost instead
         else:
