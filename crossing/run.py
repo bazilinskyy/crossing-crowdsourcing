@@ -24,7 +24,7 @@ SHOW_OUTPUT = True  # should figures be plotted
 # FILTER_DATA = False  # filter Appen and heroku data
 # CLEAN_DATA = False  # clean Appen data
 # REJECT_CHEATERS = False  # reject cheaters on Appen
-# UPDATE_MAPPING = True  # update mapping with keypress data
+# UPDATE_MAPPING = False  # update mapping with keypress data
 # SHOW_OUTPUT = True  # should figures be plotted
 
 file_mapping = 'mapping.p'  # file to save updated mapping
