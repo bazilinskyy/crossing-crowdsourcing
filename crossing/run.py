@@ -8,24 +8,24 @@ cs.logs(show_level='info', show_color=True)
 logger = cs.CustomLogger(__name__)  # use custom logger
 
 # Const
-# SAVE_P = True  # save pickle files with data
-# LOAD_P = False  # load pickle files with data
-# SAVE_CSV = True  # load csv files with data
-# FILTER_DATA = True  # filter Appen and heroku data
-# CLEAN_DATA = True  # clean Appen data
-# REJECT_CHEATERS = True  # reject cheaters on Appen
-# UPDATE_MAPPING = True  # update mapping with keypress data
-# SHOW_OUTPUT = True  # shoud figures be plotted
+SAVE_P = True  # save pickle files with data
+LOAD_P = False  # load pickle files with data
+SAVE_CSV = True  # load csv files with data
+FILTER_DATA = True  # filter Appen and heroku data
+CLEAN_DATA = True  # clean Appen data
+REJECT_CHEATERS = True  # reject cheaters on Appen
+UPDATE_MAPPING = True  # update mapping with keypress data
+SHOW_OUTPUT = True  # should figures be plotted
 
 # for debugging, skip processing
-SAVE_P = False  # save pickle files with data
-LOAD_P = True  # load pickle files with data
-SAVE_CSV = True  # load csv files with data
-FILTER_DATA = False  # filter Appen and heroku data
-CLEAN_DATA = False  # clean Appen data
-REJECT_CHEATERS = False  # reject cheaters on Appen
-UPDATE_MAPPING = False  # update mapping with keypress data
-SHOW_OUTPUT = True  # shoud figures be plotted
+# SAVE_P = False  # save pickle files with data
+# LOAD_P = True  # load pickle files with data
+# SAVE_CSV = True  # load csv files with data
+# FILTER_DATA = False  # filter Appen and heroku data
+# CLEAN_DATA = False  # clean Appen data
+# REJECT_CHEATERS = False  # reject cheaters on Appen
+# UPDATE_MAPPING = True  # update mapping with keypress data
+# SHOW_OUTPUT = True  # should figures be plotted
 
 file_mapping = 'mapping.p'  # file to save updated mapping
 
@@ -78,7 +78,12 @@ if __name__ == '__main__':
         mapping = heroku.read_mapping()
         # process keypresses and update mapping
         mapping = heroku.process_kp()
-        # add count of specific object (pedestrian or vehicle)
+        # add distance to pedestrian at different time intervals
+        mapping = heroku.check_dist_type(mapping, 'dist_at_9')
+        mapping = heroku.check_dist_type(mapping, 'dist_at_10')
+        mapping = heroku.check_dist_type(mapping, 'dist_at_11')
+        # add count of specific object (district of city, pedestrian, vehicle)
+        mapping = heroku.add_district_data(mapping)
         mapping = heroku.add_object_count(mapping, 'person')
         mapping = heroku.add_object_count(mapping, 'car')
         # check is velocity data is processed correctly to match kp
@@ -473,7 +478,7 @@ if __name__ == '__main__':
                               marginal_x='rug',
                               save_file=True)
         # todo: add comment
-        analysis.scatter(mapping[mapping['Mean distance to the pedestrian'] != ''],  # noqa: E501
+        analysis.scatter(mapping[mapping['avg_dist'] != ''],  # noqa: E501
                          x='avg_dist',
                          y='risky_slider',
                          trendline='ols',
@@ -483,7 +488,7 @@ if __name__ == '__main__':
                          marginal_x='rug',
                          save_file=True)
         # todo: add comment
-        analysis.scatter(mapping[mapping['Mean distance to the pedestrian'] != ''],  # noqa: E501
+        analysis.scatter(mapping[mapping['avg_dist'] != ''],  # noqa: E501
                          x='avg_velocity',
                          y='avg_kp',
                          trendline='ols',
@@ -493,7 +498,7 @@ if __name__ == '__main__':
                          marginal_x='rug',
                          save_file=True)
         # todo: add comment
-        analysis.scatter_mult(mapping[mapping['Mean pedestrian count'] != ''],     # noqa: E501
+        analysis.scatter_mult(mapping[mapping['avg_person'] != ''],     # noqa: E501
                               x=['avg_object', 'avg_person', 'avg_car'],
                               y='risky_slider',
                               trendline='ols',
@@ -504,7 +509,7 @@ if __name__ == '__main__':
                               marginal_x='rug',
                               save_file=True)
         # todo: add comment
-        analysis.scatter_mult(mapping[mapping['Mean pedestrian count'] != ''],     # noqa: E501
+        analysis.scatter_mult(mapping[mapping['avg_person'] != ''],     # noqa: E501
                               x=['avg_object', 'avg_person', 'avg_car'],
                               y='avg_kp',
                               trendline='ols',
@@ -515,7 +520,7 @@ if __name__ == '__main__':
                               marginal_x='rug',
                               save_file=True)
         # todo: add comment
-        analysis.scatter(mapping[mapping['Mean object surface'] != ''],    # noqa: E501
+        analysis.scatter(mapping[mapping['avg_obj_surface'] != ''],    # noqa: E501
                          x='avg_object',
                          y='avg_kp',
                          trendline='ols',
@@ -525,7 +530,7 @@ if __name__ == '__main__':
                          marginal_x='rug',
                          save_file=True)
         # todo: add comment
-        analysis.scatter(mapping[mapping['Mean object surface'] != ''],    # noqa: E501
+        analysis.scatter(mapping[mapping['avg_obj_surface'] != ''],    # noqa: E501
                          x='avg_obj_surface',
                          y='risky_slider',
                          trendline='ols',
