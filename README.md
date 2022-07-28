@@ -72,6 +72,9 @@ Keypresses in relation to traffic rules.
 [![keypresses for traffic signs](figures/kp_or_cross_look-Crossing_Looking_cross_look-notCrossing_Looking_cross_look-Crossing_notLooking_cross_look-nonspecific.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/kp_or_cross_look-Crossing_Looking_cross_look-notCrossing_Looking_cross_look-Crossing_notLooking_cross_look-nonspecific.html)  
 Keypresses in relation to the traffic signs.
 
+[![relationship between mean keypresses of participants and mean surface area of objects](figures/scatter_avg_obj_surface-avg_kp.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/scatter_avg_obj_surface-avg_kp.html)  
+Relationship between mean keypresses of participants and mean surface area of objects.
+
 #### Communication
 [![communication](figures/communication.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/communication.html)  
 Communication.
@@ -92,6 +95,27 @@ Relationship between eye contact and risk score.
 
 [![relationship between velocity and risk score](figures/scatter_velocity_risk-risky_slider.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/scatter_velocity_risk-risky_slider.html)  
 Relationship between car velocity and risk score.
+
+[![relationship between mean risk and values of subjective eye contact](figures/scatter_EC-yes,EC-yes_but_too_late,EC-no,EC-i_don't_know-risky_slider.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/scatter_EC-yes,EC-yes_but_too_late,EC-no,EC-i_don't_know-risky_slider.html)  
+Relationship between mean risk and values of subjective eye contact.
+
+[![relationship between mean risk and percentage of participants indicating eye contact](figures/scatter_EC-yes,EC-yes_but_too_late,EC-no,EC-i_don't_know-avg_kp.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/scatter_EC-yes,EC-yes_but_too_late,EC-no,EC-i_don't_know-avg_kp.html)  
+Relationship between mean risk and percentage of participants indicating eye contact.
+
+[![relationship between mean risk and mean distance to pedestrian](figures/scatter_avg_dist-risky_slider.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/scatter_avg_dist-risky_slider.html)  
+Relationship between mean risk and mean distance to pedestrian.
+
+[![relationship between mean risk and mean distance to pedestrian](figures/scatter_avg_velocity-avg_kp.html.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/scatter_avg_velocity-avg_kp.html.html)  
+Relationship between mean risk and mean distance to pedestrian.
+
+[![relationship between mean risk and mean number of objects](figures/scatter_avg_object,avg_person,avg_car-risky_slider.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/scatter_avg_object,avg_person,avg_car-risky_slider.html)  
+Relationship between mean risk and mean number of objects.
+
+[![relationship between mean risk and mean keypresses of participants](figures/scatter_avg_object,avg_person,avg_car-avg_kp.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/scatter_avg_object,avg_person,avg_car-avg_kp.html)  
+Relationship between mean risk and mean keypresses of participants.
+
+[![relationship between mean risk and mean surface area of objects](figures/scatter_avg_obj_surface-risky_slider.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/scatter_avg_obj_surface-risky_slider.html)  
+Relationship between mean risk and mean surface area of objects.
 
 #### Eye contact
 [![eye contact score](figures/bar_EC-yes-EC-yes_but_too_late-EC-no-EC-i_don't_know_video_0-video_1-video_2-video_3-video_4-video_5-video_6-video_7-video_8-video_9-video_10-video_11-video_12-video_13-video_14-video_15-video.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/bar_EC-yes-EC-yes_but_too_late-EC-no-EC-i_don't_know_video_0-video_1-video_2-video_3-video_4-video_5-video_6-video_7-video_8-video_9-video_10-video_11-video_12-video_13-video_14-video_15-video.html)  
