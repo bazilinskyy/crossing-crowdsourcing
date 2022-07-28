@@ -105,7 +105,7 @@ Relationship between mean risk and percentage of participants indicating eye con
 [![relationship between mean risk and mean distance to pedestrian](figures/scatter_avg_dist-risky_slider.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/scatter_avg_dist-risky_slider.html)  
 Relationship between mean risk and mean distance to pedestrian.
 
-[![relationship between mean risk and mean distance to pedestrian](figures/scatter_avg_velocity-avg_kp.html.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/scatter_avg_velocity-avg_kp.html)  
+[![relationship between mean risk and mean distance to pedestrian](figures/scatter_avg_velocity-avg_kp.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/scatter_avg_velocity-avg_kp.html)  
 Relationship between mean risk and mean distance to pedestrian.
 
 [![relationship between mean risk and mean number of objects](figures/scatter_avg_object,avg_person,avg_car-risky_slider.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/scatter_avg_object,avg_person,avg_car-risky_slider.html)  
