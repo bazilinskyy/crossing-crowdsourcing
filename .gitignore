@@ -20,4 +20,7 @@ secret
 
 # Pickle files
 crossing/analysis/*.p
-crossing/*.pnode_modules
+crossing/*.p
+
+# node modules folder
+/node_modules
