@@ -351,7 +351,7 @@ class Appen:
                                       right_index=True,
                                       how='left')
         # drop not needed columns
-        df_country.drop(['unit_id', 'id', 'tainted', 'worker_id'], 1)
+        df_country = df_country.drop(columns=['unit_id', 'id'])
         # assign to attribute
         self.countries_data = df_country
         # save to csv

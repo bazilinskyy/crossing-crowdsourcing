@@ -36,6 +36,7 @@ class Analysis:
         # set font to Times
         plt.rc('font', family='serif')
 
+    # TODO: fix error with value of string not used as float
     def corr_matrix(self, df, columns_drop, save_file=False):
         """
         Output correlation matrix.
@@ -47,8 +48,9 @@ class Analysis:
         """
         logger.info('Creating correlation matrix.')
         # drop columns
-        df = df.drop(columns_drop, 1)
+        df = df.drop(columns=columns_drop)
         # create correlation matrix
+        print(list(df))
         corr = df.corr()
         # create mask
         mask = np.zeros_like(corr)
@@ -106,7 +108,7 @@ class Analysis:
         """
         logger.info('Creating scatter matrix.')
         # drop columns
-        df = df.drop(columns_drop, 1)
+        df = df.drop(columns=columns_drop)
         # create dimensions list after dropping columns
         dimensions = df.keys()
         # plot matrix

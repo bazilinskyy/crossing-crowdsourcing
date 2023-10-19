@@ -397,7 +397,7 @@ class Heroku:
                 video_len = self.mapping.loc[video_id]['video_length']
                 rt_data = []
                 counter_data = 0
-                for (col_name, col_data) in self.heroku_data.iteritems():
+                for (col_name, col_data) in self.heroku_data.items():
                     # find the right column to loop through
                     if video_rt == col_name:
                         # loop through rows in column
@@ -514,7 +514,7 @@ class Heroku:
                 video_as = 'video_' + str(num) + '-as-' + str(rep)
                 video_order = 'video_' + str(num) + '-qs-' + str(rep)
                 # loop over columns
-                for col_name, col_data in self.heroku_data.iteritems():
+                for col_name, col_data in self.heroku_data.items():
                     # when col_name equals video, then check
                     if col_name == video_as:
                         # loop over rows in column
@@ -635,7 +635,8 @@ class Heroku:
                 if counter_filtered / data_count > self.allowed_length:
                     # if threshold reached, append data of this participant to
                     # df_1
-                    df_1 = df_1.append(row)
+                    df_1 = pd.concat([df_1, pd.DataFrame([row])],
+                                     ignore_index=True)
         logger.info('Filter-h1. People who had more than {} share of stimuli'
                     + ' of unexpected length: {}.',
                     self.allowed_length,
@@ -661,7 +662,8 @@ class Heroku:
                             counter_filtered = counter_filtered + 1
             if counter_filtered > self.allowed_signs:
                 # append participant if too much mistakes in signs_answers
-                df_2 = df_2.append(row)
+                df_2 = pd.concat([df_2, pd.DataFrame([row])],
+                                 ignore_index=True)
         # people that made too many mistakes with questions with traffic signs
         logger.info('Filter-h2. People who made more than {} mistakes with '
                     + 'questions of traffic signs: {}',
