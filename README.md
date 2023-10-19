@@ -69,7 +69,7 @@ Keypresses for a selected video (video_0).
 [![keypresses for traffic rules](figures/kp_and_traffic_rules.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/kp_and_traffic_rules.html)  
 Keypresses in relation to traffic rules.
 
-[![keypresses for traffic signs](figures/kp_or_cross_look-Crossing_Looking_cross_look-notCrossing_Looking_cross_look-Crossing_notLooking_cross_look-nonspecific.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/kp_or_cross_look-Crossing_Looking_cross_look-notCrossing_Looking_cross_look-Crossing_notLooking_cross_look-nonspecific.html)  
+[![keypresses for traffic signs](figures/kkp_or_cross_look.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/kkp_or_cross_look.html)  
 Keypresses in relation to the traffic signs.
 
 [![relationship between mean keypresses of participants and mean surface area of objects](figures/scatter_avg_obj_surface-avg_kp.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/scatter_avg_obj_surface-avg_kp.html)  
@@ -87,7 +87,7 @@ Distance to pedestrian over speed for a selected video (video_5).
 Distance to pedestrian over speed for a selected video (video_50).
 
 #### Risk
-[![risk score](figures/bar_risky_slider_video_0-video_1-video_2-video_3-video_4-video_5-video_6-video_7-video_8-video_9-video_10-video_11-video_12-video_13-video_14-video_15-video_16-video_17-video_18-video_19-video.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/bar_risky_slider_video_0-video_1-video_2-video_3-video_4-video_5-video_6-video_7-video_8-video_9-video_10-video_11-video_12-video_13-video_14-video_15-video_16-video_17-video_18-video_19-video.html)  
+[![risk score](figures/bar_riskybar_risky_slider.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/bar_riskybar_risky_slider.html)  
 Risk score for individual videos.
 
 [![relationship between eye contact and risk score](figures/scatter_EC_score-risky_slider.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/scatter_EC_score-risky_slider.html)  
@@ -118,17 +118,17 @@ Relationship between mean risk and mean keypresses of participants.
 Relationship between mean risk and mean surface area of objects.
 
 #### Eye contact
-[![eye contact score](figures/bar_EC-yes-EC-yes_but_too_late-EC-no-EC-i_don't_know_video_0-video_1-video_2-video_3-video_4-video_5-video_6-video_7-video_8-video_9-video_10-video_11-video_12-video_13-video_14-video_15-video.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/bar_EC-yes-EC-yes_but_too_late-EC-no-EC-i_don't_know_video_0-video_1-video_2-video_3-video_4-video_5-video_6-video_7-video_8-video_9-video_10-video_11-video_12-video_13-video_14-video_15-video.html)  
+[![eye contact score](figures/bar_EC.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/bar_EC.html)  
 Eye contact score.
 
-[![wrong eye contact](figures/bar_looking_fails_video_0-video_1-video_2-video_3-video_4-video_5-video_6-video_7-video_8-video_9-video_10-video_11-video_12-video_13-video_14-video_15-video_16-video_17-video_18-video_19-vide.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/bar_looking_fails_video_0-video_1-video_2-video_3-video_4-video_5-video_6-video_7-video_8-video_9-video_10-video_11-video_12-video_13-video_14-video_15-video_16-video_17-video_18-video_19-vide.html)  
+[![wrong eye contact](figures/bar_looking_fails.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/bar_looking_fails.html)  
 Percentage of participants that wrongly indicated looking behaviour.
 
 #### Information on participants
 [![driving frequency](figures/hist_driving_freq.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/hist_driving_freq.html)  
 Driving frequency.
 
-[![driving behaviour questionnaire](figures/hist_dbq1_anger-dbq2_speed_motorway-dbq3_speed_residential-dbq4_headway-dbq5_traffic_lights-dbq6_horn-dbq7_mobile.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/hist_dbq1_anger-dbq2_speed_motorway-dbq3_speed_residential-dbq4_headway-dbq5_traffic_lights-dbq6_horn-dbq7_mobile.html)  
+[![driving behaviour questionnaire](figures/hist_dbq.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/hist_dbq.html)  
 Driving behaviour questionnaire (DBQ).
 
 [![time of participation](figures/hist_time.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/hist_time.html)  
