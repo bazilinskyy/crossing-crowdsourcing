@@ -174,7 +174,7 @@ class Appen:
             df_5.to_csv(cs.settings.output_dir + '/' + self.file_cheaters_csv)
             logger.info('Filter-a5. Saved list of cheaters to csv file {}',
                         self.file_cheaters_csv)
-        # concatanate dfs with filtered data
+        # concatenate dfs with filtered data
         old_size = df.shape[0]
         df_filtered = pd.concat([df_1, df_2, df_3, df_4, df_5])
         # check if there are people to filter
