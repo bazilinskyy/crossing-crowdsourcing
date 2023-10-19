@@ -804,11 +804,11 @@ class Heroku:
 
     def check_dist_type(self, df, col_name):
         """Check distance type
-        
+
         Args:
             df (TYPE): dataframe with data.
             col_name (TYPE): column to check in df.
-        
+
         Returns:
             dataframe: updated dataframe.
         """
@@ -969,12 +969,12 @@ class Heroku:
 
     def add_avg(self, df, col, col_name):
         """Add column with avg value of time-series.
-        
+
         Args:
-            df (s): dataframe containg all data
+            df (s): dataframe containing all data
             col: column which contains time series data
             col_name: name of column
-        
+
         Returns:
             df: containing an extra column with speed data at specific time.
         """
@@ -986,7 +986,7 @@ class Heroku:
             if len(array) > 1:
                 for i, data in enumerate(array):
                     # disregard the first second (blackscreen)
-                    if i > 9:  
+                    if i > 9:
                         value = value + data
                         count = count + 1
                 avg_col.append(value/count)
@@ -999,12 +999,12 @@ class Heroku:
 
     def add_cols_avg(self, df, cols, col_name):
         """Add averages of columns
-        
+
         Args:
             df (TYPE): Description
             cols (TYPE): Description
             col_name (TYPE): Description
-        
+
         Returns:
             TYPE: Description
         """
@@ -1022,7 +1022,7 @@ class Heroku:
                 avg_col.append('')
             else:
                 avg_col.append(value/count)
-        col_name = 'avg_' + col_name    
+        col_name = 'avg_' + col_name
         df[col_name] = avg_col
         return df
 
