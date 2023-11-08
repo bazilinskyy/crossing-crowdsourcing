@@ -118,7 +118,7 @@ Relationship between mean risk and mean keypresses of participants.
 Relationship between mean risk and mean surface area of objects.
 
 #### Eye contact
-[![eye contact score](figures/bar_EC.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/bar_EC.html)  
+[![eye contact score](figures/bar_ec.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/bar_ec.html)  
 Eye contact score.
 
 [![wrong eye contact](figures/bar_looking_fails.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/bar_looking_fails.html)  
