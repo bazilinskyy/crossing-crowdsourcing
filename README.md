@@ -87,7 +87,7 @@ Distance to pedestrian over speed for a selected video (video_5).
 Distance to pedestrian over speed for a selected video (video_50).
 
 #### Risk
-[![risk score](figures/bar_riskybar_risky_slider.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/bar_riskybar_risky_slider.html)  
+[![risk score](figures/bar_risky_slider.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/bar_risky_slider.html)  
 Risk score for individual videos.
 
 [![relationship between eye contact and risk score](figures/scatter_EC_score-risky_slider.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/scatter_EC_score-risky_slider.html)  
