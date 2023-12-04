@@ -69,7 +69,7 @@ Keypresses for a selected video (video_0).
 [![keypresses for traffic rules](figures/kp_and_traffic_rules.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/kp_and_traffic_rules.html)  
 Keypresses in relation to traffic rules.
 
-[![keypresses for traffic signs](figures/kkp_or_cross_look.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/kkp_or_cross_look.html)  
+[![keypresses for traffic signs](figures/kp_or_cross_look.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/kp_or_cross_look.html)  
 Keypresses in relation to the traffic signs.
 
 [![relationship between mean keypresses of participants and mean surface area of objects](figures/scatter_avg_obj_surface-avg_kp.png)](https://htmlpreview.github.io/?https://github.com/bazilinskyy/crossing-crowdsourcing/blob/main/figures/scatter_avg_obj_surface-avg_kp.html)  

@@ -669,7 +669,7 @@ class Heroku:
                     + 'questions of traffic signs: {}',
                     self.allowed_signs,
                     df_2.shape[0])
-        # concatanate dfs with filtered data
+        # concatenate dfs with filtered data
         old_size = df.shape[0]
         df_filtered = pd.concat([df_1, df_2])
         # check if there are people to filter
